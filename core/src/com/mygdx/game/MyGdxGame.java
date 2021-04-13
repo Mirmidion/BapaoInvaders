@@ -23,49 +23,63 @@ import java.awt.*;
 
 public class MyGdxGame extends ApplicationAdapter {
 
+	//Scene control
 	boolean mainMenu = true;
 	boolean game = false;
+
+	//Object visuals
 	Skin buttonSkin;
 	TextureAtlas atlas;
+
+	//Fonts
 	BitmapFont normalFont;
 	BitmapFont titleFont;
+
+	//Main Menu Layout and Objects
 	Table mainMenuTable;
 	TextButton start;
 	TextButton settings;
 	TextButton exit;
 	Text title;
-	Stage stage;
+
+	//Settings Menu
 	Texture settingsMenu;
 	boolean settingsMenuSwitch;
 
+	//Camera
 	private OrthographicCamera camera;
 
-	int width;
-	int height;
+	//Screen width & height
+	int width = 1920;
+	int height = 1080;
 
+	//SpriteBatches
 	SpriteBatch batch;
+	Stage stage;
 
+	//Background
 	Texture background;
 	
 	@Override
 	public void create () {
+		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
+		stage = new Stage();
 
-		width = 1920;
-		height = 1080;
-
+		//Initializing Textures
 		background = new Texture("background.png");
 
-		//normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
+		//Initializing Fonts
+		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
 		titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
 		titleFont.getData().setScale(2);
-		stage = new Stage();
+
 		Gdx.input.setInputProcessor(stage);
 		mainMenuTable = new Table();
 		mainMenuTable.setPosition(250,600);
 		mainMenuTable.left();
 
-		buttonSkin = new Skin(Gdx.files.internal("Skin.json"));
+		buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
 		start = new TextButton("Start", buttonSkin);
 		settings = new TextButton("Settings",buttonSkin);
@@ -98,17 +112,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		});
 
 		start.setTransform(true);
-		start.setScale(2);
 		settings.setTransform(true);
-		settings.setScale(2);
 		exit.setTransform(true);
-		exit.setScale(2);
 
 
 
 
 		mainMenuTable.row();
-		mainMenuTable.add(start).padTop(50);
+		mainMenuTable.add(start).padTop(225);
 		mainMenuTable.row();
 		mainMenuTable.add(settings).padTop(50);
 		mainMenuTable.row();
@@ -135,7 +146,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.begin();
 
 			batch.draw(background, 0, 0, width, height);
-			titleFont.draw(batch, "Bapao Invaders", 200, 800);
+			titleFont.draw(batch, "Bapao Inmoeders", 200, 800);
 
 			batch.end();
 			stage.draw();
