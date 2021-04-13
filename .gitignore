@@ -17,4 +17,8 @@
 *.lvlps
 .cache/
 hs_err_pid22196.log
-*.log
+*.xml
+.idea/BapaoInvaders.iml
+.idea/gradle.xml
+.idea/vcs.xml
+
