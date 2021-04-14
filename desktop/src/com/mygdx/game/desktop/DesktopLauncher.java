@@ -11,12 +11,13 @@ import com.mygdx.game.MyGdxGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "Bapao Inmoeders";
+		config.title = "Bapao Invaders";
 		config.addIcon("Icon.png", Files.FileType.Internal);
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		config.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
 		config.x = -7;
 		config.y = 0;
+
 		new LwjglApplication(new MyGdxGame(), config);
 	}
 }
