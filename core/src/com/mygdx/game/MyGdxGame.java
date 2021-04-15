@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.TimeUtils;
 import org.w3c.dom.Text;
 
 import javax.swing.plaf.synth.Region;
@@ -31,6 +32,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Scene control
 	boolean mainMenu = true;
 	boolean game = false;
+	boolean inLevel = false;
 
 	//Object visuals
 	Skin buttonSkin;
@@ -67,12 +69,15 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	//Background
 	Texture background;
+	Texture gameBackground;
 
 	//Player
-	Texture player;
+	Player player;
 
 	//Solar Systems
 	SolarSystem solarSystem = new SolarSystem();
+	int globalDifficulty = 0;
+	int level = 0;
 	
 	@Override
 	public void create () {
@@ -83,6 +88,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Initializing Textures
 		background = new Texture("background.png");
+		gameBackground = new Texture("gameBackground.png");
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -146,7 +152,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width, height);
 
-
+		player = new Player();
 	}
 
 	@Override
@@ -182,23 +188,59 @@ public class MyGdxGame extends ApplicationAdapter {
 		else if (game) {
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+			shapeRenderer.setAutoShapeType(true);
 			batch.begin();
+			batch.draw(gameBackground, 0, 0, width, height);
+			batch.end();
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 			shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
+			int localOrbitCounter = 0;
 			for (int i : solarSystem.orbitRings){
-				shapeRenderer.circle(solarSystem.posXStar, solarSystem.posYStar, i);
+				localOrbitCounter++;
+				if (localOrbitCounter > solarSystem.planets.size()){
+					break;
+				}
+				shapeRenderer.ellipse(solarSystem.posXStar - i, solarSystem.posYStar - i, i*2, i*2);
 			}
-			shapeRenderer.end();
-			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 			shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
-			shapeRenderer.circle(solarSystem.posXStar, solarSystem.posYStar, solarSystem.radiusInPixels );
+			shapeRenderer.ellipse(solarSystem.posXStar - solarSystem.radiusInPixels/2, solarSystem.posYStar - solarSystem.radiusInPixels/2, solarSystem.radiusInPixels, solarSystem.radiusInPixels );
 			for (Planet planet : solarSystem.planets){
 				if (planet.planetTexture == null) {
-					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.planetColor.getRed() / 255), ((float) planet.planetColor.getGreen() / 255), ((float) planet.planetColor.getBlue() / 255), ((float) planet.planetColor.getAlpha() / 255)));
+					if (planet.moonList.size() != 0){
+						int moonOrbit = planet.radius+25;
+						for (Planet moon : planet.moonList){
 
-					System.out.println((solarSystem.posXStar + planet.posX) + (solarSystem.posYStar + planet.posY) + "");
-					shapeRenderer.circle((solarSystem.posXStar + planet.posX), (solarSystem.posYStar + planet.posY), planet.radius);
+
+							moon.orbit = moonOrbit/2;
+							shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
+							shapeRenderer.ellipse(solarSystem.posXStar + planet.posX - moonOrbit/2,(solarSystem.posYStar + planet.posY - moonOrbit/2), moonOrbit, moonOrbit);
+							shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.planetColor.getRed() / 255), ((float) moon.planetColor.getGreen() / 255), ((float) moon.planetColor.getBlue() / 255), ((float) moon.planetColor.getAlpha() / 255)));
+							moon.setMoonOrbit(moon.orbit);
+							shapeRenderer.ellipse((moon.posX + planet.posX + solarSystem.posXStar - 6), (moon.posY +planet.posY + solarSystem.posYStar -6), moon.radius ,moon.radius );
+							System.out.println(moon.posX);
+							if (moon.difficulty == level){
+								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+								shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+							}
+							moonOrbit += 25;
+						}
+						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
+					}
+					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.planetColor.getRed() / 255), ((float) planet.planetColor.getGreen() / 255), ((float) planet.planetColor.getBlue() / 255), ((float) planet.planetColor.getAlpha() / 255)));
+					planet.orbit();
+					shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+					if (planet.difficulty == level){
+						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+					}
 				}
 				else{
 
@@ -206,7 +248,34 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			}
 			shapeRenderer.end();
+			if (Gdx.input.isButtonPressed(Input.Keys.ENTER)){
+				inLevel = true;
+				game = false;
+				mainMenu = false;
+
+			}
+		}
+		else if (inLevel){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			batch.begin();
+			batch.draw(gameBackground, 0, 0, width, height);
+			batch.draw(player.playerSprite, player.posX,player.posY);
+			for (Bullet bullet : player.allBullets){
+				batch.draw(bullet.laser, bullet.posX, bullet.posY);
+				bullet.setPosY(5);
+			}
 			batch.end();
+
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+				player.setPosX(-2);
+			}
+			else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+				player.setPosX(2);
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+				player.shoot();
+			}
 		}
 	}
 	
@@ -222,6 +291,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		int posXStar = width/2;
 		int posYStar = height/2;
 		int radiusInPixels = 100;
+		float yScaleOfOrbits = 0.9f;
 
 		Color starColor = new Color(255, 224, 67);
 
@@ -229,13 +299,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		ArrayList<Planet> planets = new ArrayList<Planet>();
 
 		// Amount of orbits around the star
-		int[] orbitRings = {200, 275, 375, 500};
+		int[] orbitRings = {200, 275, 375, 500, 575, 650};
+
 
 		public SolarSystem(){
-			int randomAmountOfPlanets = MathUtils.random(4,8);
+			int randomAmountOfPlanets = MathUtils.random(4,6);
+			int randomOrbit = 0;
 			for (int i = randomAmountOfPlanets; i > 0; i--){
-				int randomOrbit = MathUtils.random(0,3);
 				this.planets.add(new Planet(this.orbitRings[randomOrbit]));
+				randomOrbit++;
 			}
 			System.out.println(randomAmountOfPlanets);
 		}
@@ -269,6 +341,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Position in Solar System
 		float posX;
 		float posY;
+		private float angle;
+		int orbit = 100;
+		private boolean orbitClockWise = true;
+		private float rotationSpeed = 1;
+
 
 		// Color and texture of the Planet
 		Color planetColor = new Color(100,100,100);
@@ -329,27 +406,37 @@ public class MyGdxGame extends ApplicationAdapter {
 				System.out.println("Added an asteroid");
 				this.radius = 10;
 			}
-			float angle = (float) ((Math.random()*(360)+0)/180*Math.PI);
+			angle = (float) ((Math.random()*(360)+0)/180*Math.PI);
 			posX = (float)Math.cos(angle)*orbit;
 			posY = (float)Math.sin(angle)*orbit;
+			this.orbit = orbit;
+			this.rotationSpeed = MathUtils.random(0.5f,2);
+			this.difficulty = globalDifficulty;
+			globalDifficulty++;
 		}
 
 		public Planet(boolean isMoon, Planet orbitPlanet){
 			this.planetColor = moonColor;
 			this.planetClass = 2;
 			this.radius = 15;
-			orbitPlanet.addMoon(this);
+			angle = (float) ((Math.random()*(360)+0)/180*Math.PI);
+			posX = (float)Math.cos(angle)*orbit;
+			posY = (float)Math.sin(angle)*orbit;
+			this.rotationSpeed = MathUtils.random(1.5f,3);
+			this.difficulty = globalDifficulty;
+			globalDifficulty++;
 		}
 
 		public void GenerateMoons(int planetType){
 			int amountOfMoons = MathUtils.random(-3,3);
 			amountOfMoons = Math.max(amountOfMoons, 0);
 			for (int i = amountOfMoons; i > 0; i--){
-				if (50 > ((i <= amountOfMoons && planetType == 3)? MathUtils.random(0,100):100) || (10 > ((planetType == 4 || planetType == 5)? MathUtils.random(0,100):100))){
+				if (50 > ((i < amountOfMoons && planetType == 3)? MathUtils.random(0,100):100) || (10 > ((planetType == 4 || planetType == 5)? MathUtils.random(0,100):100))){
 					System.out.println("break");
 					break;
 				}
 				addMoon(new Planet(true, this));
+
 				System.out.println("Added a Moon");
 			}
 		}
@@ -357,11 +444,116 @@ public class MyGdxGame extends ApplicationAdapter {
 		public void addMoon(Planet moon){
 			this.moonList.add(moon);
 		}
+
+		public void orbit(){
+			this.setOrbit(getOrbitDirection(this.rotationSpeed));
+			this.posX = (float)Math.cos(angle)*orbit;
+			this.posY = (float)Math.sin(angle)*orbit;
+		}
+
+		public void setOrbit(float angle){
+			if (this.angle + angle > 2*Math.PI){
+				this.angle = 0;
+			}
+			else if (this.angle + angle < 0){
+				this.angle = 1;
+			}
+			else{
+				this.angle += angle;
+			}
+		}
+
+		public void setMoonOrbit(int orbit){
+			this.orbit = orbit;
+			this.orbit();
+		}
+
+		public float getOrbitDirection(float speed){
+			if (this.orbitClockWise){
+				return 0.001f * speed;
+			}
+			else{
+				return -0.001f * speed;
+			}
+		}
 	}
 
 	public static boolean isBetween(int x, int lower, int upper) {
 		return lower <= x && x <= upper;
 	}
+
+	class Player {
+		private int posX = width/2;
+		private int posY = 100;
+		private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
+		private int gun = 1;
+		private long time = 0;
+		ArrayList<Bullet> allBullets = new ArrayList<Bullet>();
+
+		public Player (){
+			this.posX = width/2-playerSprite.getWidth()/2;
+		}
+
+		public void setPosX(int x){
+			if (posX + x > width - playerSprite.getWidth()){
+				posX = width - playerSprite.getWidth();
+			}
+			else if (posX + x < 0){
+				posX = 0;
+			}
+			else {
+				posX += x;
+			}
+		}
+
+		public void shoot(){
+			if (TimeUtils.millis() - time > 500){
+				allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()));
+				time = TimeUtils.millis();
+				gun *= -1;
+			}
+
+		}
+
+		public void destroyBullet(Bullet bulletToRemove){
+			//allBullets.remove(bulletToRemove);
+		}
+
+
+	}
+
+	class Bullet{
+		private int posX;
+		private int posY;
+		Texture laser = new Texture(Gdx.files.internal("laser.png"));
+
+
+		public Bullet (int x, int y){
+			this.posX = x + player.posX;
+			this.posY = y + player.posY;
+		}
+
+
+
+		public void setPosX(int posX) {
+			if (this.posX+posX > width || this.posX+posX < 0){
+				player.destroyBullet(this);
+			}
+			else{
+				this.posX += posX;
+			}
+		}
+
+		public void setPosY(int posY) {
+			if (this.posY+posY > height || this.posY+posY < 0){
+				player.destroyBullet(this);
+			}
+			else{
+				this.posY += posY;
+			}
+		}
+	}
+
 
 }
 

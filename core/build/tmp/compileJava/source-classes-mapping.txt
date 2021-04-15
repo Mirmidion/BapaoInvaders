@@ -3,5 +3,7 @@ com/mygdx/game/MyGdxGame.java
  com.mygdx.game.MyGdxGame$1
  com.mygdx.game.MyGdxGame$2
  com.mygdx.game.MyGdxGame$3
+ com.mygdx.game.MyGdxGame$Bullet
  com.mygdx.game.MyGdxGame$Planet
+ com.mygdx.game.MyGdxGame$Player
  com.mygdx.game.MyGdxGame$SolarSystem
