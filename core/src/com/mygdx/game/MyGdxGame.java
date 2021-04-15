@@ -75,10 +75,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	Player player;
 
 	//Solar Systems
-	SolarSystem solarSystem = new SolarSystem();
+	SolarSystem solarSystem;
 	int globalDifficulty = 0;
 	int level = 0;
-	
+	Texture starTexture;
+	Texture iceGiantTexture;
+	Texture gasGiantTexture;
+
+
 	@Override
 	public void create () {
 		//Inititializing SpriteBatches
@@ -89,6 +93,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Initializing Textures
 		background = new Texture("background.png");
 		gameBackground = new Texture("gameBackground.png");
+		starTexture = new Texture(Gdx.files.internal("sun.png"), true);
+		iceGiantTexture = new Texture(Gdx.files.internal("IceGiant.png"), true);
+		gasGiantTexture = new Texture(Gdx.files.internal("GasGiant.png"), true);
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -153,6 +160,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera.setToOrtho(false, width, height);
 
 		player = new Player();
+
+		solarSystem = new SolarSystem();
 	}
 
 	@Override
@@ -200,31 +209,33 @@ public class MyGdxGame extends ApplicationAdapter {
 				if (localOrbitCounter > solarSystem.planets.size()){
 					break;
 				}
-				shapeRenderer.ellipse(solarSystem.posXStar - i, solarSystem.posYStar - i, i*2, i*2);
+				shapeRenderer.ellipse(solarSystem.posXStar - i, solarSystem.posYStar -i, i*2, i*2);
 			}
 			shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-			shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
-			shapeRenderer.ellipse(solarSystem.posXStar - solarSystem.radiusInPixels/2, solarSystem.posYStar - solarSystem.radiusInPixels/2, solarSystem.radiusInPixels, solarSystem.radiusInPixels );
+			shapeRenderer.end();
+			batch.begin();
+			batch.draw(starTexture, solarSystem.posXStar-starTexture.getWidth()/2f, solarSystem.posYStar-starTexture.getHeight()/2f);
+			batch.end();
+			shapeRenderer.begin();
 			for (Planet planet : solarSystem.planets){
-				if (planet.planetTexture == null) {
+				float planetPositionY = solarSystem.posYStar + planet.posY;
+				float planetPositionX = solarSystem.posXStar + planet.posX;
+				if (planet.planetTexture == null || true) {
 					if (planet.moonList.size() != 0){
 						int moonOrbit = planet.radius+25;
 						for (Planet moon : planet.moonList){
-
-
 							moon.orbit = moonOrbit/2;
 							shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
-							shapeRenderer.ellipse(solarSystem.posXStar + planet.posX - moonOrbit/2,(solarSystem.posYStar + planet.posY - moonOrbit/2), moonOrbit, moonOrbit);
+							shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
 							shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.planetColor.getRed() / 255), ((float) moon.planetColor.getGreen() / 255), ((float) moon.planetColor.getBlue() / 255), ((float) moon.planetColor.getAlpha() / 255)));
 							moon.setMoonOrbit(moon.orbit);
-							shapeRenderer.ellipse((moon.posX + planet.posX + solarSystem.posXStar - 6), (moon.posY +planet.posY + solarSystem.posYStar -6), moon.radius ,moon.radius );
-							System.out.println(moon.posX);
+							shapeRenderer.ellipse((moon.posX + planetPositionX - 6), (moon.posY +planetPositionY -6), moon.radius ,moon.radius );
 							if (moon.difficulty == level){
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+								shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -232,18 +243,62 @@ public class MyGdxGame extends ApplicationAdapter {
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
 					}
+					shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.planetColor.getRed() / 255), ((float) planet.planetColor.getGreen() / 255), ((float) planet.planetColor.getBlue() / 255), ((float) planet.planetColor.getAlpha() / 255)));
 					planet.orbit();
-					shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+					if (planet.planetClass == 4 || planet.planetClass == 5){
+						shapeRenderer.end();
+						batch.begin();
+						batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,(planetPositionY - planet.planetTexture.getHeight()/2f ));
+
+						batch.end();
+						shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+					}
+
+					shapeRenderer.circle(planetPositionX, planetPositionY, planet.radius/2f);
 					if (planet.difficulty == level){
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2), (solarSystem.posYStar + planet.posY - planet.radius/2) , planet.radius, planet.radius);
+						shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					}
+
 				}
 				else{
+					if (planet.moonList.size() != 0){
+						int moonOrbit = planet.planetTexture.getWidth()+25;
+						for (Planet moon : planet.moonList){
+							moon.orbit = moonOrbit/2;
+							shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
+							shapeRenderer.ellipse(solarSystem.posXStar + planet.posX - moonOrbit/2f,solarSystem.posYStar + planet.posY - moonOrbit/2f, moonOrbit, moonOrbit);
+							shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.planetColor.getRed() / 255), ((float) moon.planetColor.getGreen() / 255), ((float) moon.planetColor.getBlue() / 255), ((float) moon.planetColor.getAlpha() / 255)));
+							moon.setMoonOrbit(moon.orbit);
+							shapeRenderer.ellipse((moon.posX + planet.posX + solarSystem.posXStar), (moon.posY +planet.posY + solarSystem.posYStar), moon.radius ,moon.radius );
+							System.out.println(Math.sqrt((moon.posX * moon.posX)+(moon.posY*moon.posY)));
+							if (moon.difficulty == level){
+								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+								shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.planetTexture.getWidth()/2f), (solarSystem.posYStar + 3 + planet.posY - planet.planetTexture.getWidth()/2f) , planet.radius, planet.radius);
+								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+							}
+							moonOrbit += 25;
+						}
+						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
+					}
+					planet.orbit();
+					batch.begin();
+					batch.draw(planet.planetTexture, solarSystem.posXStar + planet.posX - planet.planetTexture.getWidth()/2f ,solarSystem.posYStar + planet.posY - planet.planetTexture.getHeight()/2f);
 
+					batch.end();
+					if (planet.difficulty == level){
+						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2f), (solarSystem.posYStar + planet.posY - planet.radius/2f) , planet.radius, planet.radius);
+						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+					}
 				}
 
 			}
@@ -388,6 +443,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			else if (isBetween(random, 51, 60)){
 				this.planetColor = gasGiantColor;
+				this.planetTexture = gasGiantTexture;
 				this.planetClass = 4;
 				System.out.println("Added a Gas Giant");
 				this.GenerateMoons(this.planetClass);
@@ -395,6 +451,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			else if (isBetween(random, 61, 70)){
 				this.planetColor = iceGiantColor;
+				this.planetTexture = iceGiantTexture;
 				this.planetClass = 5;
 				System.out.println("Added a Ice Giant");
 				this.GenerateMoons(this.planetClass);
@@ -508,7 +565,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		public void shoot(){
 			if (TimeUtils.millis() - time > 500){
-				allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()));
+				allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()-32));
 				time = TimeUtils.millis();
 				gun *= -1;
 			}
