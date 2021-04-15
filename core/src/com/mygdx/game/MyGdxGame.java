@@ -70,6 +70,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Background
 	Texture background;
 	Texture gameBackground;
+	int backgroundPosY;
 
 	//Player
 	Player player;
@@ -81,6 +82,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture starTexture;
 	Texture iceGiantTexture;
 	Texture gasGiantTexture;
+	float mapScale = 1;
+
+	boolean paused = false;
+	String previousScene = "";
+
+	long pauseDelay = 0;
 
 
 	@Override
@@ -209,17 +216,17 @@ public class MyGdxGame extends ApplicationAdapter {
 				if (localOrbitCounter > solarSystem.planets.size()){
 					break;
 				}
-				shapeRenderer.ellipse(solarSystem.posXStar - i, solarSystem.posYStar -i, i*2, i*2);
+				shapeRenderer.ellipse(solarSystem.posXStar - i/mapScale, solarSystem.posYStar -i/mapScale, i*2/mapScale, i*2/mapScale);
 			}
 			shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 			shapeRenderer.end();
 			batch.begin();
-			batch.draw(starTexture, solarSystem.posXStar-starTexture.getWidth()/2f, solarSystem.posYStar-starTexture.getHeight()/2f);
+			batch.draw(starTexture, solarSystem.posXStar-starTexture.getWidth()/2f/mapScale, (solarSystem.posYStar-starTexture.getHeight()/2f/mapScale), starTexture.getWidth()/mapScale, starTexture.getHeight()/mapScale);
 			batch.end();
 			shapeRenderer.begin();
 			for (Planet planet : solarSystem.planets){
-				float planetPositionY = solarSystem.posYStar + planet.posY;
-				float planetPositionX = solarSystem.posXStar + planet.posX;
+				float planetPositionY = solarSystem.posYStar + planet.posY / mapScale;
+				float planetPositionX = solarSystem.posXStar + planet.posX / mapScale;
 				if (planet.planetTexture == null || true) {
 					if (planet.moonList.size() != 0){
 						int moonOrbit = planet.radius+25;
@@ -246,14 +253,14 @@ public class MyGdxGame extends ApplicationAdapter {
 					shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.planetColor.getRed() / 255), ((float) planet.planetColor.getGreen() / 255), ((float) planet.planetColor.getBlue() / 255), ((float) planet.planetColor.getAlpha() / 255)));
 					planet.orbit();
-					if (planet.planetClass == 4 || planet.planetClass == 5){
-						shapeRenderer.end();
-						batch.begin();
-						batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,(planetPositionY - planet.planetTexture.getHeight()/2f ));
-
-						batch.end();
-						shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-					}
+//					if (planet.planetClass == 4 || planet.planetClass == 5){
+//						shapeRenderer.end();
+//						batch.begin();
+//						batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,(planetPositionY - planet.planetTexture.getHeight()/2f ));
+//
+//						batch.end();
+//						shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//					}
 
 					shapeRenderer.circle(planetPositionX, planetPositionY, planet.radius/2f);
 					if (planet.difficulty == level){
@@ -303,18 +310,45 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			}
 			shapeRenderer.end();
-			if (Gdx.input.isButtonPressed(Input.Keys.ENTER)){
+
+
+			if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
 				inLevel = true;
 				game = false;
 				mainMenu = false;
 
 			}
+
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+				if (mapScale == 2 || mapScale + 0.01f >= 2){
+					mapScale = 2;
+				}
+				else{
+					mapScale += 0.01f;
+				}
+			}
+			else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+				if (mapScale == 1 || mapScale + 0.01f <= 1){
+					mapScale = 1;
+				}
+				else{
+					mapScale -= 0.01f;
+				}
+			}
+
+
 		}
 		else if (inLevel){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
-			batch.draw(gameBackground, 0, 0, width, height);
+			backgroundPosY-= 2;
+			if (backgroundPosY % height == 0){
+				backgroundPosY = 0;
+			}
+			batch.draw(gameBackground, 0, backgroundPosY + height, width, height);
+			batch.draw(gameBackground, 0, backgroundPosY, width, height);
+
 			batch.draw(player.playerSprite, player.posX,player.posY);
 			for (Bullet bullet : player.allBullets){
 				batch.draw(bullet.laser, bullet.posX, bullet.posY);
@@ -331,6 +365,22 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
 				player.shoot();
 			}
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && TimeUtils.millis() - pauseDelay > 500){
+			if (!paused){
+				previousScene = (inLevel)? "inLevel" : (mainMenu)? "mainMenu" : (game)? "map": "";
+				inLevel = mainMenu = game = false;
+				paused = true;
+				pauseDelay = TimeUtils.millis();
+			}
+			else {
+				inLevel = previousScene.equals("inLevel");
+				mainMenu = previousScene.equals("mainMenu");
+				game = previousScene.equals("map");
+				paused = false;
+				pauseDelay = TimeUtils.millis();
+			}
+
 		}
 	}
 	
