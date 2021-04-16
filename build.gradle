@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.13'
         classpath 'org.gretty:gretty:3.0.2'
+
         
 
     }
@@ -44,6 +45,7 @@ project(":desktop") {
 
 
     dependencies {
+        implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"

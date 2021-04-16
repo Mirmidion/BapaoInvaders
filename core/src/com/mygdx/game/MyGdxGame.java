@@ -3,11 +3,14 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -51,6 +54,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	TextButton settings;
 	TextButton exit;
 	Text title;
+
+	Sound music;
 
 	//Settings Menu
 	Texture settingsMenu;
@@ -109,6 +114,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		iceGiantTexture = new Texture(Gdx.files.internal("IceGiant.png"), true);
 		gasGiantTexture = new Texture(Gdx.files.internal("GasGiant.png"), true);
 		asteroidTexture = new Texture(Gdx.files.internal("Asteroid.png"), true);
+
+		music = Gdx.audio.newSound(Gdx.files.internal("Theme.mp3"));
+		music.loop();
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -177,6 +185,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+	}
+
+	@Override
 	public void render () {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -195,7 +208,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			batch.end();
 			stage.draw();
-
+			stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 			if (settingsMenuSwitch){
 				batch.begin();
 				batch.draw(settingsMenu, 200,200, 1520, 680);
@@ -418,6 +431,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 			// draw all defenses present
+
+			int defenseCount = 0;
 			for (Defense defense : currentPlanet.defenses){
 				Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
 				for (Bullet bullet : player.allBullets){
@@ -430,6 +445,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				if (defense.getHealth() > 0){
 					batch.draw(defense.getTexture(),defense.getPosX(),defense.getPosY());
 				}
+				defenseCount++;
 			}
 			batch.end();
 
