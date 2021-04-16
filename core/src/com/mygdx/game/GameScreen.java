@@ -192,10 +192,7 @@ public class GameScreen implements Screen {
 		music3.setLooping(true);
 	}
 
-	@Override
-	public void resize(int width, int height) {
-		super.resize(width, height);
-	}
+
 
 	@Override
 	public void render (float delta) {
@@ -323,7 +320,7 @@ public class GameScreen implements Screen {
 						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-						shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
+						shapeRenderer.ellipse((planetPositionX*mapScale - planet.radius/2f*mapScale), (planetPositionY*mapScale - planet.radius/2f*mapScale), planet.radius, planet.radius);
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					}
 				}
@@ -357,7 +354,7 @@ public class GameScreen implements Screen {
 							if (moon.difficulty == level){
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
+								shapeRenderer.ellipse((planetPositionX - planet.radius/2f*mapScale) , (planetPositionY - planet.radius/2f*mapScale) , planet.radius, planet.radius);
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -377,7 +374,7 @@ public class GameScreen implements Screen {
 						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2f), (solarSystem.posYStar + planet.posY - planet.radius/2f) , planet.radius, planet.radius);
+						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX/mapScale - planet.radius/2f), (solarSystem.posYStar + planet.posY/mapScale - planet.radius/2f) , planet.radius, planet.radius);
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					}
 				}
