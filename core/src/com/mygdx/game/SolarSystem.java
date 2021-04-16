@@ -23,13 +23,13 @@ public class SolarSystem{
     int[] orbitRings = {200, 275, 375, 500, 575, 650};
 
 
-    public SolarSystem(int width, int height, Texture gasGiantTexture, Texture iceGiantTexture){
+    public SolarSystem(int width, int height, Texture gasGiantTexture, Texture iceGiantTexture, Texture asteroidTexture){
         posYStar = height/2;
         posXStar = width/2;
         int randomAmountOfPlanets = MathUtils.random(4,6);
         int randomOrbit = 0;
         for (int i = randomAmountOfPlanets; i > 0; i--){
-            this.planets.add(new Planet(this.orbitRings[randomOrbit], gasGiantTexture, iceGiantTexture));
+            this.planets.add(new Planet(this.orbitRings[randomOrbit], gasGiantTexture, iceGiantTexture, asteroidTexture));
             randomOrbit++;
         }
         System.out.println(randomAmountOfPlanets);

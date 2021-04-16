@@ -19,9 +19,6 @@ public class DesktopLauncher {
 		String url = "jdbc:mysql://localhost/cursus";
 		String username = "root", password = "";
 
-
-
-
 		try{
 			Class.forName("com.");
 			Connection connection = DriverManager.getConnection(url,username,password);

@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import org.w3c.dom.Text;
@@ -71,11 +72,15 @@ public class Planet {
     // Gas Giant colour
     Color gasGiantColor = new Color(163, 128, 83);
 
-    public Planet(int orbit, Texture gasGiantTexture, Texture iceGiantTexture){
+    // All defenses
+    Defense[] defenses = {new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)};
+
+    public Planet(int orbit, Texture gasGiantTexture, Texture iceGiantTexture, Texture asteroidTexture){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
         if (isBetween(random, 0, 50)){
-            int randomColor = MathUtils.random(0,5);
+            int randomColor = MathUtils.random(1,5);
+            planetTexture = (randomColor == 1)? new Texture(Gdx.files.internal("Planet1.png")): (randomColor == 2)? new Texture(Gdx.files.internal("Planet3.png")):(randomColor == 3)? new Texture(Gdx.files.internal("Planet2.png")):(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
             this.planetColor = possiblePlanetColors[randomColor];
             this.planetClass = 3;
             System.out.println("Added a Planet");
@@ -99,6 +104,7 @@ public class Planet {
             this.radius = 50;
         }
         else if (isBetween(random, 71, 85)) {
+            this.planetTexture = asteroidTexture;
             this.planetColor = asteroidColor;
             this.planetClass = 1;
             System.out.println("Added an asteroid");

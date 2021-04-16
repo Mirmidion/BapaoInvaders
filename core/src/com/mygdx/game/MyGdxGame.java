@@ -84,12 +84,15 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture starTexture;
 	Texture iceGiantTexture;
 	Texture gasGiantTexture;
+	Texture asteroidTexture;
 	float mapScale = 1;
 
 	boolean paused = false;
 	String previousScene = "";
 
 	long pauseDelay = 0;
+
+	Planet currentPlanet;
 
 
 	@Override
@@ -105,6 +108,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		starTexture = new Texture(Gdx.files.internal("sun.png"), true);
 		iceGiantTexture = new Texture(Gdx.files.internal("IceGiant.png"), true);
 		gasGiantTexture = new Texture(Gdx.files.internal("GasGiant.png"), true);
+		asteroidTexture = new Texture(Gdx.files.internal("Asteroid.png"), true);
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -169,7 +173,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		player = new Player(width);
 
-		solarSystem = new SolarSystem(width, height, gasGiantTexture, iceGiantTexture);
+		solarSystem = new SolarSystem(width, height, gasGiantTexture, iceGiantTexture, asteroidTexture);
 	}
 
 	@Override
@@ -289,6 +293,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 					// If the planet is the next level, outline the planet
 					if (planet.difficulty == level){
+						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
 						shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
@@ -337,11 +342,12 @@ public class MyGdxGame extends ApplicationAdapter {
 					// Calculate the planets position in the orbit
 					planet.orbit();
 					batch.begin();
-					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.017f + (planetPositionY - planet.planetTexture.getHeight()/2f ));
+					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.02f + (planetPositionY - planet.planetTexture.getHeight()/2f ));
 					batch.end();
 
 					// If the planet is the next level, outline the planet
 					if (planet.difficulty == level){
+						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
 						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX - planet.radius/2f), (solarSystem.posYStar + planet.posY - planet.radius/2f) , planet.radius, planet.radius);
@@ -396,9 +402,33 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			// Draw every bullet and move them up
 			for (Bullet bullet : player.allBullets){
-				batch.draw(bullet.laser, bullet.getPosX(), bullet.getPosY());
+				if (bullet.exists){
+					batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+				}
 				if (!paused) {
 					bullet.setPosY(5, player, height);
+				}
+			}
+
+			for (Planet planet : solarSystem.planets){
+				if (planet.difficulty == Planet.globalDifficulty){
+					currentPlanet = planet;
+				}
+			}
+
+
+			// draw all defenses present
+			for (Defense defense : currentPlanet.defenses){
+				Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
+				for (Bullet bullet : player.allBullets){
+					Rectangle bulletRectangle = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+					if (bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX()+defense.getTexture().getWidth()){
+						bullet.exists = false;
+						defense.setHealth(-50);
+					}
+				}
+				if (defense.getHealth() > 0){
+					batch.draw(defense.getTexture(),defense.getPosX(),defense.getPosY());
 				}
 			}
 			batch.end();
@@ -413,6 +443,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !paused){
 				player.shoot();
 			}
+
+
 		}
 
 		// Enable using the ESCAPE KEY to pause the scene. Supported scenes for pausing are: level
@@ -431,6 +463,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		background.dispose();
+	}
+
+	public boolean overlaps (Rectangle r, Rectangle r2) {
+		return r2.x < r.x + r.width && r2.x + width > r.x && r2.y < r.y + r.height && r2.y + height > r.y;
 	}
 
 }

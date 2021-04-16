@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 public class Bullet{
     private int posX;
     private int posY;
-    Texture laser = new Texture(Gdx.files.internal("laser.png"));
+    private Texture laser = new Texture(Gdx.files.internal("laser.png"));
     private boolean friendly;
+    boolean exists = true;
 
     public Bullet (int x, int y, boolean friendly, Player player){
         this.posX = x + player.getPosX();
@@ -26,7 +27,7 @@ public class Bullet{
 
     public void setPosY(int posY, Player player, int height) {
         if (this.posY+posY > height || this.posY+posY < 0){
-            //player.bulletRemove(this);
+            this.exists = false;
         }
         else{
             this.posY += posY;
@@ -39,5 +40,9 @@ public class Bullet{
 
     public int getPosY() {
         return posY;
+    }
+
+    public Texture getLaser() {
+        return laser;
     }
 }

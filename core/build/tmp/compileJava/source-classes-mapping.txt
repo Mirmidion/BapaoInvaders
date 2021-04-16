@@ -1,16 +1,18 @@
+com/mygdx/game/Player.java
+ com.mygdx.game.Player
 com/mygdx/game/Enemy.java
  com.mygdx.game.Enemy
+com/mygdx/game/Defense.java
+ com.mygdx.game.Defense
+com/mygdx/game/Bullet.java
+ com.mygdx.game.Bullet
 com/mygdx/game/SolarSystem.java
  com.mygdx.game.SolarSystem
 com/mygdx/game/Planet.java
  com.mygdx.game.Planet
-com/mygdx/game/Player.java
- com.mygdx.game.Player
 com/mygdx/game/MyGdxGame.java
  com.mygdx.game.MyGdxGame
  com.mygdx.game.MyGdxGame$1
  com.mygdx.game.MyGdxGame$2
  com.mygdx.game.MyGdxGame$3
  com.mygdx.game.MyGdxGame$scene
-com/mygdx/game/Bullet.java
- com.mygdx.game.Bullet
