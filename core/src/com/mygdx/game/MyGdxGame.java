@@ -55,7 +55,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	TextButton exit;
 	Text title;
 
-	Sound music;
+	Music music;
+	Music music2;
+	Music music3;
 
 	//Settings Menu
 	Texture settingsMenu;
@@ -115,8 +117,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		gasGiantTexture = new Texture(Gdx.files.internal("GasGiant.png"), true);
 		asteroidTexture = new Texture(Gdx.files.internal("Asteroid.png"), true);
 
-		music = Gdx.audio.newSound(Gdx.files.internal("Theme.mp3"));
-		music.loop();
+		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
+		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
+		music3 = Gdx.audio.newMusic(Gdx.files.internal("Theme3.mp3"));
+
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -182,6 +186,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		player = new Player(width);
 
 		solarSystem = new SolarSystem(width, height, gasGiantTexture, iceGiantTexture, asteroidTexture);
+
+		music.setLooping(true);
+		music2.setLooping(true);
+		music3.setLooping(true);
 	}
 
 	@Override
@@ -199,6 +207,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 
 		if (currentScene == scene.mainMenu) {
+			music.play();
+			music2.dispose();
+			music3.dispose();
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
@@ -221,6 +232,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		// If on the map, draw the solar system
 		else if (currentScene == scene.map) {
+			music.dispose();
+			music2.play();
+			music3.dispose();
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			shapeRenderer.setAutoShapeType(true);
@@ -355,7 +369,7 @@ public class MyGdxGame extends ApplicationAdapter {
 					// Calculate the planets position in the orbit
 					planet.orbit();
 					batch.begin();
-					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.02f + (planetPositionY - planet.planetTexture.getHeight()/2f ));
+					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.017f + (planetPositionY - planet.planetTexture.getHeight()/2f ));
 					batch.end();
 
 					// If the planet is the next level, outline the planet
@@ -396,6 +410,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// If in a level, draw everything of that level
 		else if (currentScene == scene.level){
+			music.dispose();
+			music2.dispose();
+			music3.play();
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
@@ -410,7 +427,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(gameBackground, 0, backgroundPosY + height, width, height);
 			batch.draw(gameBackground, 0, backgroundPosY, width, height);
 
-			// Draw the playe sprite with the correct position
+			// Draw the player sprite with the correct position
 			batch.draw(player.getPlayerSprite(), player.getPosX(),player.getPosY());
 
 			// Draw every bullet and move them up
@@ -479,6 +496,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		background.dispose();
+		shapeRenderer.dispose();
+		music.dispose();
+		music2.dispose();
 	}
 
 	public boolean overlaps (Rectangle r, Rectangle r2) {

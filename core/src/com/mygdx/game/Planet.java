@@ -78,6 +78,8 @@ public class Planet {
     public Planet(int orbit, Texture gasGiantTexture, Texture iceGiantTexture, Texture asteroidTexture){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
+        this.difficulty = globalDifficulty;
+        globalDifficulty++;
         if (isBetween(random, 0, 50)){
             int randomColor = MathUtils.random(1,5);
             planetTexture = (randomColor == 1)? new Texture(Gdx.files.internal("Planet1.png")): (randomColor == 2)? new Texture(Gdx.files.internal("Planet3.png")):(randomColor == 3)? new Texture(Gdx.files.internal("Planet2.png")):(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
@@ -116,8 +118,6 @@ public class Planet {
         posY = (float)Math.sin(angle)*orbit;
         this.orbit = orbit;
         this.rotationSpeed = MathUtils.random(0.5f,2);
-        this.difficulty = globalDifficulty;
-        globalDifficulty++;
     }
 
     public Planet(boolean isMoon, Planet orbitPlanet){
