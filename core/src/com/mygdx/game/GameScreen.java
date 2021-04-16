@@ -1,8 +1,6 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -28,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-public class MyGdxGame extends ApplicationAdapter {
+public class GameScreen implements Screen {
 
 	//Scene control
 	enum scene  {mainMenu, map, level}
@@ -95,8 +93,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Planet currentPlanet;
 
 
-	@Override
-	public void create () {
+	public GameScreen () {
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
 		stage = new Stage();
@@ -177,7 +174,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
+	public void render (float delta) {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
@@ -458,7 +455,32 @@ public class MyGdxGame extends ApplicationAdapter {
 			pauseDelay = TimeUtils.millis();
 		}
 	}
-	
+
+	@Override
+	public void show() {
+
+	}
+
+	@Override
+	public void resize(int width, int height) {
+
+	}
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void hide() {
+
+	}
+
 	@Override
 	public void dispose () {
 		batch.dispose();
