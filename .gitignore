@@ -104,3 +104,4 @@ tests/gdx-tests-android/assets/bitmapWrittenFont.png
 /local.properties
 natives.zip
 
+*.lock
