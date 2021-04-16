@@ -31,7 +31,6 @@ robovm-build/
 project.xcworkspace/
 xcuserdata/
 xcode/native/
-.gradle/
 build/
 bin/
 target/

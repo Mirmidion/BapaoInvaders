@@ -452,7 +452,7 @@ public class GameScreen implements Screen {
 				Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
 				for (Bullet bullet : player.allBullets){
 					Rectangle bulletRectangle = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-					if (bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX()+defense.getTexture().getWidth()){
+					if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX()+defense.getTexture().getWidth()){
 						bullet.exists = false;
 						defense.setHealth(-50);
 					}
