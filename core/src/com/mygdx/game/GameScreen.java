@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.w3c.dom.Text;
 
 import javax.swing.plaf.synth.Region;
@@ -66,6 +68,7 @@ public class GameScreen implements Screen {
 
 	//Camera
 	private OrthographicCamera camera;
+	private Viewport viewport;
 
 	//Screen width & height
 	int width = 1920;
@@ -167,9 +170,6 @@ public class GameScreen implements Screen {
 		settings.setTransform(true);
 		exit.setTransform(true);
 
-
-
-
 		mainMenuTable.row();
 		mainMenuTable.add(start).padTop(225);
 		mainMenuTable.row();
@@ -177,11 +177,12 @@ public class GameScreen implements Screen {
 		mainMenuTable.row();
 		mainMenuTable.add(exit).padTop(50);
 
-
 		stage.addActor(mainMenuTable);
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width, height);
+
+		viewport = new StretchViewport(1920, 1080, camera);
 
 		player = new Player(width);
 
@@ -490,14 +491,17 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void show() {
+	public void resize(int width, int height) {
+		viewport.update(width, height, true);
+		batch.setProjectionMatrix(camera.combined);
 
 	}
 
 	@Override
-	public void resize(int width, int height) {
+	public void show() {
 
 	}
+
 
 	@Override
 	public void pause() {
