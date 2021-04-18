@@ -1,26 +1,18 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -28,11 +20,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.w3c.dom.Text;
 
-import javax.swing.plaf.synth.Region;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
 
 public class GameScreen implements Screen {
 
@@ -78,6 +66,10 @@ public class GameScreen implements Screen {
 	SpriteBatch batch;
 	Stage stage;
 
+	//Sprites
+	Sprite[] bapaoSprites;
+	Sprite bapaoSprite;
+
 	//Drawer of shapes
 	ShapeRenderer shapeRenderer;
 
@@ -97,6 +89,11 @@ public class GameScreen implements Screen {
 	Texture gasGiantTexture;
 	Texture asteroidTexture;
 	float mapScale = 1;
+
+	//Other
+	float[] bapaoY = new float[]{1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020};
+	float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
+	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 50, 50, 100, 230, 400, 500, 10, 500, 20, 340};
 
 	boolean paused = false;
 	String previousScene = "";
@@ -119,6 +116,14 @@ public class GameScreen implements Screen {
 		iceGiantTexture = new Texture(Gdx.files.internal("IceGiant.png"), true);
 		gasGiantTexture = new Texture(Gdx.files.internal("GasGiant.png"), true);
 		asteroidTexture = new Texture(Gdx.files.internal("Asteroid.png"), true);
+
+		//Initializing Sprites
+		bapaoSprite = new Sprite(new Texture("Bapao1.png"));
+		bapaoSprites = new Sprite[15];
+		for(int i = 0; i<bapaoSprites.length; i++)
+		{
+			bapaoSprites[i] = new Sprite(new Texture("Bapao1.png"));
+		}
 
 		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
 		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
@@ -212,10 +217,12 @@ public class GameScreen implements Screen {
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
 
-			batch.draw(background, 0, 0, width, height);
+			batch.draw(gameBackground, 0, 0, width, height);
 			titleFont.draw(batch, "Bapao Invaders", 200, 800);
 
 			batch.end();
+
+			renderBapaos(delta);  //todo
 			stage.draw();
 			stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 			if (settingsMenuSwitch){
@@ -525,6 +532,29 @@ public class GameScreen implements Screen {
 		shapeRenderer.dispose();
 		music.dispose();
 		music2.dispose();
+	}
+
+	public void renderBapaos(float delta)
+	{
+		for(int i = 0; i<bapaoSprites.length; i++)
+		{
+			batch.begin();
+			bapaoSprites[i].draw(batch);
+			batch.end();
+		}
+
+		for(int i = 0; i<bapaoSprites.length; i++)
+		{
+			bapaoSprites[i].setPosition(bapaoX[i], bapaoY[i]);
+			bapaoSprites[i].setRotation(bapaoY[i]);
+			if(bapaoY[i] < 0)
+			{
+				bapaoY[i] = 1010;
+				bapaoX[i] = (float) (Math.random()) * (1920);
+
+			}
+			bapaoY[i] -= (bapaoSpeed[i] * delta);
+		}
 	}
 
 	public boolean overlaps (Rectangle r, Rectangle r2) {
