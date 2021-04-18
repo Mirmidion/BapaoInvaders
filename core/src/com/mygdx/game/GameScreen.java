@@ -91,7 +91,7 @@ public class GameScreen implements Screen {
 	float mapScale = 1;
 
 	//Other
-	float[] bapaoY = new float[]{1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020};
+	float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
 	float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
 	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 50, 50, 100, 230, 400, 500, 10, 500, 20, 340};
 
