@@ -12,13 +12,16 @@ public class Planet {
 
     // Difficulty of the waves
     int difficulty;
+    int currentWave;
 
     // Waves consist of int[] that contain amount and types of enemies
     int[][] waves = {
-            {	},
+            {18, 1},
             {	},
             {	}
     };
+
+    ArrayList<ArrayList<Enemy>> enemyWaves = new ArrayList<ArrayList<Enemy>>();
 
     /* Planet classes:
     1 - Asteroid 15%
@@ -118,6 +121,14 @@ public class Planet {
         posY = (float)Math.sin(angle)*orbit;
         this.orbit = orbit;
         this.rotationSpeed = MathUtils.random(0.5f,2);
+
+        ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
+        for (int y = 0; y < waves[0][0]/6; y++) {
+            for (int x = 0; x < 6; x++) {
+                enemyList.add(new Enemy(1, x*300+90, y*220+1080, x*300+90-50, x*300+90+170));
+            }
+        }
+        enemyWaves.add(enemyList);
     }
 
     public Planet(boolean isMoon, Planet orbitPlanet){

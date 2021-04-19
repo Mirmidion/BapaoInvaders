@@ -1,13 +1,13 @@
-com/mygdx/game/Player.java
- com.mygdx.game.Player
-com/mygdx/game/Enemy.java
- com.mygdx.game.Enemy
-com/mygdx/game/Planet.java
- com.mygdx.game.Planet
 com/mygdx/game/Defense.java
  com.mygdx.game.Defense
 com/mygdx/game/SolarSystem.java
  com.mygdx.game.SolarSystem
+com/mygdx/game/Planet.java
+ com.mygdx.game.Planet
+com/mygdx/game/Enemy.java
+ com.mygdx.game.Enemy
+com/mygdx/game/Player.java
+ com.mygdx.game.Player
 com/mygdx/game/Bullet.java
  com.mygdx.game.Bullet
 com/mygdx/game/BapoaInvaders.java

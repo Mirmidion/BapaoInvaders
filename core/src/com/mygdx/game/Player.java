@@ -14,6 +14,7 @@ public class Player {
     private int gun = 1;
     private long time = 0;
     ArrayList<Bullet> allBullets = new ArrayList<Bullet>();
+    private int health = 0;
 
     public Player (int width){
         this.posX = width/2-playerSprite.getWidth()/2;
@@ -49,7 +50,6 @@ public class Player {
             time = TimeUtils.millis();
             gun *= -1;
         }
-
     }
 
     public void bulletRemove(Bullet bulletToRemove) {
@@ -58,5 +58,13 @@ public class Player {
                 //iter.remove();
             }
         }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = Math.max(Math.min(this.health + health, 100), 0);
     }
 }

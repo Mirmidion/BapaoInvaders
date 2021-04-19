@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import org.w3c.dom.Text;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GameScreen implements Screen {
 
@@ -93,7 +94,7 @@ public class GameScreen implements Screen {
 	//Other
 	float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
 	float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
-	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 50, 50, 100, 230, 400, 500, 10, 500, 20, 340};
+	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
 
 	boolean paused = false;
 	String previousScene = "";
@@ -215,14 +216,18 @@ public class GameScreen implements Screen {
 			music3.dispose();
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 			batch.begin();
-
 			batch.draw(gameBackground, 0, 0, width, height);
-			titleFont.draw(batch, "Bapao Invaders", 200, 800);
-
 			batch.end();
 
 			renderBapaos(delta);  //todo
+
+			batch.begin();
+			titleFont.draw(batch, "Bapao Invaders", 200, 800);
+			batch.end();
+
+
 			stage.draw();
 			stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 			if (settingsMenuSwitch){
@@ -374,7 +379,7 @@ public class GameScreen implements Screen {
 					// Calculate the planets position in the orbit
 					planet.orbit();
 					batch.begin();
-					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.017f + (planetPositionY - planet.planetTexture.getHeight()/2f ));
+					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.018f/mapScale + (planetPositionY - planet.planetTexture.getHeight()/2f ));
 					batch.end();
 
 					// If the planet is the next level, outline the planet
@@ -422,6 +427,8 @@ public class GameScreen implements Screen {
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			batch.begin();
 
+
+
 			// Move the background down
 			backgroundPosY -= (!paused)? 2:0;
 			if (backgroundPosY % height == 0){
@@ -433,56 +440,107 @@ public class GameScreen implements Screen {
 			batch.draw(gameBackground, 0, backgroundPosY, width, height);
 
 			// Draw the player sprite with the correct position
-			batch.draw(player.getPlayerSprite(), player.getPosX(),player.getPosY());
-
-			// Draw every bullet and move them up
-			for (Bullet bullet : player.allBullets){
-				if (bullet.exists){
-					batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-				}
-				if (!paused) {
-					bullet.setPosY(5, player, height);
-				}
+			if (player.getHealth() != 0) {
+				batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
 			}
-
-			for (Planet planet : solarSystem.planets){
-				if (planet.difficulty == Planet.globalDifficulty){
-					currentPlanet = planet;
-				}
+			else{
+				solarSystem = new SolarSystem(width, height, gasGiantTexture, iceGiantTexture, asteroidTexture);
+				currentScene = scene.mainMenu;
+				player = new Player(width);
+				Planet.globalDifficulty = 0;
+				currentPlanet = null;
 			}
+			if (currentPlanet != null) {
+				batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
 
-
-			// draw all defenses present
-
-			int defenseCount = 0;
-			for (Defense defense : currentPlanet.defenses){
-				Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
-				for (Bullet bullet : player.allBullets){
-					Rectangle bulletRectangle = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-					if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX()+defense.getTexture().getWidth()){
-						bullet.exists = false;
-						defense.setHealth(-50);
+				for (Enemy enemy : currentPlanet.enemyWaves.get(0)) {
+					if (enemy.getHealth() != 0) {
+						enemy.moveEnemy();
+						batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());
+						for (Bullet bullet : Enemy.allEnemyBullets) {
+							Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, player.getPlayerSprite().getHeight());
+							Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+							if (player.getHealth() != 0 && bullet.exists && overlaps(playerRectangle, bulletRectangle) && bulletRectangle.x > playerRectangle.x && bulletRectangle.y > playerRectangle.y/*&& bulletRectangle.x > player.getPosX() && bulletRectangle.x < player.getPosX()+player.getPlayerSprite().getWidth()*/) {
+								bullet.exists = false;
+								player.setHealth(-25);
+							}
+						}
+						for (Bullet bullet : player.allBullets) {
+							Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
+							Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+							if (enemy.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, enemyRectangle) && bulletRectangle.x > enemy.getPosX() && bulletRectangle.x < enemy.getPosX() + enemy.getEnemySprite().getWidth()) {
+								bullet.exists = false;
+								enemy.setHealth(-50);
+								System.out.println("sheeeesh");
+							}
+						}
 					}
 				}
-				if (defense.getHealth() > 0){
-					batch.draw(defense.getTexture(),defense.getPosX(),defense.getPosY());
+				// Draw every bullet and move them up
+				for (Bullet bullet : player.allBullets) {
+
+					if (bullet.exists) {
+						batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+					}
+					if (!paused) {
+						bullet.setPosY(5, height);
+					}
 				}
-				defenseCount++;
+
+				for (Bullet bullet : Enemy.allEnemyBullets) {
+					if (bullet.exists) {
+						batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+					}
+					if (!paused) {
+						bullet.setPosY(-5f, height);
+					}
+				}
+
+				for (Planet planet : solarSystem.planets) {
+					if (planet.difficulty == Planet.globalDifficulty) {
+						currentPlanet = planet;
+					}
+				}
+
+
+				// draw all defenses present
+
+				int defenseCount = 0;
+				for (Defense defense : currentPlanet.defenses) {
+					Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
+					for (Bullet bullet : player.allBullets) {
+						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+						if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX() + defense.getTexture().getWidth() && defense.getPosY() + defense.getTexture().getHeight() > bullet.getPosY()) {
+							bullet.exists = false;
+							defense.setHealth(-50);
+						}
+					}
+					for (Bullet bullet : Enemy.allEnemyBullets) {
+						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+						if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX() + defense.getTexture().getWidth() && defense.getPosY() + defense.getTexture().getHeight() > bullet.getPosY()) {
+							bullet.exists = false;
+							defense.setHealth(-50);
+						}
+					}
+					if (defense.getHealth() > 0) {
+						batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
+					}
+					defenseCount++;
+
+				}
+
+
+				// Change the position of the player depending on the keys pressed
+				if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !paused) {
+					player.setPosX(-2, width);
+				} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !paused) {
+					player.setPosX(2, width);
+				}
+				if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !paused) {
+					player.shoot();
+				}
 			}
 			batch.end();
-
-			// Change the position of the player depending on the keys pressed
-			if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !paused){
-				player.setPosX(-2, width);
-			}
-			else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !paused){
-				player.setPosX(2, width);
-			}
-			if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !paused){
-				player.shoot();
-			}
-
-
 		}
 
 		// Enable using the ESCAPE KEY to pause the scene. Supported scenes for pausing are: level
@@ -547,9 +605,9 @@ public class GameScreen implements Screen {
 		{
 			bapaoSprites[i].setPosition(bapaoX[i], bapaoY[i]);
 			bapaoSprites[i].setRotation(bapaoY[i]);
-			if(bapaoY[i] < 0)
+			if(bapaoY[i] < -50)
 			{
-				bapaoY[i] = 1010;
+				bapaoY[i] = 1210;
 				bapaoX[i] = (float) (Math.random()) * (1920);
 
 			}

@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Bullet{
-    private int posX;
-    private int posY;
+    private float posX;
+    private float posY;
     private Texture laser = new Texture(Gdx.files.internal("laser.png"));
     private boolean friendly;
     boolean exists = true;
@@ -13,6 +13,12 @@ public class Bullet{
     public Bullet (int x, int y, boolean friendly, Player player){
         this.posX = x + player.getPosX();
         this.posY = y + player.getPosY();
+        this.friendly = friendly;
+    }
+
+    public Bullet (int x, int y, boolean friendly, Enemy enemy){
+        this.posX = x + enemy.getPosX();
+        this.posY = y + enemy.getPosY();
         this.friendly = friendly;
     }
 
@@ -25,7 +31,7 @@ public class Bullet{
         }
     }
 
-    public void setPosY(int posY, Player player, int height) {
+    public void setPosY(float posY, int height) {
         if (this.posY+posY > height || this.posY+posY < 0){
             this.exists = false;
         }
@@ -34,11 +40,11 @@ public class Bullet{
         }
     }
 
-    public int getPosX() {
+    public float getPosX() {
         return posX;
     }
 
-    public int getPosY() {
+    public float getPosY() {
         return posY;
     }
 
