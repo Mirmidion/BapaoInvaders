@@ -12,6 +12,8 @@ com/mygdx/game/Bullet.java
  com.mygdx.game.Bullet
 com/mygdx/game/BapoaInvaders.java
  com.mygdx.game.BapoaInvaders
+com/mygdx/game/Controller.java
+ com.mygdx.game.Controller
 com/mygdx/game/GameScreen.java
  com.mygdx.game.GameScreen
  com.mygdx.game.GameScreen$1

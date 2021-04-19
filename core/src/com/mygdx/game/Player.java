@@ -14,7 +14,7 @@ public class Player {
     private int gun = 1;
     private long time = 0;
     ArrayList<Bullet> allBullets = new ArrayList<Bullet>();
-    private int health = 0;
+    private int health = 100;
 
     public Player (int width){
         this.posX = width/2-playerSprite.getWidth()/2;
