@@ -222,11 +222,12 @@ public class Planet {
         int count = 0;
         for (int i = 0; i < waves.get(wave-1).get(0); i++){
             count++;
-            int pos1 = 1920 / ((waves.get(wave-1).get(0) % 6 == 0) ? 6 : (waves.get(wave-1).get(0) % 6)) * i ;
-            int pos2 = 1920 / ((waves.get(wave-1).get(0) % 6 == 0) ? 12 : (waves.get(wave-1).get(0) % 6 * 2)) ;
+            int pos1 = 1920 / (waves.get(wave-1).get(0)) * i ;
+            int pos2 = 1920 / (waves.get(wave-1).get(0))  ;
             int padding = 1920 - -1*((pos1 - pos2)-((pos1 - pos2)*(waves.get(wave-1).get(0)%6)));
             enemyWaves.add(new Enemy(waves.get(wave-1).get(1), pos1 - pos2,(int)Math.floor(i%6/6f)*220+900, pos1 - pos2 -25, pos1 - pos2 +75));
+            System.out.println(count + " " + (pos1-pos2));
         }
-        System.out.println(count + " " + waves.get(wave-1).get(0));
+
     }
 }
