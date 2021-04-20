@@ -458,7 +458,7 @@ public class GameScreen implements Screen {
 
 				for (Iterator<Enemy> enemyIterator = currentPlanet.enemyWaves.iterator(); enemyIterator.hasNext();) {
 					Enemy enemy = enemyIterator.next();
-					System.out.println(enemy.getPosY());
+					System.out.println(enemy.getPosY() + "\t" + enemy.getPosX());
 					if (enemy.getHealth() != 0) {
 						enemy.moveEnemy();
 						batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());

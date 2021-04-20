@@ -209,9 +209,9 @@ public class Planet {
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
             ArrayList<Integer> wave = new ArrayList<Integer>();
             int amountOfTypesOfEnemies = Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))));
-            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
+            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies+1; enemyType++){
                 int randomAmount = MathUtils.random(4,12);
-                wave.add(randomAmount);
+                wave.add(12);
                 wave.add(enemyType);
                 waves.add(wave);
             }
@@ -220,13 +220,24 @@ public class Planet {
 
     public void generateEnemies(int wave){
         int count = 0;
+        int lineCount = 0;
         for (int i = 0; i < waves.get(wave-1).get(0); i++){
             count++;
-            int pos1 = 1920 / (waves.get(wave-1).get(0)) * i ;
-            int pos2 = 1920 / (waves.get(wave-1).get(0))  ;
-            int padding = 1920 - -1*((pos1 - pos2)-((pos1 - pos2)*(waves.get(wave-1).get(0)%6)));
-            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), pos1 - pos2,(int)Math.floor(i%6/6f)*220+900, pos1 - pos2 -25, pos1 - pos2 +75));
-            System.out.println(count + " " + (pos1-pos2));
+            int padding = 180;
+
+            if (0<count && count <=6) {
+                padding = ((1920 - (count - (lineCount * 6)) * 140 - (count - (lineCount * 6 + 1)) * 80) / 10);
+            }
+            if (count%6==0){
+                lineCount++;
+                count-=6;
+            }
+
+
+
+
+            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), i%6*220+padding ,lineCount*220+900, i%6*220+padding -50, i%6*220+padding +50));
+            System.out.println(i%6);
         }
 
     }
