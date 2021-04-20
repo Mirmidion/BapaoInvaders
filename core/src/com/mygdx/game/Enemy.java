@@ -14,19 +14,66 @@ public class Enemy{
     private int enemyClass;
     private int speed = 1;
     private int gun = 1;
-    private Texture enemySprite = new Texture("Enemyship.png");
+    private Texture enemySprite;
     static ArrayList<Bullet> allEnemyBullets = new ArrayList<Bullet>();
-    private int health = 100;
+    private int health;
 
     // 1 == right	-1 == left
     private int directionOfMoving = -1;
 
     public Enemy(int enemyClass, int x, int y, int limitXLeft, int limitXRight){
         this.enemyClass = enemyClass;
-        this.limitXLeft = limitXLeft;
-        this.limitXRight = limitXRight;
-        this.posX = x;
-        this.posY = y;
+        switch (enemyClass) {
+            // Cruiser (average speed and damage)
+            case 1: {
+                this.enemySprite = new Texture("Enemyship.png");
+                this.limitXLeft = limitXLeft;
+                this.limitXRight = limitXRight;
+                this.posX = x;
+                this.posY = y;
+                this.speed = 1;
+                this.health = 100;
+            }
+            // Falcon (very agile, not much damage)
+            case 2: {
+                this.enemySprite = new Texture("Enemyship.png");
+                this.limitXLeft = limitXLeft;
+                this.limitXRight = limitXRight;
+                this.posX = x;
+                this.posY = y;
+                this.speed = 1;
+                this.health = 50;
+            }
+            // Fighter (little above average damage, average speed)
+            case 3: {
+                this.enemySprite = new Texture("Enemyship.png");
+                this.limitXLeft = limitXLeft;
+                this.limitXRight = limitXRight;
+                this.posX = x;
+                this.posY = y;
+                this.speed = 1;
+                this.health = 150;
+            }
+            // Tank (high health, high damage but slow)
+            case 4: {
+                this.enemySprite = new Texture("Enemyship.png");
+                this.limitXLeft = limitXLeft;
+                this.limitXRight = limitXRight;
+                this.posX = x;
+                this.posY = y;
+                this.speed = 1;
+                this.health = 300;
+            }
+            default:{
+                this.enemySprite = new Texture("Enemyship.png");
+                this.limitXLeft = limitXLeft;
+                this.limitXRight = limitXRight;
+                this.posX = x;
+                this.posY = y;
+                this.speed = 1;
+                this.health = 100;
+            }
+        }
     }
 
     public void moveEnemy(){
@@ -41,7 +88,7 @@ public class Enemy{
     }
 
     public void shoot(){
-        allEnemyBullets.add(new Bullet(enemySprite.getWidth()-((gun == 1)?40:104),enemySprite.getHeight()-140, false, this));
+        Bullet.allBullets.add(new Bullet(enemySprite.getWidth()-((gun == 1)?40:104),enemySprite.getHeight()-140, false, this));
         this.gun *= -1;
     }
 
@@ -63,5 +110,9 @@ public class Enemy{
 
     public int getHealth() {
         return health;
+    }
+
+    public int getEnemyClass() {
+        return enemyClass;
     }
 }

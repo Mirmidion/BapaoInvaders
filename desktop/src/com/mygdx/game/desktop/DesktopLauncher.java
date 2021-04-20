@@ -10,9 +10,10 @@ import com.mygdx.game.BapoaInvaders;
 
 
 public class DesktopLauncher {
-	public static void main (String[] arg) {
-
+	public static void main(String[] args) {
+		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		
 		config.title = "Bapao Invaders";
 		config.addIcon("Icon.png", Files.FileType.Internal);
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
@@ -21,5 +22,6 @@ public class DesktopLauncher {
 		config.y = 0;
 
 		new LwjglApplication(new BapoaInvaders(), config);
+
 	}
 }

@@ -7,21 +7,24 @@ import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class Planet {
 
     // Difficulty of the waves
     int difficulty;
     int currentWave;
+    static LinkedList<Planet> planetListOfDifficulty = new LinkedList<Planet>();
 
-    // Waves consist of int[] that contain amount and types of enemies
-    int[][] waves = {
-            {18, 1},
-            {	},
-            {	}
-    };
 
-    ArrayList<ArrayList<Enemy>> enemyWaves = new ArrayList<ArrayList<Enemy>>();
+    // Waves consist of arraylist<int> that contain amount and types of enemies
+    // The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
+    ArrayList<ArrayList<Integer>> waves = new ArrayList<ArrayList<Integer>>();
+    int lastWave;
+
+    ArrayList<Enemy> enemyWaves = new ArrayList<Enemy>();
 
     /* Planet classes:
     1 - Asteroid 15%
@@ -82,6 +85,8 @@ public class Planet {
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
         this.difficulty = globalDifficulty;
+        planetListOfDifficulty.offer(this);
+        System.out.println(planetListOfDifficulty.size());
         globalDifficulty++;
         if (isBetween(random, 0, 50)){
             int randomColor = MathUtils.random(1,5);
@@ -122,13 +127,13 @@ public class Planet {
         this.orbit = orbit;
         this.rotationSpeed = MathUtils.random(0.5f,2);
 
-        ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
-        for (int y = 0; y < waves[0][0]/6; y++) {
-            for (int x = 0; x < 6; x++) {
-                enemyList.add(new Enemy(1, x*300+90, y*220+1080, x*300+90-50, x*300+90+170));
-            }
-        }
-        enemyWaves.add(enemyList);
+        this.generateWaves();
+
+
+        this.generateEnemies(1);
+        System.out.println(enemyWaves.size());
+        this.lastWave = this.enemyWaves.size()-1;
+
     }
 
     public Planet(boolean isMoon, Planet orbitPlanet){
@@ -141,6 +146,9 @@ public class Planet {
         this.rotationSpeed = MathUtils.random(1.5f,3);
         this.difficulty = globalDifficulty;
         globalDifficulty++;
+        this.generateWaves();
+        this.generateEnemies(1);
+        planetListOfDifficulty.offer(this);
     }
 
     public void GenerateMoons(int planetType){
@@ -152,7 +160,6 @@ public class Planet {
                 break;
             }
             addMoon(new Planet(true, this));
-
             System.out.println("Added a Moon");
         }
     }
@@ -195,5 +202,31 @@ public class Planet {
 
     public static boolean isBetween(int x, int lower, int upper) {
         return lower <= x && x <= upper;
+    }
+
+    public void generateWaves(){
+        int amountOfWaves = MathUtils.random(4,7);
+        for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
+            ArrayList<Integer> wave = new ArrayList<Integer>();
+            int amountOfTypesOfEnemies = Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))));
+            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
+                int randomAmount = MathUtils.random(4,12);
+                wave.add(randomAmount);
+                wave.add(enemyType);
+                waves.add(wave);
+            }
+        }
+    }
+
+    public void generateEnemies(int wave){
+        int count = 0;
+        for (int i = 0; i < waves.get(wave-1).get(0); i++){
+            count++;
+            int pos1 = 1920 / ((waves.get(wave-1).get(0) % 6 == 0) ? 6 : (waves.get(wave-1).get(0) % 6)) * i ;
+            int pos2 = 1920 / ((waves.get(wave-1).get(0) % 6 == 0) ? 12 : (waves.get(wave-1).get(0) % 6 * 2)) ;
+            int padding = 1920 - -1*((pos1 - pos2)-((pos1 - pos2)*(waves.get(wave-1).get(0)%6)));
+            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), pos1 - pos2,(int)Math.floor(i%6/6f)*220+900, pos1 - pos2 -25, pos1 - pos2 +75));
+        }
+        System.out.println(count + " " + waves.get(wave-1).get(0));
     }
 }

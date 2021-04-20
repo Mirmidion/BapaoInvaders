@@ -18,19 +18,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class GameScreen implements Screen {
 
 	//Scene control
 	enum scene  {mainMenu, map, level}
 	scene currentScene =  scene.mainMenu;
-	boolean mainMenu = true;
-	boolean game = false;
-	boolean inLevel = false;
 
 	//Object visuals
 	Skin buttonSkin;
@@ -96,12 +95,13 @@ public class GameScreen implements Screen {
 	float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
 	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
 
-	boolean paused = false;
-	String previousScene = "";
+	static boolean paused = false;
 
 	long pauseDelay = 0;
 
 	Planet currentPlanet;
+
+	static int score;
 
 
 	public GameScreen () {
@@ -129,7 +129,6 @@ public class GameScreen implements Screen {
 		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
 		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
 		music3 = Gdx.audio.newMusic(Gdx.files.internal("Theme3.mp3"));
-
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -168,6 +167,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				dispose();
+				System.exit(0);
 			}
 
 		});
@@ -311,7 +311,7 @@ public class GameScreen implements Screen {
 							if (moon.difficulty == level){
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((planetPositionX - planet.radius/2f), (planetPositionY - planet.radius/2f) , planet.radius, planet.radius);
+								shapeRenderer.ellipse((moon.posX + planetPositionX + solarSystem.posXStar - moon.radius/2f), (moon.posY + planetPositionY + solarSystem.posYStar - moon.radius/2f) , moon.radius, moon.radius);
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -330,6 +330,7 @@ public class GameScreen implements Screen {
 
 					// If the planet is the next level, outline the planet
 					if (planet.difficulty == level){
+						System.out.println(planet.difficulty + " " + level);
 						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
@@ -343,7 +344,7 @@ public class GameScreen implements Screen {
 					// If there are moons around the planet, do a for-loop
 					if (planet.moonList.size() != 0){
 
-						// Calculating the moon orbit in a way it doesnt interfere with the planets size
+						// Calculating the moon orbit in a way it doesn't interfere with the planets size
 						int moonOrbit = planet.radius+25;
 
 						// Loop for going through every moon
@@ -364,10 +365,11 @@ public class GameScreen implements Screen {
 							shapeRenderer.ellipse((moon.posX + planetPositionX - 6), (moon.posY +planetPositionY -6), moon.radius ,moon.radius );
 
 							// If the moon is the next level you are going to play, outline this moon
-							if (moon.difficulty == level){
+							if (moon == Planet.planetListOfDifficulty.peek()){
+								currentPlanet = moon;
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((planetPositionX - planet.radius/2f*mapScale) , (planetPositionY - planet.radius/2f*mapScale) , planet.radius, planet.radius);
+								shapeRenderer.ellipse((moon.posX + planetPositionX - moon.radius/2f), (moon.posY + planetPositionY - moon.radius/2f) , moon.radius, moon.radius);
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -383,8 +385,7 @@ public class GameScreen implements Screen {
 					batch.end();
 
 					// If the planet is the next level, outline the planet
-					if (planet.difficulty == level){
-						currentPlanet = planet;
+					if (planet == Planet.planetListOfDifficulty.peek()){
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
 						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX/mapScale - planet.radius/2f), (solarSystem.posYStar + planet.posY/mapScale - planet.radius/2f) , planet.radius, planet.radius);
@@ -397,6 +398,8 @@ public class GameScreen implements Screen {
 			// If ENTER is pressed, start the next level
 			if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
 				currentScene = scene.level;
+				currentPlanet = Planet.planetListOfDifficulty.peek();
+				Planet.planetListOfDifficulty.remove();
 			}
 
 			// If the left or right arrow is pressed, zoom in/out
@@ -453,46 +456,50 @@ public class GameScreen implements Screen {
 			if (currentPlanet != null) {
 				batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
 
-				for (Enemy enemy : currentPlanet.enemyWaves.get(0)) {
+				for (Iterator<Enemy> enemyIterator = currentPlanet.enemyWaves.iterator(); enemyIterator.hasNext();) {
+					Enemy enemy = enemyIterator.next();
+					System.out.println(enemy.getPosY());
 					if (enemy.getHealth() != 0) {
 						enemy.moveEnemy();
 						batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());
-						for (Bullet bullet : Enemy.allEnemyBullets) {
+						for (Iterator<Bullet> bulletIterator = Bullet.allBullets.iterator(); bulletIterator.hasNext();) {
+							Bullet bullet = bulletIterator.next();
+							Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
 							Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, player.getPlayerSprite().getHeight());
 							Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-							if (player.getHealth() != 0 && bullet.exists && overlaps(playerRectangle, bulletRectangle) && bulletRectangle.x > playerRectangle.x && bulletRectangle.y > playerRectangle.y/*&& bulletRectangle.x > player.getPosX() && bulletRectangle.x < player.getPosX()+player.getPlayerSprite().getWidth()*/) {
+							if (player.getHealth() != 0 && bullet.exists && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
 								bullet.exists = false;
 								player.setHealth(-25);
+								bulletIterator.remove();
 							}
-						}
-						for (Bullet bullet : player.allBullets) {
-							Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
-							Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-							if (enemy.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, enemyRectangle) && bulletRectangle.x > enemy.getPosX() && bulletRectangle.x < enemy.getPosX() + enemy.getEnemySprite().getWidth()) {
+							else if (enemy.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, enemyRectangle)&& bullet.getFriendly()) {
 								bullet.exists = false;
 								enemy.setHealth(-50);
-								System.out.println("sheeeesh");
+								bulletIterator.remove();
+								score += 50;
 							}
 						}
 					}
+					else{
+						enemyIterator.remove();
+					}
 				}
-				// Draw every bullet and move them up
-				for (Bullet bullet : player.allBullets) {
 
+				if (currentPlanet.enemyWaves.size() == 0){
+					level++;
+					currentScene = scene.map;
+					Bullet.allBullets = new ArrayList<Bullet>();
+					player.resetPosition(width);
+					System.out.println(level);
+				}
+
+				// Draw every bullet and move them up/down
+				for (Bullet bullet : Bullet.allBullets) {
 					if (bullet.exists) {
 						batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
 					}
 					if (!paused) {
-						bullet.setPosY(5, height);
-					}
-				}
-
-				for (Bullet bullet : Enemy.allEnemyBullets) {
-					if (bullet.exists) {
-						batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-					}
-					if (!paused) {
-						bullet.setPosY(-5f, height);
+						bullet.setPosY(5f, height);
 					}
 				}
 
@@ -502,22 +509,13 @@ public class GameScreen implements Screen {
 					}
 				}
 
-
 				// draw all defenses present
-
 				int defenseCount = 0;
 				for (Defense defense : currentPlanet.defenses) {
 					Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
-					for (Bullet bullet : player.allBullets) {
-						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-						if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX() + defense.getTexture().getWidth() && defense.getPosY() + defense.getTexture().getHeight() > bullet.getPosY()) {
-							bullet.exists = false;
-							defense.setHealth(-50);
-						}
-					}
-					for (Bullet bullet : Enemy.allEnemyBullets) {
-						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-						if (defense.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, defenseRectangle) && bulletRectangle.x > defense.getPosX() && bulletRectangle.x < defense.getPosX() + defense.getTexture().getWidth() && defense.getPosY() + defense.getTexture().getHeight() > bullet.getPosY()) {
+					for (Bullet bullet : Bullet.allBullets) {
+						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), (int)bullet.getLaser().getHeight());
+						if (defense.getHealth() != 0 && bullet.exists && overlaps(defenseRectangle, bulletRectangle)) {
 							bullet.exists = false;
 							defense.setHealth(-50);
 						}
@@ -526,7 +524,6 @@ public class GameScreen implements Screen {
 						batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
 					}
 					defenseCount++;
-
 				}
 
 
@@ -590,6 +587,8 @@ public class GameScreen implements Screen {
 		shapeRenderer.dispose();
 		music.dispose();
 		music2.dispose();
+		music3.dispose();
+
 	}
 
 	public void renderBapaos(float delta)
@@ -616,7 +615,7 @@ public class GameScreen implements Screen {
 	}
 
 	public boolean overlaps (Rectangle r, Rectangle r2) {
-		return r2.x < r.x + r.width && r2.x + width > r.x && r2.y < r.y + r.height && r2.y + height > r.y;
+		return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
 	}
 
 }

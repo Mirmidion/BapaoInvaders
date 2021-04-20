@@ -46,7 +46,7 @@ public class Player {
 
     public void shoot(){
         if (TimeUtils.millis() - time > 500){
-            allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()-32, true, this));
+            Bullet.allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()-32, true, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
@@ -66,5 +66,9 @@ public class Player {
 
     public void setHealth(int health) {
         this.health = Math.max(Math.min(this.health + health, 100), 0);
+    }
+
+    public void resetPosition(int width){
+        this.posX = width/2-playerSprite.getWidth()/2;
     }
 }
