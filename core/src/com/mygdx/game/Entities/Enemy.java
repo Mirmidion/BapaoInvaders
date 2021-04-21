@@ -1,10 +1,8 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.TimeUtils;
-
-import java.util.ArrayList;
+import com.mygdx.game.Entities.Bullet;
 
 public class Enemy{
     private float posX;
@@ -15,7 +13,6 @@ public class Enemy{
     private int speed = 1;
     private int gun = 1;
     private Texture enemySprite;
-    static ArrayList<Bullet> allEnemyBullets = new ArrayList<Bullet>();
     private int health;
 
     // 1 == right	-1 == left

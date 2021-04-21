@@ -1,15 +1,12 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 public class Planet {
 
@@ -79,7 +76,7 @@ public class Planet {
     Color gasGiantColor = new Color(163, 128, 83);
 
     // All defenses
-    Defense[] defenses = {new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)};
+    static Defense[] defenses = {new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)};
 
     public Planet(int orbit, Texture gasGiantTexture, Texture iceGiantTexture, Texture asteroidTexture){
         int random = MathUtils.random(85);
@@ -128,8 +125,6 @@ public class Planet {
         this.rotationSpeed = MathUtils.random(0.5f,2);
 
         this.generateWaves();
-
-
         this.generateEnemies(1);
         System.out.println(enemyWaves.size());
         this.lastWave = this.enemyWaves.size()-1;
@@ -222,23 +217,85 @@ public class Planet {
         int count = 0;
         int lineCount = 0;
         for (int i = 0; i < waves.get(wave-1).get(0); i++){
-            count++;
-            int padding = 180;
 
-            if (0<count && count <=6) {
-                padding = ((1920 - (count - (lineCount * 6)) * 140 - (count - (lineCount * 6 + 1)) * 80) / 10);
-            }
+            int padding = 340;
+
             if (count%6==0){
                 lineCount++;
-                count-=6;
+                count = 0;
             }
 
 
 
 
-            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), i%6*220+padding ,lineCount*220+900, i%6*220+padding -50, i%6*220+padding +50));
+            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), count*220+padding ,lineCount*220+900, count*220+padding -50, count*220+padding +50));
             System.out.println(i%6);
+            count++;
         }
 
+    }
+
+    public static Defense[] getDefenses() {
+        return defenses;
+    }
+
+    public static void setDefenses(Defense[] defenses) {
+        Planet.defenses = defenses;
+    }
+
+    public ArrayList<Enemy> getEnemyWaves() {
+        return enemyWaves;
+    }
+
+    public static int getGlobalDifficulty() {
+        return globalDifficulty;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public static void setGlobalDifficulty(int globalDifficulty) {
+        Planet.globalDifficulty = globalDifficulty;
+    }
+
+    public static void setPlanetListOfDifficulty(LinkedList<Planet> planetListOfDifficulty) {
+        Planet.planetListOfDifficulty = planetListOfDifficulty;
+    }
+
+    public static LinkedList<Planet> getPlanetListOfDifficulty() {
+        return planetListOfDifficulty;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public Texture getPlanetTexture() {
+        return planetTexture;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public Color getPlanetColor() {
+        return planetColor;
+    }
+
+    public int getOrbit() {
+        return orbit;
+    }
+
+    public void setOrbit(int orbit) {
+        this.orbit = orbit;
+    }
+
+    public ArrayList<Planet> getMoonList() {
+        return moonList;
     }
 }

@@ -19,89 +19,91 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.mygdx.game.Entities.*;
 import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class GameScreen implements Screen {
 
 	//Scene control
-	enum scene  {mainMenu, map, level}
-	scene currentScene =  scene.mainMenu;
+	private enum scene  {mainMenu, map, level}
+	private scene currentScene =  scene.mainMenu;
 
 	//Object visuals
-	Skin buttonSkin;
-	TextureAtlas atlas;
+	private Skin buttonSkin;
+	private TextureAtlas atlas;
 
 	//Fonts
-	BitmapFont normalFont;
-	BitmapFont titleFont;
+	private BitmapFont normalFont;
+	private BitmapFont titleFont;
 
 	//Main Menu Layout and Objects
-	Table mainMenuTable;
-	TextButton start;
-	TextButton settings;
-	TextButton exit;
-	Text title;
+	private Table mainMenuTable;
+	private TextButton start;
+	private TextButton settings;
+	private TextButton exit;
+	private Text title;
 
-	Music music;
-	Music music2;
-	Music music3;
+	private Music music;
+	private Music music2;
+	private Music music3;
 
 	//Settings Menu
-	Texture settingsMenu;
-	boolean settingsMenuSwitch;
+	private Texture settingsMenu;
+	private boolean settingsMenuSwitch;
 
 	//Camera
 	private OrthographicCamera camera;
 	private Viewport viewport;
 
 	//Screen width & height
-	int width = 1920;
-	int height = 1080;
+	private int width = 1920;
+	private int height = 1080;
 
 	//SpriteBatches
-	SpriteBatch batch;
-	Stage stage;
+	private SpriteBatch batch;
+	private Stage stage;
 
 	//Sprites
-	Sprite[] bapaoSprites;
-	Sprite bapaoSprite;
+	private Sprite[] bapaoSprites;
+	private Sprite bapaoSprite;
 
 	//Drawer of shapes
-	ShapeRenderer shapeRenderer;
+	private ShapeRenderer shapeRenderer;
 
 	//Background
-	Texture background;
-	Texture gameBackground;
-	int backgroundPosY;
+	private Texture background;
+	private Texture gameBackground;
+	private int backgroundPosY;
 
 	//Player
-	Player player;
+	private Player player;
 
 	//Solar Systems
-	SolarSystem solarSystem;
-	int level = 0;
-	Texture starTexture;
-	Texture iceGiantTexture;
-	Texture gasGiantTexture;
-	Texture asteroidTexture;
-	float mapScale = 1;
+	private SolarSystem solarSystem;
+	private int level = 0;
+	private Texture starTexture;
+	private Texture iceGiantTexture;
+	private Texture gasGiantTexture;
+	private Texture asteroidTexture;
+	private float mapScale = 1;
 
 	//Other
-	float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
-	float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
-	int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
+	private float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
+	private float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
+	private int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
 
-	static boolean paused = false;
+	private static boolean paused = false;
 
-	long pauseDelay = 0;
+	private long pauseDelay = 0;
 
-	Planet currentPlanet;
+	private Planet currentPlanet;
 
-	static int score;
+	private static int score;
 
 
 	public GameScreen () {
@@ -258,41 +260,41 @@ public class GameScreen implements Screen {
 
 			// Orbits around the sun being drawn, limited to the amount of planets present
 			int localOrbitCounter = 0;
-			for (int i : solarSystem.orbitRings){
+			for (int i : solarSystem.getOrbitRings()){
 				localOrbitCounter++;
-				if (localOrbitCounter > solarSystem.planets.size()){
+				if (localOrbitCounter > solarSystem.getPlanets().size()){
 					break;
 				}
-				shapeRenderer.ellipse(solarSystem.posXStar - i/mapScale, solarSystem.posYStar -i/mapScale, i*2/mapScale, i*2/mapScale);
+				shapeRenderer.ellipse(solarSystem.getPosXStar() - i/mapScale, solarSystem.getPosYStar() -i/mapScale, i*2/mapScale, i*2/mapScale);
 			}
 			shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 			shapeRenderer.end();
 
 			// Star texture being drawn
 			batch.begin();
-			batch.draw(starTexture, solarSystem.posXStar-starTexture.getWidth()/2f/mapScale, (solarSystem.posYStar-starTexture.getHeight()/2f/mapScale+9), starTexture.getWidth()/mapScale, starTexture.getHeight()/mapScale);
+			batch.draw(starTexture, solarSystem.getPosXStar()-starTexture.getWidth()/2f/mapScale, (solarSystem.getPosYStar()-starTexture.getHeight()/2f/mapScale+9), starTexture.getWidth()/mapScale, starTexture.getHeight()/mapScale);
 			batch.end();
 			shapeRenderer.begin();
 
 			// Loop for going through every planet in the system
-			for (Planet planet : solarSystem.planets){
+			for (Planet planet : solarSystem.getPlanets()){
 
 				// Calculating the planets position relative to the scale and star position
-				float planetPositionY = solarSystem.posYStar + planet.posY / mapScale;
-				float planetPositionX = solarSystem.posXStar + planet.posX / mapScale;
+				float planetPositionY = solarSystem.getPosYStar() + planet.getPosY() / mapScale;
+				float planetPositionX = solarSystem.getPosXStar() + planet.getPosX() / mapScale;
 
 				// If there is no texture, draw an ellipse
-				if (planet.planetTexture == null ) {
+				if (planet.getPlanetTexture() == null ) {
 
 					// If there are moons around the planet, do a for-loop
-					if (planet.moonList.size() != 0){
+					if (planet.getMoonList().size() != 0){
 
 						// Calculating the moon orbit in a way it doesnt interfere with the planets size
-						int moonOrbit = planet.radius+25;
+						int moonOrbit = planet.getRadius()+25;
 
 						// Loop for going through every moon
-						for (Planet moon : planet.moonList){
-							moon.orbit = moonOrbit/2;
+						for (Planet moon : planet.getMoonList()){
+							moon.setOrbit(moonOrbit/2);
 							shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 
 							// Draw the orbit with a grey-ish colour
@@ -300,18 +302,18 @@ public class GameScreen implements Screen {
 							shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
 
 							// Calculate the position of the moon on the orbit
-							moon.setMoonOrbit(moon.orbit);
+							moon.setMoonOrbit(moon.getOrbit());
 
 							//Draw the moon with its own colour
 							shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.planetColor.getRed() / 255), ((float) moon.planetColor.getGreen() / 255), ((float) moon.planetColor.getBlue() / 255), ((float) moon.planetColor.getAlpha() / 255)));
-							shapeRenderer.ellipse((moon.posX + planetPositionX - 6), (moon.posY +planetPositionY -6), moon.radius ,moon.radius );
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.getPlanetColor().getRed() / 255), ((float) moon.getPlanetColor().getGreen() / 255), ((float) moon.getPlanetColor().getBlue() / 255), ((float) moon.getPlanetColor().getAlpha() / 255)));
+							shapeRenderer.ellipse((moon.getPosX() + planetPositionX - 6), (moon.getPosY() +planetPositionY -6), moon.getRadius() ,moon.getRadius() );
 
 							// If the moon is the next level you are going to play, outline this moon
-							if (moon.difficulty == level){
+							if (moon.getDifficulty() == level){
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((moon.posX + planetPositionX + solarSystem.posXStar - moon.radius/2f), (moon.posY + planetPositionY + solarSystem.posYStar - moon.radius/2f) , moon.radius, moon.radius);
+								shapeRenderer.ellipse((moon.getPosX() + planetPositionX + solarSystem.getPosXStar() - moon.getRadius()/2f), (moon.getPosY() + planetPositionY + solarSystem.getPosYStar() - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -325,16 +327,16 @@ public class GameScreen implements Screen {
 
 					// Draw the planet with its own colour
 					shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.planetColor.getRed() / 255), ((float) planet.planetColor.getGreen() / 255), ((float) planet.planetColor.getBlue() / 255), ((float) planet.planetColor.getAlpha() / 255)));
-					shapeRenderer.circle(planetPositionX, planetPositionY, planet.radius/2f);
+					shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.getPlanetColor().getRed() / 255), ((float) planet.getPlanetColor().getGreen() / 255), ((float) planet.getPlanetColor().getBlue() / 255), ((float) planet.getPlanetColor().getAlpha() / 255)));
+					shapeRenderer.circle(planetPositionX, planetPositionY, planet.getRadius()/2f);
 
 					// If the planet is the next level, outline the planet
-					if (planet.difficulty == level){
-						System.out.println(planet.difficulty + " " + level);
+					if (planet.getDifficulty() == level){
+						System.out.println(planet.getDifficulty() + " " + level);
 						currentPlanet = planet;
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-						shapeRenderer.ellipse((planetPositionX*mapScale - planet.radius/2f*mapScale), (planetPositionY*mapScale - planet.radius/2f*mapScale), planet.radius, planet.radius);
+						shapeRenderer.ellipse((planetPositionX*mapScale - planet.getRadius()/2f*mapScale), (planetPositionY*mapScale - planet.getRadius()/2f*mapScale), planet.getRadius(), planet.getRadius());
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					}
 				}
@@ -342,14 +344,14 @@ public class GameScreen implements Screen {
 				// Else just draw the texture
 				else{
 					// If there are moons around the planet, do a for-loop
-					if (planet.moonList.size() != 0){
+					if (planet.getMoonList().size() != 0){
 
 						// Calculating the moon orbit in a way it doesn't interfere with the planets size
-						int moonOrbit = planet.radius+25;
+						int moonOrbit = planet.getRadius()+25;
 
 						// Loop for going through every moon
-						for (Planet moon : planet.moonList){
-							moon.orbit = moonOrbit/2;
+						for (Planet moon : planet.getMoonList()){
+							moon.setOrbit(moonOrbit/2);
 							shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 
 							// Draw the orbit with a grey-ish colour
@@ -357,19 +359,19 @@ public class GameScreen implements Screen {
 							shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
 
 							// Calculate the position of the moon on the orbit
-							moon.setMoonOrbit(moon.orbit);
+							moon.setMoonOrbit(moon.getOrbit());
 
 							//Draw the moon with its own colour
 							shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.planetColor.getRed() / 255), ((float) moon.planetColor.getGreen() / 255), ((float) moon.planetColor.getBlue() / 255), ((float) moon.planetColor.getAlpha() / 255)));
-							shapeRenderer.ellipse((moon.posX + planetPositionX - 6), (moon.posY +planetPositionY -6), moon.radius ,moon.radius );
+							shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.getPlanetColor().getRed() / 255), ((float) moon.getPlanetColor().getGreen() / 255), ((float) moon.getPlanetColor().getBlue() / 255), ((float) moon.getPlanetColor().getAlpha() / 255)));
+							shapeRenderer.ellipse((moon.getPosX() + planetPositionX - 6), (moon.getPosY() +planetPositionY -6), moon.getRadius() ,moon.getRadius() );
 
 							// If the moon is the next level you are going to play, outline this moon
-							if (moon == Planet.planetListOfDifficulty.peek()){
+							if (moon == Planet.getPlanetListOfDifficulty().peek()){
 								currentPlanet = moon;
 								shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 								shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-								shapeRenderer.ellipse((moon.posX + planetPositionX - moon.radius/2f), (moon.posY + planetPositionY - moon.radius/2f) , moon.radius, moon.radius);
+								shapeRenderer.ellipse((moon.getPosX() + planetPositionX - moon.getRadius()/2f), (moon.getPosY() + planetPositionY - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
 								shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 							}
 							moonOrbit += 25;
@@ -381,14 +383,14 @@ public class GameScreen implements Screen {
 					// Calculate the planets position in the orbit
 					planet.orbit();
 					batch.begin();
-					batch.draw(planet.planetTexture, (planetPositionX - planet.planetTexture.getWidth()/2f) ,solarSystem.posYStar*0.017f + planet.posY*0.018f/mapScale + (planetPositionY - planet.planetTexture.getHeight()/2f ));
+					batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,solarSystem.getPosYStar()*0.017f + planet.getPosY()*0.018f/mapScale + (planetPositionY - planet.getPlanetTexture().getHeight()/2f ));
 					batch.end();
 
 					// If the planet is the next level, outline the planet
-					if (planet == Planet.planetListOfDifficulty.peek()){
+					if (planet == Planet.getPlanetListOfDifficulty().peek()){
 						shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 						shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-						shapeRenderer.ellipse((solarSystem.posXStar + planet.posX/mapScale - planet.radius/2f), (solarSystem.posYStar + planet.posY/mapScale - planet.radius/2f) , planet.radius, planet.radius);
+						shapeRenderer.ellipse((solarSystem.getPosXStar() + planet.getPosX()/mapScale - planet.getRadius()/2f), (solarSystem.getPosYStar() + planet.getPosY()/mapScale - planet.getRadius()/2f) , planet.getRadius(), planet.getRadius());
 						shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 					}
 				}
@@ -398,8 +400,8 @@ public class GameScreen implements Screen {
 			// If ENTER is pressed, start the next level
 			if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
 				currentScene = scene.level;
-				currentPlanet = Planet.planetListOfDifficulty.peek();
-				Planet.planetListOfDifficulty.remove();
+				currentPlanet = Planet.getPlanetListOfDifficulty().peek();
+				Planet.getPlanetListOfDifficulty().remove();
 			}
 
 			// If the left or right arrow is pressed, zoom in/out
@@ -447,33 +449,36 @@ public class GameScreen implements Screen {
 				batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
 			}
 			else{
+				Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
+				Planet.setGlobalDifficulty(0);
+				currentPlanet = null;
 				solarSystem = new SolarSystem(width, height, gasGiantTexture, iceGiantTexture, asteroidTexture);
 				currentScene = scene.mainMenu;
 				player = new Player(width);
-				Planet.globalDifficulty = 0;
-				currentPlanet = null;
+				Bullet.setAllBullets(new ArrayList<Bullet>());
+				Planet.setDefenses(new Defense[]{new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)});
 			}
 			if (currentPlanet != null) {
 				batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
 
-				for (Iterator<Enemy> enemyIterator = currentPlanet.enemyWaves.iterator(); enemyIterator.hasNext();) {
+				for (Iterator<Enemy> enemyIterator = currentPlanet.getEnemyWaves().iterator(); enemyIterator.hasNext();) {
 					Enemy enemy = enemyIterator.next();
 					System.out.println(enemy.getPosY() + "\t" + enemy.getPosX());
 					if (enemy.getHealth() != 0) {
 						enemy.moveEnemy();
 						batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());
-						for (Iterator<Bullet> bulletIterator = Bullet.allBullets.iterator(); bulletIterator.hasNext();) {
+						for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext();) {
 							Bullet bullet = bulletIterator.next();
 							Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
 							Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, player.getPlayerSprite().getHeight());
 							Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-							if (player.getHealth() != 0 && bullet.exists && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
-								bullet.exists = false;
+							if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
+								bullet.setExists(false);
 								player.setHealth(-25);
 								bulletIterator.remove();
 							}
-							else if (enemy.getHealth() != 0 && bullet.exists && overlaps(bulletRectangle, enemyRectangle)&& bullet.getFriendly()) {
-								bullet.exists = false;
+							else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle)&& bullet.getFriendly()) {
+								bullet.setExists(false);
 								enemy.setHealth(-50);
 								bulletIterator.remove();
 								score += 50;
@@ -485,17 +490,17 @@ public class GameScreen implements Screen {
 					}
 				}
 
-				if (currentPlanet.enemyWaves.size() == 0){
+				if (currentPlanet.getEnemyWaves().size() == 0){
 					level++;
 					currentScene = scene.map;
-					Bullet.allBullets = new ArrayList<Bullet>();
+					Bullet.setAllBullets(new ArrayList<Bullet>());
 					player.resetPosition(width);
 					System.out.println(level);
 				}
 
 				// Draw every bullet and move them up/down
-				for (Bullet bullet : Bullet.allBullets) {
-					if (bullet.exists) {
+				for (Bullet bullet : Bullet.getAllBullets()) {
+					if (bullet.isExists()) {
 						batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
 					}
 					if (!paused) {
@@ -503,20 +508,20 @@ public class GameScreen implements Screen {
 					}
 				}
 
-				for (Planet planet : solarSystem.planets) {
-					if (planet.difficulty == Planet.globalDifficulty) {
+				for (Planet planet : solarSystem.getPlanets()) {
+					if (planet.getDifficulty() == Planet.getGlobalDifficulty()) {
 						currentPlanet = planet;
 					}
 				}
 
 				// draw all defenses present
 				int defenseCount = 0;
-				for (Defense defense : currentPlanet.defenses) {
+				for (Defense defense : currentPlanet.getDefenses()) {
 					Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
-					for (Bullet bullet : Bullet.allBullets) {
+					for (Bullet bullet : Bullet.getAllBullets()) {
 						Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), (int)bullet.getLaser().getHeight());
-						if (defense.getHealth() != 0 && bullet.exists && overlaps(defenseRectangle, bulletRectangle)) {
-							bullet.exists = false;
+						if (defense.getHealth() != 0 && bullet.isExists() && overlaps(defenseRectangle, bulletRectangle)) {
+							bullet.setExists(false);
 							defense.setHealth(-50);
 						}
 					}
@@ -588,7 +593,6 @@ public class GameScreen implements Screen {
 		music.dispose();
 		music2.dispose();
 		music3.dispose();
-
 	}
 
 	public void renderBapaos(float delta)

@@ -1,8 +1,9 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.Entities.Bullet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +14,6 @@ public class Player {
     private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private int gun = 1;
     private long time = 0;
-    ArrayList<Bullet> allBullets = new ArrayList<Bullet>();
     private int health = 100;
 
     public Player (int width){
@@ -53,11 +53,7 @@ public class Player {
     }
 
     public void bulletRemove(Bullet bulletToRemove) {
-        for (Iterator<Bullet> iter = this.allBullets.iterator(); iter.hasNext(); ) {
-            if (iter == bulletToRemove) {
-                //iter.remove();
-            }
-        }
+
     }
 
     public int getHealth() {
@@ -71,4 +67,5 @@ public class Player {
     public void resetPosition(int width){
         this.posX = width/2-playerSprite.getWidth()/2;
     }
+
 }

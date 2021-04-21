@@ -1,9 +1,9 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.mygdx.game.Entities.Planet;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class SolarSystem{
@@ -13,8 +13,6 @@ public class SolarSystem{
     int posYStar = 0;
     int radiusInPixels = 100;
     float yScaleOfOrbits = 0.9f;
-
-    Color starColor = new Color(255, 224, 67);
 
     // Planets inside the Solar System
     ArrayList<Planet> planets = new ArrayList<Planet>();
@@ -35,4 +33,27 @@ public class SolarSystem{
         System.out.println(randomAmountOfPlanets);
     }
 
+    public int getPosXStar() {
+        return posXStar;
+    }
+
+    public ArrayList<Planet> getPlanets() {
+        return planets;
+    }
+
+    public int getPosYStar() {
+        return posYStar;
+    }
+
+    public float getyScaleOfOrbits() {
+        return yScaleOfOrbits;
+    }
+
+    public int getRadiusInPixels() {
+        return radiusInPixels;
+    }
+
+    public int[] getOrbitRings() {
+        return orbitRings;
+    }
 }

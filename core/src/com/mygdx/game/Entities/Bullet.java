@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -83,4 +83,22 @@ public class Bullet{
     public boolean getFriendly(){
         return friendly;
     }
+
+    public static void setAllBullets(ArrayList<Bullet> allBullets) {
+        Bullet.allBullets = allBullets;
+    }
+
+    public boolean isExists() {
+        return exists;
+    }
+
+    public void setExists(boolean exists) {
+        this.exists = exists;
+    }
+
+    public static ArrayList<Bullet> getAllBullets() {
+        return allBullets;
+    }
+
+
 }
