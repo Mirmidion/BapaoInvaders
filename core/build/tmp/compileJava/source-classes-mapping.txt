@@ -6,12 +6,12 @@ com/mygdx/game/Entities/Enemy.java
  com.mygdx.game.Entities.Enemy
 com/mygdx/game/Entities/Bullet.java
  com.mygdx.game.Entities.Bullet
+com/mygdx/game/Controllers/Controller.java
+ com.mygdx.game.Controllers.Controller
 com/mygdx/game/Entities/SolarSystem.java
  com.mygdx.game.Entities.SolarSystem
 com/mygdx/game/Entities/Player.java
  com.mygdx.game.Entities.Player
-com/mygdx/game/Controller.java
- com.mygdx.game.Controller
 com/mygdx/game/Scenes/Level.java
  com.mygdx.game.Scenes.Level
 com/mygdx/game/Scenes/Map.java

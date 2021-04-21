@@ -89,10 +89,10 @@ public class GameScreen implements Screen {
 		settingsMenu = new Texture(Gdx.files.internal("button.png"));
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
-
+		
 		//Initializing Textures
 		gameBackground = new Texture("gameBackground.png");
-
+		
 		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
 		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
 		music3 = Gdx.audio.newMusic(Gdx.files.internal("Theme3.mp3"));
@@ -101,12 +101,12 @@ public class GameScreen implements Screen {
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
 		titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
 		titleFont.getData().setScale(2);
-
+		
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width, height);
 
 		viewport = new StretchViewport(1920, 1080, camera);
-		
+
 		solarSystem = new SolarSystem(width, height);
 
 		music.setLooping(true);
@@ -132,6 +132,7 @@ public class GameScreen implements Screen {
 		if (currentScene == scene.mainMenu) {
 			mainMenuScene.render(delta);
 		}
+
 		// If on the map, draw the solar system
 		else if (currentScene == scene.map) {
 			mapScene.render(delta);
