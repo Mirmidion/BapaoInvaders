@@ -48,37 +48,25 @@ public class Planet {
 
     // Color and texture of the Planet
     Color planetColor = new Color(100,100,100);
-    Texture planetTexture;
+    Texture currentPlanetTexture;
 
     // Radius of planet
     int radius = 0;
 
-    // List of all possible planet colours
-    Color[] possiblePlanetColors = {
-            new Color(200,10,10),
-            new Color(125,0,0),
-            new Color(113, 31, 127),
-            new Color(34, 90, 12),
-            new Color(86, 97, 30),
-            new Color(37, 92, 79),
-    };
+
+    Texture asteroidTexture = new Texture("Asteroid.png");
+    Texture gasGiantTexture = new Texture("GasGiant.png");
+    Texture iceGiantTexture = new Texture("IceGiant.png");
 
     // Moon colour
     Color moonColor = new Color(73, 72, 72);
 
-    // Asteroid colour
-    Color asteroidColor = new Color(87, 75, 75);
 
-    // Ice Giant colour
-    Color iceGiantColor = new Color(37, 103, 203);
-
-    // Gas Giant colour
-    Color gasGiantColor = new Color(163, 128, 83);
 
     // All defenses
     static Defense[] defenses = {new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)};
 
-    public Planet(int orbit, Texture gasGiantTexture, Texture iceGiantTexture, Texture asteroidTexture){
+    public Planet(int orbit){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
         this.difficulty = globalDifficulty;
@@ -87,32 +75,28 @@ public class Planet {
         globalDifficulty++;
         if (isBetween(random, 0, 50)){
             int randomColor = MathUtils.random(1,5);
-            planetTexture = (randomColor == 1)? new Texture(Gdx.files.internal("Planet1.png")): (randomColor == 2)? new Texture(Gdx.files.internal("Planet3.png")):(randomColor == 3)? new Texture(Gdx.files.internal("Planet2.png")):(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
-            this.planetColor = possiblePlanetColors[randomColor];
+            currentPlanetTexture = (randomColor == 1)? new Texture(Gdx.files.internal("Planet1.png")): (randomColor == 2)? new Texture(Gdx.files.internal("Planet3.png")):(randomColor == 3)? new Texture(Gdx.files.internal("Planet2.png")):(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
             this.planetClass = 3;
             System.out.println("Added a Planet");
             this.GenerateMoons(this.planetClass);
             this.radius = 30;
         }
         else if (isBetween(random, 51, 60)){
-            this.planetColor = gasGiantColor;
-            this.planetTexture = gasGiantTexture;
+            this.currentPlanetTexture = gasGiantTexture;
             this.planetClass = 4;
             System.out.println("Added a Gas Giant");
             this.GenerateMoons(this.planetClass);
             this.radius = 50;
         }
         else if (isBetween(random, 61, 70)){
-            this.planetColor = iceGiantColor;
-            this.planetTexture = iceGiantTexture;
+            this.currentPlanetTexture = iceGiantTexture;
             this.planetClass = 5;
             System.out.println("Added a Ice Giant");
             this.GenerateMoons(this.planetClass);
             this.radius = 50;
         }
         else if (isBetween(random, 71, 85)) {
-            this.planetTexture = asteroidTexture;
-            this.planetColor = asteroidColor;
+            this.currentPlanetTexture = asteroidTexture;
             this.planetClass = 1;
             System.out.println("Added an asteroid");
             this.radius = 10;
@@ -276,7 +260,7 @@ public class Planet {
     }
 
     public Texture getPlanetTexture() {
-        return planetTexture;
+        return currentPlanetTexture;
     }
 
     public int getRadius() {
