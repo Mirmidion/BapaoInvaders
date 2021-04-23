@@ -11,11 +11,11 @@ buildscript {
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.13'
         classpath 'org.gretty:gretty:3.0.2'
-
-        
-
+        classpath 'mysql:mysql-connector-java:8.0.24'
     }
 }
+
+
 
 allprojects {
     apply plugin: "eclipse"
@@ -51,7 +51,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        
+        api "mysql:mysql-connector-java:8.0.24"
     }
 }
 

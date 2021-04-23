@@ -18,12 +18,11 @@ import java.sql.Driver;
 public class DesktopLauncher {
 	public static void main(String[] args) {
 
-		/*
+
 		String url = "jdbc:mysql://localhost/cursus";
 		String username = "root", password = "";
 
 		try{
-			Class.forName("");
 			Connection connection = DriverManager.getConnection(url,username,password);
 			Statement statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT naam FROM medewerker");
@@ -38,7 +37,7 @@ public class DesktopLauncher {
 			System.out.println(e);
 		}
 
-		 */
+
 		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		
