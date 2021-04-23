@@ -7,6 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Level  implements Screen {
+public class Level implements Screen {
 
     //The spritebatch
     SpriteBatch batch = new SpriteBatch();
@@ -51,8 +53,9 @@ public class Level  implements Screen {
         mainRenderScreen.getMusic3().play();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        batch.enableBlending();
         batch.begin();
+
 
 
         // Move the background down
@@ -67,7 +70,10 @@ public class Level  implements Screen {
 
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
-            batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
+            //batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
+            player.getPlayerSprite().setPosition(player.getPosX(), player.getPosY());
+            player.getPlayerSprite().setColor(player.getColor());
+            player.getPlayerSprite().draw(batch, player.getPlayerAlpha());
         } else {
             Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
             Planet.setGlobalDifficulty(0);
@@ -89,11 +95,16 @@ public class Level  implements Screen {
                     for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                         Bullet bullet = bulletIterator.next();
                         Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
-                        Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, player.getPlayerSprite().getHeight());
+                        Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, (int)player.getPlayerSprite().getHeight());
                         Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
                         if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
                             bullet.setExists(false);
-                            player.setHealth(-25);
+                            player.invulnerableTime();
+                            if(!player.isInvulnerable()) {
+                                player.setInvulnerable();
+
+                                player.setHealth(-25);
+                            }
                             bulletIterator.remove();
                         } else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
                             bullet.setExists(false);
@@ -110,6 +121,7 @@ public class Level  implements Screen {
 
                 }
             }
+
 
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
                 mainRenderScreen.addLevel();

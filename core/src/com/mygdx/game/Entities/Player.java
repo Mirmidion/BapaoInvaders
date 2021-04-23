@@ -2,27 +2,39 @@ package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.Bullet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Player {
+public class Player extends Actor {
     private int posX = 0;
     private int posY = 100;
-    private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
+    private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
+   // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private int gun = 1;
     private long time = 0;
     private int health = 100;
+    private boolean invulnerable = false;
+    private long timeInvulnerable = 0;
+
+
+
+    private float playerAlpha = 1;
 
     public Player (int width){
-        this.posX = width/2-playerSprite.getWidth()/2;
+        this.posX = (int) (width/2-playerSprite.getWidth()/2);
     }
 
     public void setPosX(int x, int width){
         if (posX + x > width - playerSprite.getWidth()){
-            posX = width - playerSprite.getWidth();
+            posX = (int) (width - playerSprite.getWidth());
         }
         else if (posX + x < 0){
             posX = 0;
@@ -40,13 +52,13 @@ public class Player {
         return posX;
     }
 
-    public Texture getPlayerSprite() {
+    public Sprite getPlayerSprite() {
         return playerSprite;
     }
 
     public void shoot(){
         if (TimeUtils.millis() - time > 500){
-            Bullet.allBullets.add(new Bullet(playerSprite.getWidth()-((gun == 1)?40:104),playerSprite.getHeight()-32, true, this));
+            Bullet.allBullets.add(new Bullet((int)playerSprite.getWidth()-((gun == 1)?40:104), (int) playerSprite.getHeight()-32, true, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
@@ -56,8 +68,32 @@ public class Player {
 
     }
 
+    public boolean isInvulnerable() {
+
+        return this.invulnerable;
+
+    }
+
+    public void setInvulnerable() {
+        this.invulnerable = true;
+    }
+
+    public void invulnerableTime()
+    {
+        playerAlpha = 0.7f;
+        if (TimeUtils.millis() - this.timeInvulnerable > 3000){
+            invulnerable = false;
+            playerAlpha = 1f;
+            this.timeInvulnerable = TimeUtils.millis();
+        }
+    }
+
     public int getHealth() {
         return health;
+    }
+
+    public float getPlayerAlpha() {
+        return playerAlpha;
     }
 
     public void setHealth(int health) {
@@ -65,7 +101,7 @@ public class Player {
     }
 
     public void resetPosition(int width){
-        this.posX = width/2-playerSprite.getWidth()/2;
+        this.posX = (int) (width/2-playerSprite.getWidth()/2);
     }
 
 }
