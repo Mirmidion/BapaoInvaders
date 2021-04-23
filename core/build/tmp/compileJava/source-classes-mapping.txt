@@ -26,3 +26,5 @@ com/mygdx/game/Scenes/MainMenu.java
  com.mygdx.game.Scenes.MainMenu$1
  com.mygdx.game.Scenes.MainMenu$2
  com.mygdx.game.Scenes.MainMenu$3
+com/mygdx/game/Scenes/loadingScreen.java
+ com.mygdx.game.Scenes.loadingScreen

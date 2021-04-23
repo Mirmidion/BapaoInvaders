@@ -1,15 +1,12 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -17,16 +14,12 @@ import com.mygdx.game.Entities.*;
 import com.mygdx.game.Scenes.Level;
 import com.mygdx.game.Scenes.MainMenu;
 import com.mygdx.game.Scenes.Map;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
+import com.mygdx.game.Scenes.loadingScreen;
 
 public class GameScreen implements Screen {
 
 	//Scene control
-	public enum scene  {mainMenu, map, level}
+	public enum scene  {mainMenu, map, level, loadingScreen}
 	private scene currentScene =  scene.mainMenu;
 	private int level = 0;
 
@@ -83,6 +76,7 @@ public class GameScreen implements Screen {
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
+	loadingScreen loadingScreenScene;
 
 	public GameScreen () {
 
@@ -116,6 +110,7 @@ public class GameScreen implements Screen {
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
 		mapScene = new Map(this);
+		loadingScreenScene = new loadingScreen(this);
 	}
 
 
@@ -141,6 +136,10 @@ public class GameScreen implements Screen {
 		// If in a level, draw everything of that level
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
+		}
+
+		else if (currentScene == scene.loadingScreen){
+			loadingScreenScene.render(delta);
 		}
 	}
 

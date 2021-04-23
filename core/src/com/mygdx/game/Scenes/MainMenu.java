@@ -64,8 +64,7 @@ public class MainMenu implements Screen {
 
         start = new TextButton("Start", buttonSkin);
         settings = new TextButton("Settings",buttonSkin);
-
-
+        
         mainRenderScreen.setSettingsMenuSwitch(false);
 
         exit = new TextButton("Exit",buttonSkin);
