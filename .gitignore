@@ -105,3 +105,6 @@ tests/gdx-tests-android/assets/bitmapWrittenFont.png
 natives.zip
 
 *.lock
+.gradle/6.7.1/executionHistory/executionHistory.bin
+.gradle/6.7.1/executionHistory/executionHistory.bin
+.gradle/6.7.1/executionHistory/executionHistory.lock
