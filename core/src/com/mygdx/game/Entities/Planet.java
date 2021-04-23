@@ -57,6 +57,7 @@ public class Planet {
     Texture asteroidTexture = new Texture("Asteroid.png");
     Texture gasGiantTexture = new Texture("GasGiant.png");
     Texture iceGiantTexture = new Texture("IceGiant.png");
+    Texture moonTexture = new Texture("Moon.png");
 
     // Moon colour
     Color moonColor = new Color(73, 72, 72);
@@ -64,7 +65,8 @@ public class Planet {
 
 
     // All defenses
-    static Defense[] defenses = {new Defense(233,300),new Defense(570,300),new Defense(904,300),new Defense(1241,300),new Defense(1578,300)};
+    static ArrayList<Defense> defenses = new ArrayList<Defense>();
+
 
     public Planet(int orbit){
         int random = MathUtils.random(85);
@@ -117,6 +119,7 @@ public class Planet {
 
     public Planet(boolean isMoon, Planet orbitPlanet){
         this.planetColor = moonColor;
+        this.currentPlanetTexture = moonTexture;
         this.planetClass = 2;
         this.radius = 15;
         angle = (float) ((Math.random()*(360)+0)/180*Math.PI);
@@ -190,7 +193,7 @@ public class Planet {
             int amountOfTypesOfEnemies = Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))));
             for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies+1; enemyType++){
                 int randomAmount = MathUtils.random(4,12);
-                wave.add(12);
+                wave.add(randomAmount);
                 wave.add(enemyType);
                 waves.add(wave);
             }
@@ -200,30 +203,36 @@ public class Planet {
     public void generateEnemies(int wave){
         int count = 0;
         int lineCount = 0;
-        for (int i = 0; i < waves.get(wave-1).get(0); i++){
+        int amountOfEnemiesOnLine = 6;
+        int totalAmountOfEnemies = waves.get(wave-1).get(0);
+        for (int i = 0; i < totalAmountOfEnemies; i++){
 
-            int padding = 340;
-
-            if (count%6==0){
-                lineCount++;
-                count = 0;
+            if (waves.get(wave-1).get(0) > 6){
+                amountOfEnemiesOnLine = 6;
+            }
+            else if (waves.get(wave-1).get(0) <= 6){
+                amountOfEnemiesOnLine = waves.get(wave-1).get(0);
             }
 
+            if (count/6==1){
+                lineCount++;
+                count = 0;
+                waves.get(wave-1).set(0,waves.get(wave-1).get(0) - 6);
+            }
 
+            int padding = (1920-amountOfEnemiesOnLine*140-(amountOfEnemiesOnLine-1)*80)/2;
 
-
-            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), count*220+padding ,lineCount*220+900, count*220+padding -50, count*220+padding +50));
-            System.out.println(i%6);
+            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding ,lineCount*220+900, count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding -50, count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding +50));
             count++;
         }
 
     }
 
-    public static Defense[] getDefenses() {
+    public static ArrayList<Defense> getDefenses() {
         return defenses;
     }
 
-    public static void setDefenses(Defense[] defenses) {
+    public static void setDefenses(ArrayList<Defense> defenses) {
         Planet.defenses = defenses;
     }
 
@@ -281,5 +290,13 @@ public class Planet {
 
     public ArrayList<Planet> getMoonList() {
         return moonList;
+    }
+
+    public static void regenerateDefenses(){
+        defenses.add(new Defense(233, 300));
+        defenses.add(new Defense(570, 300));
+        defenses.add(new Defense(904, 300));
+        defenses.add(new Defense(1241, 300));
+        defenses.add(new Defense(1578, 300));
     }
 }

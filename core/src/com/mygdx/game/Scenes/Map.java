@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.Planet;
 import com.mygdx.game.GameScreen;
 
@@ -18,6 +19,9 @@ public class Map implements Screen {
 
     //Drawer of shapes
     private ShapeRenderer shapeRenderer;
+
+    private boolean blink = true;
+    private long blinkTime = 0;
 
     public Map(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
@@ -72,116 +76,56 @@ public class Map implements Screen {
             float planetPositionY = mainRenderScreen.getSolarSystem().getPosYStar() + planet.getPosY() / mapScale;
             float planetPositionX = mainRenderScreen.getSolarSystem().getPosXStar() + planet.getPosX() / mapScale;
 
-            // If there is no texture, draw an ellipse
-            if (planet.getPlanetTexture() == null ) {
+            // If there are moons around the planet, do a for-loop
+            if (planet.getMoonList().size() != 0){
 
-                // If there are moons around the planet, do a for-loop
-                if (planet.getMoonList().size() != 0){
+                // Calculating the moon orbit in a way it doesn't interfere with the planets size
+                int moonOrbit = planet.getRadius()+25;
 
-                    // Calculating the moon orbit in a way it doesnt interfere with the planets size
-                    int moonOrbit = planet.getRadius()+25;
+                // Loop for going through every moon
+                for (Planet moon : planet.getMoonList()){
+                     moon.setOrbit(moonOrbit/2);
+                     shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 
-                    // Loop for going through every moon
-                    for (Planet moon : planet.getMoonList()){
-                        moon.setOrbit(moonOrbit/2);
-                        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+                     // Draw the orbit with a grey-ish colour
+                     shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
+                     shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
+                     shapeRenderer.end();
 
-                        // Draw the orbit with a grey-ish colour
-                        shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
-                        shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
+                     // Calculate the position of the moon on the orbit
+                     moon.setMoonOrbit(moon.getOrbit());
 
-                        // Calculate the position of the moon on the orbit
-                        moon.setMoonOrbit(moon.getOrbit());
+                     //Draw the moon with its own texture
+                     batch.begin();
+                     batch.draw(moon.getPlanetTexture(), moon.getPosX() + planetPositionX - moon.getPlanetTexture().getWidth()/2f, moon.getPosY() +planetPositionY - moon.getPlanetTexture().getHeight()/2f);
+                     batch.end();
+                     shapeRenderer.begin();
 
-                        //Draw the moon with its own colour
-                        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                        shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.getPlanetColor().getRed() / 255), ((float) moon.getPlanetColor().getGreen() / 255), ((float) moon.getPlanetColor().getBlue() / 255), ((float) moon.getPlanetColor().getAlpha() / 255)));
-                        shapeRenderer.ellipse((moon.getPosX() + planetPositionX - 6), (moon.getPosY() +planetPositionY -6), moon.getRadius() ,moon.getRadius() );
-
-                        // If the moon is the next level you are going to play, outline this moon
-                        if (moon.getDifficulty() == mainRenderScreen.getLevel()){
-                            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                            shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-                            shapeRenderer.ellipse((moon.getPosX() + planetPositionX + mainRenderScreen.getSolarSystem().getPosXStar() - moon.getRadius()/2f), (moon.getPosY() + planetPositionY + mainRenderScreen.getSolarSystem().getPosYStar() - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
-                            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                        }
-                        moonOrbit += 25;
-                    }
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                    shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
+                     // If the moon is the next level you are going to play, outline this moon
+                     if (moon == Planet.getPlanetListOfDifficulty().peek()){
+                         mainRenderScreen.setCurrentPlanet(moon);
+                         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+                         shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+                         shapeRenderer.ellipse((moon.getPosX() + planetPositionX - moon.getRadius()/2f), (moon.getPosY() + planetPositionY - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
+                     }
+                     moonOrbit += 25;
                 }
-
-                // Calculate the planets position in orbit
-                planet.orbit();
-
-                // Draw the planet with its own colour
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) planet.getPlanetColor().getRed() / 255), ((float) planet.getPlanetColor().getGreen() / 255), ((float) planet.getPlanetColor().getBlue() / 255), ((float) planet.getPlanetColor().getAlpha() / 255)));
-                shapeRenderer.circle(planetPositionX, planetPositionY, planet.getRadius()/2f);
-
-                // If the planet is the next level, outline the planet
-                if (planet.getDifficulty() == mainRenderScreen.getLevel()){
-                    System.out.println(planet.getDifficulty() + " " + mainRenderScreen.getLevel());
-                    mainRenderScreen.setCurrentPlanet(planet);
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                    shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-                    shapeRenderer.ellipse((planetPositionX*mapScale - planet.getRadius()/2f*mapScale), (planetPositionY*mapScale - planet.getRadius()/2f*mapScale), planet.getRadius(), planet.getRadius());
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                }
+                shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
             }
 
-            // Else just draw the texture
-            else{
-                // If there are moons around the planet, do a for-loop
-                if (planet.getMoonList().size() != 0){
+            // Calculate the planets position in the orbit
+            planet.orbit();
+            batch.begin();
+            batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,  planetPositionY - planet.getPlanetTexture().getHeight()/2f );
+            batch.end();
 
-                    // Calculating the moon orbit in a way it doesn't interfere with the planets size
-                    int moonOrbit = planet.getRadius()+25;
-
-                    // Loop for going through every moon
-                    for (Planet moon : planet.getMoonList()){
-                        moon.setOrbit(moonOrbit/2);
-                        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-
-                        // Draw the orbit with a grey-ish colour
-                        shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
-                        shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
-
-                        // Calculate the position of the moon on the orbit
-                        moon.setMoonOrbit(moon.getOrbit());
-
-                        //Draw the moon with its own colour
-                        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                        shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(((float) moon.getPlanetColor().getRed() / 255), ((float) moon.getPlanetColor().getGreen() / 255), ((float) moon.getPlanetColor().getBlue() / 255), ((float) moon.getPlanetColor().getAlpha() / 255)));
-                        shapeRenderer.ellipse((moon.getPosX() + planetPositionX - 6), (moon.getPosY() +planetPositionY -6), moon.getRadius() ,moon.getRadius() );
-
-                        // If the moon is the next level you are going to play, outline this moon
-                        if (moon == Planet.getPlanetListOfDifficulty().peek()){
-                            mainRenderScreen.setCurrentPlanet(moon);
-                            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                            shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-                            shapeRenderer.ellipse((moon.getPosX() + planetPositionX - moon.getRadius()/2f), (moon.getPosY() + planetPositionY - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
-                            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                        }
-                        moonOrbit += 25;
-                    }
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                    shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
-                }
-
-                // Calculate the planets position in the orbit
-                planet.orbit();
-                batch.begin();
-                batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,  planetPositionY - planet.getPlanetTexture().getHeight()/2f );
-                batch.end();
-
-                // If the planet is the next level, outline the planet
-                if (planet == Planet.getPlanetListOfDifficulty().peek()){
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                    shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
-                    shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + planet.getPosX()/mapScale - planet.getRadius()/2f), (mainRenderScreen.getSolarSystem().getPosYStar() + planet.getPosY()/mapScale - planet.getRadius()/2f) , planet.getRadius(), planet.getRadius());
-                    shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                }
+            // If the planet is the next level, outline the planet
+            if (planet == Planet.getPlanetListOfDifficulty().peek()){
+                shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(255,255,255,255));
+                shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + planet.getPosX()/mapScale - planet.getRadius()/2f), (mainRenderScreen.getSolarSystem().getPosYStar() + planet.getPosY()/mapScale - planet.getRadius()/2f) , planet.getRadius(), planet.getRadius());
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
             }
         }
         shapeRenderer.end();
@@ -210,6 +154,22 @@ public class Map implements Screen {
                 mapScale -= 0.01f;
             }
         }
+
+        if (TimeUtils.millis() -blinkTime >= 600){
+            blink = !blink;
+            blinkTime = TimeUtils.millis();
+        }
+
+        // Draw the current score
+        batch.begin();
+        mainRenderScreen.getTitleFont().getData().setScale(1f);
+        mainRenderScreen.getTitleFont().draw(batch, "Score: " + GameScreen.getScore(), 80, 1000);
+        mainRenderScreen.getTitleFont().draw(batch, "Level: " + (Planet.getPlanetListOfDifficulty().peek().getDifficulty()+1), 80, 950);
+        mainRenderScreen.getNormalFont().getData().setScale(0.7f);
+        if (blink) {
+            mainRenderScreen.getNormalFont().draw(batch, "Press ENTER to start the level", 630, 100);
+        }
+        batch.end();
     }
 
     @Override

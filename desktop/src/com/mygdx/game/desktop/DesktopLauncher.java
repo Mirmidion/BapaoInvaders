@@ -8,9 +8,37 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.mygdx.game.BapoaInvaders;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Driver;
+
 
 public class DesktopLauncher {
 	public static void main(String[] args) {
+
+		/*
+		String url = "jdbc:mysql://localhost/cursus";
+		String username = "root", password = "";
+
+		try{
+			Class.forName("");
+			Connection connection = DriverManager.getConnection(url,username,password);
+			Statement statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT naam FROM medewerker");
+			//int gelukt = statement.executeUpdate("INSERT INTO cursus VALUES(‘JAV’, ‘Java’,’S’,5)");
+			while(rs.next()){
+				System.out.println(rs.getString(1));
+			}
+			statement.close(); //sluit ook de resultset
+			connection.close();
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+		 */
 		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		

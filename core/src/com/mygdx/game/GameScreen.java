@@ -25,6 +25,8 @@ import java.util.LinkedList;
 
 public class GameScreen implements Screen {
 
+	//----- These are all the variables used in more than 1 scene ----//
+
 	//Scene control
 	public enum scene  {mainMenu, map, level}
 	private scene currentScene =  scene.mainMenu;
@@ -35,8 +37,7 @@ public class GameScreen implements Screen {
 	private BitmapFont normalFont;
 	private BitmapFont titleFont;
 
-
-
+	//Music
 	private Music music;
 	private Music music2;
 	private Music music3;
@@ -56,33 +57,28 @@ public class GameScreen implements Screen {
 	//SpriteBatches
 	private SpriteBatch batch;
 
-
-
 	//Background
 	private Texture gameBackground;
 
-
-	//Player
-
-
 	//Solar Systems
 	private SolarSystem solarSystem;
-
-
-
-
-
-	private static boolean paused = false;
-
-	private long pauseDelay = 0;
-
 	private Planet currentPlanet;
 
+	//Paused variables
+	private static boolean paused = false;
+	private long pauseDelay = 0;
+
+	//The score
 	private static int score;
 
+	//Different scenes used throughout the game
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
+
+	//FPS counter
+	int framesPerSecond;
+	long lastChecked;
 
 	public GameScreen () {
 
@@ -116,6 +112,7 @@ public class GameScreen implements Screen {
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
 		mapScene = new Map(this);
+
 	}
 
 
@@ -142,6 +139,17 @@ public class GameScreen implements Screen {
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
 		}
+
+		if (TimeUtils.millis() - lastChecked >= 1000){
+			framesPerSecond = Gdx.graphics.getFramesPerSecond();
+			lastChecked = TimeUtils.millis();
+		}
+
+
+		batch.begin();
+		normalFont.getData().setScale(0.2f);
+		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
+		batch.end();
 	}
 
 	@Override
@@ -278,6 +286,10 @@ public class GameScreen implements Screen {
 
 	public scene getCurrentScene() {
 		return currentScene;
+	}
+
+	public BitmapFont getNormalFont() {
+		return normalFont;
 	}
 }
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
+import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,15 +19,23 @@ import java.util.LinkedList;
 
 public class Level  implements Screen {
 
+    //The spritebatch
     SpriteBatch batch = new SpriteBatch();
+
+    //The main gamescreen
     GameScreen mainRenderScreen;
+
+    //Background position of the scrolling background
     private int backgroundPosY;
+
+    //The player object
     private Player player;
 
 
     public Level(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
         player = new Player(mainRenderScreen.getWidth());
+        Planet.regenerateDefenses();
     }
 
 
@@ -67,14 +76,13 @@ public class Level  implements Screen {
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
             player = new Player(mainRenderScreen.getWidth());
             Bullet.setAllBullets(new ArrayList<Bullet>());
-            Planet.setDefenses(new Defense[]{new Defense(233, 300), new Defense(570, 300), new Defense(904, 300), new Defense(1241, 300), new Defense(1578, 300)});
+            Planet.regenerateDefenses();
         }
         if (mainRenderScreen.getCurrentPlanet() != null) {
             batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
 
             for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
                 Enemy enemy = enemyIterator.next();
-                System.out.println(enemy.getPosY() + "\t" + enemy.getPosX());
                 if (enemy.getHealth() != 0) {
                     enemy.moveEnemy();
                     batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());
@@ -91,11 +99,15 @@ public class Level  implements Screen {
                             bullet.setExists(false);
                             enemy.setHealth(-50);
                             bulletIterator.remove();
-                            GameScreen.setScore(50);
+                        }
+                        else if (enemy.getHealth() <= 0){
+                            GameScreen.setScore(50*enemy.getEnemyClass());
+                            break;
                         }
                     }
                 } else {
                     enemyIterator.remove();
+
                 }
             }
 
@@ -104,16 +116,19 @@ public class Level  implements Screen {
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
                 Bullet.setAllBullets(new ArrayList<Bullet>());
                 player.resetPosition(mainRenderScreen.getWidth());
-                System.out.println(mainRenderScreen.getLevel());
             }
 
             // Draw every bullet and move them up/down
-            for (Bullet bullet : Bullet.getAllBullets()) {
+            for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext();) {
+                Bullet bullet = iter.next();
                 if (bullet.isExists()) {
                     batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
                 }
                 if (!GameScreen.isPaused()) {
                     bullet.setPosY(5f, mainRenderScreen.getHeight());
+                }
+                if (bullet.getPosX() > 1080 || bullet.getPosY() > 1920){
+                    iter.remove();
                 }
             }
 
@@ -125,7 +140,8 @@ public class Level  implements Screen {
 
             // draw all defenses present
             int defenseCount = 0;
-            for (Defense defense : Planet.getDefenses()) {
+            for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
+                Defense defense = iter.next();
                 Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
                 for (Bullet bullet : Bullet.getAllBullets()) {
                     Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), (int) bullet.getLaser().getHeight());
@@ -136,6 +152,9 @@ public class Level  implements Screen {
                 }
                 if (defense.getHealth() > 0) {
                     batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
+                }
+                else{
+                    iter.remove();
                 }
                 defenseCount++;
             }
@@ -156,14 +175,15 @@ public class Level  implements Screen {
 
             // Enable using the ESCAPE KEY to pause the scene. Supported scenes for pausing are: level
             if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && TimeUtils.millis() - mainRenderScreen.getPauseDelay() > 500) {
-                if (!GameScreen.isPaused()) {
-                    GameScreen.setPaused(true);
-                } else {
-                    GameScreen.setPaused(false);
-                }
+                GameScreen.setPaused(!GameScreen.isPaused());
                 mainRenderScreen.setPauseDelay(TimeUtils.millis());
-
             }
+
+            // Draw the current score
+            batch.begin();
+            mainRenderScreen.getTitleFont().getData().setScale(1f);
+            mainRenderScreen.getTitleFont().draw(batch, "Score: " + GameScreen.getScore(), 80, 1000);
+            batch.end();
         }
     }
             @Override

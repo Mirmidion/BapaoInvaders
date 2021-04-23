@@ -20,9 +20,14 @@ import org.w3c.dom.Text;
 
 public class MainMenu implements Screen {
 
-    GameScreen mainRenderScreen;
+    //The spritebatch
     SpriteBatch batch = new SpriteBatch();
+
+    //The stage for drawing and getting input from buttons
     Stage stage = new Stage();
+
+    //The main gamescreen
+    GameScreen mainRenderScreen;
 
     //Main Menu Layout and Objects
     private Table mainMenuTable;
