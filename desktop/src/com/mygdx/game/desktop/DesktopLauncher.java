@@ -17,7 +17,7 @@ import java.sql.Driver;
 
 public class DesktopLauncher {
 	public static void main(String[] args) {
-
+/*
 
 		String url = "jdbc:mysql://localhost/cursus";
 		String username = "root", password = "";
@@ -35,7 +35,7 @@ public class DesktopLauncher {
 		}
 		catch(Exception e){
 			System.out.println(e);
-		}
+		}*/
 
 
 		
