@@ -122,6 +122,10 @@ public class Level implements Screen {
                 }
             }
 
+            if(player.isInvulnerable()) {
+                player.invulnerableTime();
+            }
+
 
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
                 mainRenderScreen.addLevel();
