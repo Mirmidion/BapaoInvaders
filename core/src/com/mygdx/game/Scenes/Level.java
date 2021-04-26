@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
@@ -30,6 +31,8 @@ public class Level  implements Screen {
 
     //The player object
     private Player player;
+
+    private int currentWaveOfPlanet = 1;
 
 
     public Level(GameScreen gameScreen){
@@ -95,6 +98,7 @@ public class Level  implements Screen {
                             bullet.setExists(false);
                             player.setHealth(-25);
                             bulletIterator.remove();
+                            //player.addAction(Actions.sequence(Actions.fadeOut(0.15f), Actions.fadeIn(0.15f)));
                         } else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
                             bullet.setExists(false);
                             enemy.setHealth(-50);
@@ -111,6 +115,18 @@ public class Level  implements Screen {
                 }
             }
 
+            if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0 && mainRenderScreen.getCurrentPlanet().getWaves().size() != currentWaveOfPlanet+1){
+                currentWaveOfPlanet++;
+                mainRenderScreen.getCurrentPlanet().generateEnemies(currentWaveOfPlanet);
+            }
+            else if (mainRenderScreen.getCurrentPlanet().getWaves().size() == currentWaveOfPlanet+1 || Gdx.input.isKeyPressed(Input.Keys.R)){
+                Planet.getPlanetListOfDifficulty().poll();
+                mainRenderScreen.setCurrentScene(GameScreen.scene.map);
+                player.resetPosition(1920);
+                Planet.regenerateDefenses();
+                Bullet.setAllBullets(new ArrayList<Bullet>());
+            }
+
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
                 mainRenderScreen.addLevel();
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
@@ -125,9 +141,9 @@ public class Level  implements Screen {
                     batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
                 }
                 if (!GameScreen.isPaused()) {
-                    bullet.setPosY(5f, mainRenderScreen.getHeight());
+                    bullet.setPosY(3f, mainRenderScreen.getHeight());
                 }
-                if (bullet.getPosX() > 1080 || bullet.getPosY() > 1920){
+                if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080){
                     iter.remove();
                 }
             }

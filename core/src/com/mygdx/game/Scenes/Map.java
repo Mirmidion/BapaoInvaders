@@ -134,7 +134,6 @@ public class Map implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             mainRenderScreen.setCurrentScene(GameScreen.scene.level);
             mainRenderScreen.setCurrentPlanet(Planet.getPlanetListOfDifficulty().peek());
-            Planet.getPlanetListOfDifficulty().remove();
         }
 
         // If the left or right arrow is pressed, zoom in/out

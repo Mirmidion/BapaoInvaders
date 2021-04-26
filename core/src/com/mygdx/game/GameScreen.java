@@ -14,9 +14,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.game.Entities.*;
-import com.mygdx.game.Scenes.Level;
-import com.mygdx.game.Scenes.MainMenu;
-import com.mygdx.game.Scenes.Map;
+import com.mygdx.game.Scenes.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class GameScreen implements Screen {
 	//----- These are all the variables used in more than 1 scene ----//
 
 	//Scene control
-	public enum scene  {mainMenu, map, level}
+	public enum scene  {mainMenu, map, level, gameOver, win}
 	private scene currentScene =  scene.mainMenu;
 	private int level = 0;
 
@@ -75,6 +73,8 @@ public class GameScreen implements Screen {
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
+	GameOverMenu gameOverScene;
+	WinMenu winScene;
 
 	//FPS counter
 	int framesPerSecond;
@@ -112,6 +112,8 @@ public class GameScreen implements Screen {
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
 		mapScene = new Map(this);
+		winScene = new WinMenu(this);
+		gameOverScene = new GameOverMenu(this);
 
 	}
 
@@ -138,6 +140,14 @@ public class GameScreen implements Screen {
 		// If in a level, draw everything of that level
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
+		}
+
+		else if (currentScene == scene.gameOver) {
+			gameOverScene.render(delta);
+		}
+
+		else if (currentScene == scene.win) {
+			winScene.render(delta);
 		}
 
 		if (TimeUtils.millis() - lastChecked >= 1000){

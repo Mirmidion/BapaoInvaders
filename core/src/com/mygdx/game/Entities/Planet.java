@@ -187,45 +187,54 @@ public class Planet {
     }
 
     public void generateWaves(){
-        int amountOfWaves = MathUtils.random(4,7);
+        int amountOfWaves = 4 + Math.round(difficulty/2f);
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
             ArrayList<Integer> wave = new ArrayList<Integer>();
-            int amountOfTypesOfEnemies = Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))));
-            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies+1; enemyType++){
+            int amountOfTypesOfEnemies = Math.min(4,Math.max(2,Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))))));
+            System.out.println(amountOfWaves);
+            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
                 int randomAmount = MathUtils.random(4,12);
                 wave.add(randomAmount);
                 wave.add(enemyType);
-                waves.add(wave);
+                this.waves.add(wave);
             }
         }
+        //System.out.println(this.waves);
     }
 
-    public void generateEnemies(int wave){
-        int count = 0;
-        int lineCount = 0;
+    public void generateEnemies(int wave) {
         int amountOfEnemiesOnLine = 6;
-        int totalAmountOfEnemies = waves.get(wave-1).get(0);
-        for (int i = 0; i < totalAmountOfEnemies; i++){
+        int lineCount = 0;
 
-            if (waves.get(wave-1).get(0) > 6){
-                amountOfEnemiesOnLine = 6;
+        for (int amount = 0; amount < waves.get(wave - 1).size(); amount += 2) {
+            int totalAmountOfEnemies = waves.get(wave - 1).get(amount);
+            int count = 0;
+            for (int i = 0; i < totalAmountOfEnemies; i++) {
+
+                if (waves.get(wave - 1).get(amount) > 6) {
+                    amountOfEnemiesOnLine = 6;
+                } else if (waves.get(wave - 1).get(amount) <= 6 || waves.get(wave - 1).get(amount) != 0) {
+                    amountOfEnemiesOnLine = waves.get(wave - 1).get(amount);
+                }
+                if (waves.get(wave - 1).get(amount) == 0){
+                    break;
+                }
+
+                if (count / 6 == 1) {
+                    lineCount++;
+                    count = 0;
+                    waves.get(wave - 1).set(0, waves.get(wave - 1).get(amount) - 6);
+                }
+
+                int padding = (1920 - amountOfEnemiesOnLine * 140 - (amountOfEnemiesOnLine - 1) * 80) / 2;
+
+                int posXEnemy = (amountOfEnemiesOnLine * 140 + (amountOfEnemiesOnLine - 1) * 80) / amountOfEnemiesOnLine;
+                enemyWaves.add(new Enemy(waves.get(wave - 1).get(amount+1), count * posXEnemy + padding, lineCount * 220 + 900, count * posXEnemy + padding - 50, count * posXEnemy + padding + 50));
+                count++;
             }
-            else if (waves.get(wave-1).get(0) <= 6){
-                amountOfEnemiesOnLine = waves.get(wave-1).get(0);
-            }
+            lineCount++;
 
-            if (count/6==1){
-                lineCount++;
-                count = 0;
-                waves.get(wave-1).set(0,waves.get(wave-1).get(0) - 6);
-            }
-
-            int padding = (1920-amountOfEnemiesOnLine*140-(amountOfEnemiesOnLine-1)*80)/2;
-
-            enemyWaves.add(new Enemy(waves.get(wave-1).get(1), count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding ,lineCount*220+900, count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding -50, count*((amountOfEnemiesOnLine*140+(amountOfEnemiesOnLine-1)*80)/amountOfEnemiesOnLine)+padding +50));
-            count++;
         }
-
     }
 
     public static ArrayList<Defense> getDefenses() {
@@ -298,5 +307,9 @@ public class Planet {
         defenses.add(new Defense(904, 300));
         defenses.add(new Defense(1241, 300));
         defenses.add(new Defense(1578, 300));
+    }
+
+    public ArrayList<ArrayList<Integer>> getWaves() {
+        return waves;
     }
 }

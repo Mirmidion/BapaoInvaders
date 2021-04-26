@@ -20,33 +20,30 @@ public class Bullet{
         this.posY = y + player.getPosY();
         this.friendly = friendly;
         this.damage = 50;
+        this.bulletSpeed = 1;
     }
 
     public Bullet (int x, int y, boolean friendly, Enemy enemy){
         this.posX = x + enemy.getPosX();
         this.posY = y + enemy.getPosY();
         this.friendly = friendly;
-        switch (enemy.getEnemyClass()) {
-            case 1:{
+        if (enemy.getEnemyClass()==1) {
+
                 this.damage = 25;
                 this.bulletSpeed = 1;
             }
-            case 2:{
+        else if (enemy.getEnemyClass()==2) {
                 this.damage = 10;
                 this.bulletSpeed = 1.5f;
             }
-            case 3:{
+        else if (enemy.getEnemyClass()==3) {
                 this.damage = 34;
                 this.bulletSpeed = 0.85f;
             }
-            case 4:{
+        else if (enemy.getEnemyClass()==4) {
                 this.damage = 50;
                 this.bulletSpeed = 0.5f;
-            }
-            default:{
-                this.damage = 25;
-                this.bulletSpeed = 1;
-            }
+
         }
     }
 
@@ -64,7 +61,7 @@ public class Bullet{
             this.exists = false;
         }
         else{
-            this.posY += posY * ((this.friendly)?1:-1);
+            this.posY += posY* this.bulletSpeed * ((this.friendly)?1:-1) ;
         }
     }
 
