@@ -23,11 +23,6 @@ public class Player {
     private long time = 0;
     private int health = 100;
     private boolean invulnerable = false;
-    private long timeInvulnerable = 0;
-
-
-
-    private float playerAlpha = 1;
 
     public Player (int width){
         this.posX = (int) (width/2-playerSprite.getWidth()/2);
@@ -58,6 +53,7 @@ public class Player {
     }
 
     public void shoot(){
+        System.out.println(time);
         if (TimeUtils.millis() - time > 500){
             Bullet.allBullets.add(new Bullet((int)playerSprite.getWidth()-((gun == 1)?40:104), (int) playerSprite.getHeight()-32, true, this));
             time = TimeUtils.millis();
@@ -75,24 +71,13 @@ public class Player {
 
     }
 
-    public void setInvulnerable() {
-        this.invulnerable = true;
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
     }
 
-    public void invulnerableTime()
-    {
-        if (TimeUtils.millis() - this.timeInvulnerable > 3000){
-            invulnerable = false;
-            this.timeInvulnerable = TimeUtils.millis();
-        }
-    }
 
     public int getHealth() {
         return health;
-    }
-
-    public float getPlayerAlpha() {
-        return playerAlpha;
     }
 
     public void setHealth(int health) {

@@ -94,16 +94,18 @@ public class Level implements Screen {
                         Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
                         Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, (int)player.getPlayerSprite().getHeight());
                         Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-                        if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
+                        if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
                             bullet.setExists(false);
-                            player.invulnerableTime();
-                            if(!player.isInvulnerable()) {
-                                player.setInvulnerable();
-
-                                player.setHealth(-25);
-                            }
+                            player.setInvulnerable(true);
+                            player.setHealth(-25);
                             bulletIterator.remove();
-                        } else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
+                        }
+                        else if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
+                            bullet.setExists(false);
+                            player.setInvulnerable(false);
+                            bulletIterator.remove();
+                        }
+                        else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
                             bullet.setExists(false);
                             enemy.setHealth(-50);
                             bulletIterator.remove();
