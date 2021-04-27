@@ -1,6 +1,7 @@
 package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -13,7 +14,7 @@ import com.mygdx.game.Entities.Bullet;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Player extends Actor {
+public class Player {
     private int posX = 0;
     private int posY = 100;
     private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
@@ -80,10 +81,8 @@ public class Player extends Actor {
 
     public void invulnerableTime()
     {
-        playerAlpha = 0.7f;
         if (TimeUtils.millis() - this.timeInvulnerable > 3000){
             invulnerable = false;
-            playerAlpha = 1f;
             this.timeInvulnerable = TimeUtils.millis();
         }
     }
@@ -103,5 +102,22 @@ public class Player extends Actor {
     public void resetPosition(int width){
         this.posX = (int) (width/2-playerSprite.getWidth()/2);
     }
+
+    public void draw(Batch batch)
+    {
+        playerSprite.draw(batch);
+        playerSprite.setPosition(posX, posY);
+        if(invulnerable)
+        {
+            playerSprite.setAlpha(0.7f);
+        }
+
+        if(!invulnerable)
+        {
+            playerSprite.setAlpha(1f);
+        }
+
+    }
+
 
 }

@@ -70,10 +70,7 @@ public class Level implements Screen {
 
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
-            //batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
-            player.getPlayerSprite().setPosition(player.getPosX(), player.getPosY());
-            player.getPlayerSprite().setColor(player.getColor());
-            player.getPlayerSprite().draw(batch, player.getPlayerAlpha());
+            player.draw(batch);
         } else {
             Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
             Planet.setGlobalDifficulty(0);
@@ -122,9 +119,6 @@ public class Level implements Screen {
                 }
             }
 
-            if(player.isInvulnerable()) {
-                player.invulnerableTime();
-            }
 
 
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
