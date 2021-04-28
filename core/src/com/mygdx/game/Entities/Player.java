@@ -2,19 +2,22 @@ package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.Bullet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Player {
+public class Player extends Actions {
     private int posX = 0;
     private int posY = 100;
     private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private int gun = 1;
     private long time = 0;
     private int health = 100;
+    private boolean invulnerable = false;
+    private long lastTimeInvulnerable = 0;
 
     public Player (int width){
         this.posX = width/2-playerSprite.getWidth()/2;
@@ -30,6 +33,7 @@ public class Player {
         else {
             posX += x;
         }
+
     }
 
     public int getPosY() {
@@ -56,6 +60,25 @@ public class Player {
 
     }
 
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    public void invulnerableTime(){
+        if (TimeUtils.millis() - lastTimeInvulnerable >= 3000){
+            this.setInvulnerable(false);
+            this.lastTimeInvulnerable = TimeUtils.millis();
+        }
+    }
+
+    public void setLastTimeInvulnerable() {
+        this.lastTimeInvulnerable = TimeUtils.millis();
+    }
+
     public int getHealth() {
         return health;
     }
@@ -67,5 +90,4 @@ public class Player {
     public void resetPosition(int width){
         this.posX = width/2-playerSprite.getWidth()/2;
     }
-
 }
