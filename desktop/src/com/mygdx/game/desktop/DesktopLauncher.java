@@ -7,6 +7,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.mygdx.game.BapoaInvaders;
+import com.mygdx.game.Controllers.Arduino;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -48,6 +49,7 @@ public class DesktopLauncher {
 		config.x = -7;
 		config.y = 0;
 
+		Arduino.setup();
 		new LwjglApplication(new BapoaInvaders(), config);
 
 	}

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.fazecast.jSerialComm.SerialPort;
 import com.mygdx.game.Controllers.Arduino;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
@@ -18,6 +19,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Level  implements Screen {
 
@@ -35,11 +37,21 @@ public class Level  implements Screen {
 
     private int currentWaveOfPlanet = 1;
 
+    private Scanner data;
+
+    public Scanner getData(){
+        return this.data;
+    }
 
     public Level(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
         player = new Player(mainRenderScreen.getWidth());
         Planet.regenerateDefenses();
+
+        SerialPort ports[] = SerialPort.getCommPorts();
+        SerialPort port = ports[0];
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        data = new Scanner(port.getInputStream());
     }
 
 
@@ -177,13 +189,16 @@ public class Level  implements Screen {
             }
 
 
+
+
+
             // Change the position of the player depending on the keys pressed
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !GameScreen.isPaused()) {
                 player.setPosX(-2, mainRenderScreen.getWidth());
             } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !GameScreen.isPaused()) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
-            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) ) && !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Arduino.buttonPressed(data) ) && !GameScreen.isPaused()) {
                 player.shoot();
             }
 
