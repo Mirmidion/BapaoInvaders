@@ -139,7 +139,7 @@ public class Level implements Screen {
                 if (!GameScreen.isPaused()) {
                     bullet.setPosY(5f, mainRenderScreen.getHeight());
                 }
-                if (bullet.getPosX() > 1080 || bullet.getPosY() > 1920){
+                if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080){
                     iter.remove();
                 }
             }
@@ -198,33 +198,34 @@ public class Level implements Screen {
             batch.end();
         }
     }
-            @Override
-            public void resize ( int width, int height){
 
-            }
+    @Override
+    public void resize ( int width, int height){
 
-            @Override
-            public void pause () {
+    }
 
-            }
+    @Override
+    public void pause () {
 
-            @Override
-            public void resume () {
+    }
 
-            }
+    @Override
+    public void resume () {
 
-            @Override
-            public void hide () {
+    }
 
-            }
+    @Override
+    public void hide () {
 
-            @Override
-            public void dispose () {
+    }
 
-            }
+    @Override
+    public void dispose () {
 
-            public boolean overlaps (Rectangle r, Rectangle r2){
-                return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
-            }
+    }
+
+    public boolean overlaps (Rectangle r, Rectangle r2){
+        return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
+    }
 
 }
