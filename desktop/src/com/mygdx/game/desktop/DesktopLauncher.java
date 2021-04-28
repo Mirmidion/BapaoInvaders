@@ -49,7 +49,7 @@ public class DesktopLauncher {
 		config.x = -7;
 		config.y = 0;
 
-		Arduino.setup();
+
 		new LwjglApplication(new BapoaInvaders(), config);
 
 	}
