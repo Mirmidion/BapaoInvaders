@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.Controllers.Arduino;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
 import org.w3c.dom.Text;
@@ -182,7 +183,7 @@ public class Level  implements Screen {
             } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !GameScreen.isPaused()) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) ) && !GameScreen.isPaused()) {
                 player.shoot();
             }
 
