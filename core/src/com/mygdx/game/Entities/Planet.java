@@ -5,16 +5,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
-public class Planet {
+public class Planet implements Serializable {
 
     // Difficulty of the waves
-    int difficulty;
+    int difficulty = 0;
     int currentWave;
-    static LinkedList<Planet> planetListOfDifficulty = new LinkedList<Planet>();
-
 
     // Waves consist of arraylist<int> that contain amount and types of enemies
     // The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
@@ -31,6 +31,9 @@ public class Planet {
     5 - Ice Giant 10%
     */
     int planetClass = 0;
+    int whichPlanetTexture;
+
+    private static final long serialVersionUID = 6529685098267757690L;
 
     // Boolean for if it can have moons and which planet this moon orbits
     ArrayList<Planet> moonList = new ArrayList<Planet>();
@@ -43,58 +46,59 @@ public class Planet {
     private boolean orbitClockWise = true;
     private float rotationSpeed = 1;
 
-    static int globalDifficulty = 0;
 
 
     // Color and texture of the Planet
     Color planetColor = new Color(100,100,100);
-    Texture currentPlanetTexture;
+    transient Texture currentPlanetTexture = new Texture("Asteroid.png");
 
     // Radius of planet
     int radius = 0;
 
+    // Textures
+    transient static Texture asteroidTexture = new Texture("Asteroid.png");
+    transient static Texture gasGiantTexture = new Texture("GasGiant.png");
+    transient static Texture iceGiantTexture = new Texture("IceGiant.png");
+    transient static Texture moonTexture = new Texture("Moon.png");
+    transient static Texture planet1Texture = new Texture(Gdx.files.internal("Planet1.png"));
+    transient static Texture planet2Texture = new Texture(Gdx.files.internal("Planet2.png"));
+    transient static Texture planet3Texture = new Texture(Gdx.files.internal("Planet3.png"));
 
-    Texture asteroidTexture = new Texture("Asteroid.png");
-    Texture gasGiantTexture = new Texture("GasGiant.png");
-    Texture iceGiantTexture = new Texture("IceGiant.png");
-    Texture moonTexture = new Texture("Moon.png");
-
-    // Moon colour
+            // Moon colour
     Color moonColor = new Color(73, 72, 72);
-
-
 
     // All defenses
     static ArrayList<Defense> defenses = new ArrayList<Defense>();
 
 
-    public Planet(int orbit){
+    public Planet(int orbit, SolarSystem solarSystem){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
-        this.difficulty = globalDifficulty;
-        planetListOfDifficulty.offer(this);
-        System.out.println(planetListOfDifficulty.size());
-        globalDifficulty++;
+        this.difficulty = solarSystem.globalDifficulty;
+        solarSystem.planetListOfDifficulty.offer(this);
+        //System.out.println(solarSystem.planetListOfDifficulty.size());
+        solarSystem.globalDifficulty++;
         if (isBetween(random, 0, 50)){
             int randomColor = MathUtils.random(1,5);
-            currentPlanetTexture = (randomColor == 1)? new Texture(Gdx.files.internal("Planet1.png")): (randomColor == 2)? new Texture(Gdx.files.internal("Planet3.png")):(randomColor == 3)? new Texture(Gdx.files.internal("Planet2.png")):(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
+            currentPlanetTexture = (randomColor == 1)? planet1Texture: (randomColor == 2)? planet3Texture:(randomColor == 3)? planet2Texture:(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
+            whichPlanetTexture = (randomColor == 1)? 1: (randomColor == 2)? 3:(randomColor == 3)? 2:(randomColor == 4)? 2: 2;
             this.planetClass = 3;
             System.out.println("Added a Planet");
-            this.GenerateMoons(this.planetClass);
+            this.GenerateMoons(this.planetClass, solarSystem);
             this.radius = 30;
         }
         else if (isBetween(random, 51, 60)){
             this.currentPlanetTexture = gasGiantTexture;
             this.planetClass = 4;
             System.out.println("Added a Gas Giant");
-            this.GenerateMoons(this.planetClass);
+            this.GenerateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 61, 70)){
             this.currentPlanetTexture = iceGiantTexture;
             this.planetClass = 5;
             System.out.println("Added a Ice Giant");
-            this.GenerateMoons(this.planetClass);
+            this.GenerateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 71, 85)) {
@@ -117,7 +121,7 @@ public class Planet {
 
     }
 
-    public Planet(boolean isMoon, Planet orbitPlanet){
+    public Planet(boolean isMoon, Planet orbitPlanet, SolarSystem solarSystem){
         this.planetColor = moonColor;
         this.currentPlanetTexture = moonTexture;
         this.planetClass = 2;
@@ -126,14 +130,14 @@ public class Planet {
         posX = (float)Math.cos(angle)*orbit;
         posY = (float)Math.sin(angle)*orbit;
         this.rotationSpeed = MathUtils.random(1.5f,3);
-        this.difficulty = globalDifficulty;
-        globalDifficulty++;
+        this.difficulty = solarSystem.globalDifficulty;
+        solarSystem.globalDifficulty++;
         this.generateWaves();
         this.generateEnemies(1);
-        planetListOfDifficulty.offer(this);
+        solarSystem.planetListOfDifficulty.offer(this);
     }
 
-    public void GenerateMoons(int planetType){
+    public void GenerateMoons(int planetType, SolarSystem solarSystem){
         int amountOfMoons = MathUtils.random(-3,3);
         amountOfMoons = Math.max(amountOfMoons, 0);
         for (int i = amountOfMoons; i > 0; i--){
@@ -141,7 +145,7 @@ public class Planet {
                 System.out.println("break");
                 break;
             }
-            addMoon(new Planet(true, this));
+            addMoon(new Planet(true, this, solarSystem));
             System.out.println("Added a Moon");
         }
     }
@@ -191,7 +195,6 @@ public class Planet {
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
             ArrayList<Integer> wave = new ArrayList<Integer>();
             int amountOfTypesOfEnemies = Math.min(4,Math.max(2,Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))))));
-            System.out.println(amountOfWaves);
             for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
                 int randomAmount = MathUtils.random(4,12);
                 wave.add(randomAmount);
@@ -210,7 +213,6 @@ public class Planet {
             int totalAmountOfEnemies = waves.get(wave - 1).get(amount);
             int count = 0;
             for (int i = 0; i < totalAmountOfEnemies; i++) {
-
                 if (waves.get(wave - 1).get(amount) > 6) {
                     amountOfEnemiesOnLine = 6;
                 } else if (waves.get(wave - 1).get(amount) <= 6 || waves.get(wave - 1).get(amount) != 0) {
@@ -235,6 +237,7 @@ public class Planet {
             lineCount++;
 
         }
+        System.out.println(enemyWaves.size());
     }
 
     public static ArrayList<Defense> getDefenses() {
@@ -249,24 +252,8 @@ public class Planet {
         return enemyWaves;
     }
 
-    public static int getGlobalDifficulty() {
-        return globalDifficulty;
-    }
-
     public int getDifficulty() {
         return difficulty;
-    }
-
-    public static void setGlobalDifficulty(int globalDifficulty) {
-        Planet.globalDifficulty = globalDifficulty;
-    }
-
-    public static void setPlanetListOfDifficulty(LinkedList<Planet> planetListOfDifficulty) {
-        Planet.planetListOfDifficulty = planetListOfDifficulty;
-    }
-
-    public static LinkedList<Planet> getPlanetListOfDifficulty() {
-        return planetListOfDifficulty;
     }
 
     public float getPosX() {
@@ -311,5 +298,37 @@ public class Planet {
 
     public ArrayList<ArrayList<Integer>> getWaves() {
         return waves;
+    }
+
+    public int getPlanetClass() {
+        return planetClass;
+    }
+
+    public void setCurrentPlanetTexture() {
+        if (planetClass == 1) {
+            this.currentPlanetTexture = asteroidTexture;
+        }
+        else if (planetClass == 2) {
+            this.currentPlanetTexture = moonTexture;
+        }
+        else if (planetClass == 3) {
+            if (whichPlanetTexture == 1) {
+                this.currentPlanetTexture = planet1Texture;
+            }
+            else if (whichPlanetTexture == 2) {
+                this.currentPlanetTexture = planet3Texture;
+            }
+            else if (whichPlanetTexture == 3) {
+                this.currentPlanetTexture = planet2Texture;
+            }
+        }
+        else if (planetClass == 4) {
+            this.currentPlanetTexture = gasGiantTexture;
+        }else if (planetClass == 5) {
+            this.currentPlanetTexture = iceGiantTexture;
+        }
+        else{
+            this.currentPlanetTexture = planet1Texture;
+        }
     }
 }
