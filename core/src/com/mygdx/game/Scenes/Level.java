@@ -71,6 +71,7 @@ public class Level implements Screen {
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
             player.draw(batch);
+            player.update(delta);
         } else {
             Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
             Planet.setGlobalDifficulty(0);
@@ -102,7 +103,6 @@ public class Level implements Screen {
                         }
                         else if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
                             bullet.setExists(false);
-                            player.setInvulnerable(false);
                             bulletIterator.remove();
                         }
                         else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {

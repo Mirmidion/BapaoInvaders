@@ -24,6 +24,8 @@ public class Player {
     private long time = 0;
     private int health = 100;
     private boolean invulnerable = false;
+    private float timeInvulnerable = 0;
+    private float invulnerableTime = 3;
 
     public Player (int width){
         this.posX = (int) (width/2-playerSprite.getWidth()/2);
@@ -89,6 +91,20 @@ public class Player {
         this.posX = (int) (width/2-playerSprite.getWidth()/2);
     }
 
+    public void update(float delta)
+    {
+        if(invulnerable)
+        {
+            timeInvulnerable += delta;
+        }
+        if(timeInvulnerable - invulnerableTime >= 0)
+        {
+            invulnerable = false;
+            timeInvulnerable = 0;
+
+        }
+    }
+
     public void draw(Batch batch)
     {
         playerSprite.draw(batch);
@@ -97,7 +113,6 @@ public class Player {
         {
             playerSprite.setAlpha(0.7f);
             batch.draw(shield, posX-40f, posY-20f, shield.getWidth()*0.4f, shield.getHeight()*0.4f);
-
         }
 
         if(!invulnerable)
