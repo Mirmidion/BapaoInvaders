@@ -123,7 +123,6 @@ public class Level  implements Screen {
                     }
                 } else {
                     enemyIterator.remove();
-
                 }
             }
 
@@ -145,7 +144,7 @@ public class Level  implements Screen {
                 solarSystem.setCurrentlevel(1);
                 mainRenderScreen.saveSaveGame(MainMenu.getSelectedSaveGame());
             }
-            
+
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
                 mainRenderScreen.addLevel();
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);

@@ -94,6 +94,7 @@ public class GameScreen implements Screen {
 					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Planets"));
 					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "PlanetDifficulty"));
 					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Score"));
+					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Played"));
 					solarSystem.resetList();
 					solarSystem.setFresh(false);
 					for (Planet planet : solarSystem.getPlanets()){
@@ -106,6 +107,7 @@ public class GameScreen implements Screen {
 					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Planets"));
 					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "PlanetDifficulty"));
 					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Score"));
+					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Played"));
 					solarSystem.resetList();
 					solarSystem.setFresh(false);
 					for (Planet planet : solarSystem.getPlanets()){
@@ -118,6 +120,7 @@ public class GameScreen implements Screen {
 					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Planets"));
 					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "PlanetDifficulty"));
 					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Score"));
+					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Played"));
 					solarSystem.resetList();
 					solarSystem.setFresh(false);
 					for (Planet planet : solarSystem.getPlanets()){
@@ -308,14 +311,17 @@ public class GameScreen implements Screen {
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame1_", "Planets");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame1_", "PlanetDifficulty");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame1_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame1_", "Played");
 			} else if (saveGame == 2) {
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame2_", "Planets");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame2_", "PlanetDifficulty");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame2_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame2_", "Played");
 			} else if (saveGame == 3) {
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame3_", "Planets");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame3_", "PlanetDifficulty");
 				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame3_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame3_", "Played");
 			}
 		}
 		catch(Exception e){
