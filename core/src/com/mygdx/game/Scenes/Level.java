@@ -193,9 +193,9 @@ public class Level  implements Screen {
 
 
             // Change the position of the player depending on the keys pressed
-            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || rasp.is_pressed("left"))&& !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || rasp.is_pressed("left") || arduino.is_pressed("left"))&& !GameScreen.isPaused()) {
                 player.setPosX(-2, mainRenderScreen.getWidth());
-            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || rasp.is_pressed("right")) && !GameScreen.isPaused()) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || rasp.is_pressed("right") || arduino.is_pressed("right")) && !GameScreen.isPaused()) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
             if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || rasp.is_pressed("up") || arduino.is_pressed("up") ) && !GameScreen.isPaused()) {
