@@ -32,7 +32,7 @@ public class GameScreen implements Screen {
 
 	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen}
 
-	private scene currentScene =  scene.mainMenu;
+	private scene currentScene =  scene.loadingScreen;
 	private int level = 0;
 
 
