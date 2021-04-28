@@ -9,8 +9,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
+<<<<<<< HEAD
 import com.fazecast.jSerialComm.SerialPort;
 import com.mygdx.game.Controllers.Arduino;
+=======
+//import com.mygdx.game.Controllers.Arduino;
+import com.mygdx.game.Controllers.raspController.RaspController;
+>>>>>>> main
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
 import org.w3c.dom.Text;
@@ -37,13 +42,18 @@ public class Level  implements Screen {
 
     private int currentWaveOfPlanet = 1;
 
+<<<<<<< HEAD
     private Scanner data;
 
     public Scanner getData(){
         return this.data;
     }
+=======
+    private RaspController rasp;
+>>>>>>> main
 
     public Level(GameScreen gameScreen){
+        rasp = new RaspController("192.168.137.54");
         this.mainRenderScreen = gameScreen;
         player = new Player(mainRenderScreen.getWidth());
         Planet.regenerateDefenses();
@@ -193,12 +203,16 @@ public class Level  implements Screen {
 
 
             // Change the position of the player depending on the keys pressed
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || rasp.is_pressed("left"))&& !GameScreen.isPaused()) {
                 player.setPosX(-2, mainRenderScreen.getWidth());
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !GameScreen.isPaused()) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || rasp.is_pressed("right")) && !GameScreen.isPaused()) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
+<<<<<<< HEAD
             if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Arduino.buttonPressed(data) ) && !GameScreen.isPaused()) {
+=======
+            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || rasp.is_pressed("up") ) && !GameScreen.isPaused()) {
+>>>>>>> main
                 player.shoot();
             }
 
