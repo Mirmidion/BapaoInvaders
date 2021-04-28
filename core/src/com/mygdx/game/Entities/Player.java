@@ -18,6 +18,7 @@ public class Player {
     private int posX = 0;
     private int posY = 100;
     private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
+    private Texture shield = new Texture(Gdx.files.internal("shield.png"));
    // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private int gun = 1;
     private long time = 0;
@@ -95,6 +96,8 @@ public class Player {
         if(invulnerable)
         {
             playerSprite.setAlpha(0.7f);
+            batch.draw(shield, posX-40f, posY-20f, shield.getWidth()*0.4f, shield.getHeight()*0.4f);
+
         }
 
         if(!invulnerable)
