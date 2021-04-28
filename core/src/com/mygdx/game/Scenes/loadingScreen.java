@@ -3,7 +3,9 @@ package com.mygdx.game.Scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+
 import com.badlogic.gdx.graphics.Color;
+
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -14,10 +16,12 @@ public class loadingScreen implements Screen {
 
     GameScreen mainRenderScreen;
     SpriteBatch batch = new SpriteBatch();
+
     ShapeRenderer shapeRenderer = new ShapeRenderer();
     AssetManager manager = new AssetManager();
     float progress;
     long previousTime;
+
 
     public loadingScreen (GameScreen renderScreen){
         mainRenderScreen = renderScreen;
@@ -41,6 +45,7 @@ public class loadingScreen implements Screen {
         batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
         batch.end();
 
+
         if (manager.update() && TimeUtils.millis() - previousTime > 3000){
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
@@ -53,6 +58,7 @@ public class loadingScreen implements Screen {
         shapeRenderer.setColor(Color.GOLD);
         shapeRenderer.rect(300, 300, 1320 * progress * ((TimeUtils.millis() - previousTime)/ 3000f), 50);
         shapeRenderer.end();
+
     }
 
     @Override
