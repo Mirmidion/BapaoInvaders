@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class Level  implements Screen {
+public class Level implements Screen {
 
     //The spritebatch
     SpriteBatch batch = new SpriteBatch();

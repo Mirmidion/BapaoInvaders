@@ -1,19 +1,21 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.game.Entities.*;
+import com.mygdx.game.Scenes.Level;
+import com.mygdx.game.Scenes.MainMenu;
+import com.mygdx.game.Scenes.Map;
+import com.mygdx.game.Scenes.loadingScreen;
 import com.mygdx.game.Scenes.*;
 
 import java.awt.*;
@@ -21,13 +23,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+
 public class GameScreen implements Screen {
 
 	//----- These are all the variables used in more than 1 scene ----//
 
 	//Scene control
-	public enum scene  {mainMenu, map, level, gameOver, win}
-	private scene currentScene =  scene.mainMenu;
+
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen}
+
+	private scene currentScene =  scene.loadingScreen;
 	private int level = 0;
 
 
@@ -73,12 +78,16 @@ public class GameScreen implements Screen {
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
+
+	loadingScreen loadingScreenScene;
+
 	GameOverMenu gameOverScene;
 	WinMenu winScene;
 
 	//FPS counter
 	int framesPerSecond;
 	long lastChecked;
+
 
 	public GameScreen () {
 
@@ -112,6 +121,9 @@ public class GameScreen implements Screen {
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
 		mapScene = new Map(this);
+
+		loadingScreenScene = new loadingScreen(this);
+
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
 
@@ -142,6 +154,11 @@ public class GameScreen implements Screen {
 			levelScene.render(delta);
 		}
 
+
+		else if (currentScene == scene.loadingScreen){
+			loadingScreenScene.render(delta);
+		}
+
 		else if (currentScene == scene.gameOver) {
 			gameOverScene.render(delta);
 		}
@@ -160,6 +177,7 @@ public class GameScreen implements Screen {
 		normalFont.getData().setScale(0.2f);
 		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
 		batch.end();
+
 	}
 
 	@Override
