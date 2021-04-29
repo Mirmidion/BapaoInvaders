@@ -19,7 +19,7 @@ public class Player {
     private int posY = 100;
     private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
     private Texture shield = new Texture(Gdx.files.internal("shield.png"));
-   // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
+    // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private int gun = 1;
     private long time = 0;
     private int health = 100;
@@ -27,18 +27,16 @@ public class Player {
     private float timeInvulnerable = 0;
     private float invulnerableTime = 3;
 
-    public Player (int width){
-        this.posX = (int) (width/2-playerSprite.getWidth()/2);
+    public Player(int width) {
+        this.posX = (int) (width / 2 - playerSprite.getWidth() / 2);
     }
 
-    public void setPosX(int x, int width){
-        if (posX + x > width - playerSprite.getWidth()){
+    public void setPosX(int x, int width) {
+        if (posX + x > width - playerSprite.getWidth()) {
             posX = (int) (width - playerSprite.getWidth());
-        }
-        else if (posX + x < 0){
+        } else if (posX + x < 0) {
             posX = 0;
-        }
-        else {
+        } else {
             posX += x;
         }
     }
@@ -55,10 +53,10 @@ public class Player {
         return playerSprite;
     }
 
-    public void shoot(){
+    public void shoot() {
         System.out.println(time);
-        if (TimeUtils.millis() - time > 500){
-            Bullet.allBullets.add(new Bullet((int)playerSprite.getWidth()-((gun == 1)?40:104), (int) playerSprite.getHeight()-32, true, this));
+        if (TimeUtils.millis() - time > 500) {
+            Bullet.allBullets.add(new Bullet((int) playerSprite.getWidth() - ((gun == 1) ? 40 : 104), (int) playerSprite.getHeight() - 32, true, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
@@ -87,36 +85,43 @@ public class Player {
         this.health = Math.max(Math.min(this.health + health, 100), 0);
     }
 
-    public void resetPosition(int width){
-        this.posX = (int) (width/2-playerSprite.getWidth()/2);
+    public void resetPosition(int width) {
+        this.posX = (int) (width / 2 - playerSprite.getWidth() / 2);
     }
 
-    public void update(float delta)
-    {
-        if(invulnerable)
-        {
+    public void update(float delta) {
+        if (invulnerable) {
             timeInvulnerable += delta;
         }
-        if(timeInvulnerable - invulnerableTime >= 0)
-        {
+        if (timeInvulnerable - invulnerableTime >= 0) {
             invulnerable = false;
             timeInvulnerable = 0;
 
         }
     }
 
-    public void draw(Batch batch)
-    {
+    public void draw(Batch batch) {
         playerSprite.draw(batch);
         playerSprite.setPosition(posX, posY);
-        if(invulnerable)
-        {
-            playerSprite.setAlpha(0.7f);
-            batch.draw(shield, posX-40f, posY-20f, shield.getWidth()*0.4f, shield.getHeight()*0.4f);
+        if (invulnerable) {
+            batch.draw(shield, posX - 40f, posY - 20f, shield.getWidth() * 0.4f, shield.getHeight() * 0.4f);
+
+            if (timeInvulnerable - 2 >= 0) {
+                boolean even = true;
+                for (float i = 2; i < 3; i += 0.10) {
+                    if (timeInvulnerable - i >= 0) {
+                        if (even) {
+                            playerSprite.setAlpha(0.5f);
+                        } else {
+                            playerSprite.setAlpha(1f);
+                        }
+                        even = !even;
+                    }
+                }
+            }
         }
 
-        if(!invulnerable)
-        {
+        if (!invulnerable) {
             playerSprite.setAlpha(1f);
         }
 
