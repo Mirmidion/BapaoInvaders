@@ -1,12 +1,17 @@
 package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.GameScreen;
 
 public class WinMenu implements Screen {
 
-    public WinMenu(GameScreen renderScreen){
+    private GameScreen mainRenderScreen;
+    SpriteBatch batch = new SpriteBatch();
 
+
+    public WinMenu(GameScreen renderScreen){
+        mainRenderScreen = renderScreen;
     }
 
     @Override
@@ -16,6 +21,13 @@ public class WinMenu implements Screen {
 
     @Override
     public void render(float delta) {
+
+        // Background being drawn
+        batch.begin();
+        batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
+        mainRenderScreen.getNormalFont().draw(batch, "Final score: " + mainRenderScreen.getScore(), 630, 100);
+        batch.end();
+
 
     }
 
