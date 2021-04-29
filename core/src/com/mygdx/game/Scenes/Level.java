@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+
 import com.badlogic.gdx.utils.TimeUtils;
 
 //import com.mygdx.game.Controllers.Arduino;
@@ -68,11 +70,16 @@ public class Level implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+
         if (batch.isDrawing()){
             batch.end();
         }
 
+
+        batch.enableBlending();
+
         batch.begin();
+
 
 
         // Move the background down
@@ -87,7 +94,8 @@ public class Level implements Screen {
 
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
-            batch.draw(player.getPlayerSprite(), player.getPosX(), player.getPosY());
+            player.draw(batch);
+            player.update(delta);
         } else {
             Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
             Planet.setGlobalDifficulty(0);
@@ -109,14 +117,19 @@ public class Level implements Screen {
                     for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                         Bullet bullet = bulletIterator.next();
                         Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
-                        Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, player.getPlayerSprite().getHeight());
+                        Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, (int)player.getPlayerSprite().getHeight());
                         Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-                        if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly()) {
+                        if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
                             bullet.setExists(false);
+                            player.setInvulnerable(true);
                             player.setHealth(-25);
                             bulletIterator.remove();
-                            //player.addAction(Actions.sequence(Actions.fadeOut(0.15f), Actions.fadeIn(0.15f)));
-                        } else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
+                        }
+                        else if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
+                            bullet.setExists(false);
+                            bulletIterator.remove();
+                        }
+                        else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
                             bullet.setExists(false);
                             enemy.setHealth(-50);
                             bulletIterator.remove();
@@ -132,6 +145,7 @@ public class Level implements Screen {
                 }
             }
 
+
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0 && mainRenderScreen.getCurrentPlanet().getWaves().size() != currentWaveOfPlanet+1){
                 currentWaveOfPlanet++;
                 mainRenderScreen.getCurrentPlanet().generateEnemies(currentWaveOfPlanet);
@@ -143,6 +157,7 @@ public class Level implements Screen {
                 Planet.regenerateDefenses();
                 Bullet.setAllBullets(new ArrayList<Bullet>());
             }
+
 
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0) {
                 mainRenderScreen.addLevel();
