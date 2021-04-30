@@ -89,6 +89,7 @@ public class Player {
         this.posX = (int) (width / 2 - playerSprite.getWidth() / 2);
     }
 
+    //update de tijd dat het schip invulnerable is en na 3 seconden zet terug op invulnerable
     public void update(float delta) {
         if (invulnerable) {
             timeInvulnerable += delta;
@@ -100,12 +101,14 @@ public class Player {
         }
     }
 
+    //'teken' het schip in de wereld en teken een shield als die geraakt wordt
     public void draw(Batch batch) {
         playerSprite.draw(batch);
         playerSprite.setPosition(posX, posY);
         if (invulnerable) {
             batch.draw(shield, posX - 40f, posY - 20f, shield.getWidth() * 0.4f, shield.getHeight() * 0.4f);
 
+            //dit stukje zorgt ervoor dat de laatste seconde van de invulnerability state, het schip knippert
             if (timeInvulnerable - 2 >= 0) {
                 boolean even = true;
                 for (float i = 2; i < 3; i += 0.10) {
