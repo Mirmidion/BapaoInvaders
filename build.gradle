@@ -64,8 +64,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.esotericsoftware.spine:spine-libgdx:3.6.53.1"
         api "com.fazecast:jSerialComm:2.6.2"
-        api "mysql:mysql-connector-java:8.0.24"
-
+        
     }
 }
 
