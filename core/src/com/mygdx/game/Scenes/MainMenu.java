@@ -83,7 +83,7 @@ public class MainMenu implements Screen {
         settings.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainRenderScreen.setSettingsMenuSwitch(!mainRenderScreen.isSettingsMenuSwitch());
+                mainRenderScreen.setCurrentScene(GameScreen.scene.settings);
             }
 
         });
@@ -141,14 +141,8 @@ public class MainMenu implements Screen {
 
         stage.draw();
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        if (mainRenderScreen.isSettingsMenuSwitch()){
-            batch.begin();
-            batch.draw(mainRenderScreen.getSettingsMenu(), 200,200, 1520, 680);
-            batch.end();
-            if (Gdx.input.isButtonPressed(Input.Keys.SPACE)){
-                mainRenderScreen.setSettingsMenuSwitch(false);
-            }
-        }
+
+
 
     }
 

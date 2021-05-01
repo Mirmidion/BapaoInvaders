@@ -12,23 +12,24 @@ public class Arduino {
     private ArduinoConnection ard;
 
 
-    public Arduino(){
+    public Arduino() {
         SerialPort ports[] = SerialPort.getCommPorts();
 
         System.out.println("Selecteer een poort: ");
-        for (SerialPort port : ports){
+        for (SerialPort port : ports) {
             System.out.println(port.getSystemPortName());
         }
 
         Scanner s = new Scanner(System.in);
-        int chosenPort = s.nextInt();
 
-        SerialPort port = ports[chosenPort - 1];
+            int chosenPort = s.nextInt();
 
-        this.ard = new ArduinoConnection(port);
-        this.ard.start();
-        }
+            SerialPort port = ports[(chosenPort) - 1];
 
+            this.ard = new ArduinoConnection(port);
+            this.ard.start();
+
+    }
     public boolean is_pressed(String button){
         try {
             return ard.result.contains(button);

@@ -30,7 +30,7 @@ public class GameScreen implements Screen {
 
 	//Scene control
 
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen}
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, settings}
 
 	private scene currentScene =  scene.loadingScreen;
 	private int level = 0;
@@ -46,7 +46,7 @@ public class GameScreen implements Screen {
 	private Music music3;
 
 	//Settings Menu
-	private Texture settingsMenu;
+	private SettingsMenu settingsScene;
 	private boolean settingsMenuSwitch;
 
 	//Camera
@@ -91,7 +91,7 @@ public class GameScreen implements Screen {
 
 	public GameScreen () {
 
-		settingsMenu = new Texture(Gdx.files.internal("button.png"));
+
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
 		
@@ -118,6 +118,7 @@ public class GameScreen implements Screen {
 		music2.setLooping(true);
 		music3.setLooping(true);
 
+		settingsScene = new SettingsMenu(this);
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
 		mapScene = new Map(this);
@@ -126,6 +127,7 @@ public class GameScreen implements Screen {
 
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
+
 
 	}
 
@@ -153,7 +155,9 @@ public class GameScreen implements Screen {
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
 		}
-
+else if (currentScene == scene.settings){
+	settingsScene.render(delta);
+		}
 
 		else if (currentScene == scene.loadingScreen){
 			loadingScreenScene.render(delta);
@@ -174,9 +178,11 @@ public class GameScreen implements Screen {
 
 
 		batch.begin();
-		normalFont.getData().setScale(0.2f);
+		normalFont.getData().setScale(0.4f);
 		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
 		batch.end();
+
+
 
 	}
 
@@ -244,9 +250,7 @@ public class GameScreen implements Screen {
 		return gameBackground;
 	}
 
-	public Texture getSettingsMenu() {
-		return settingsMenu;
-	}
+
 
 	public boolean isSettingsMenuSwitch() {
 		return settingsMenuSwitch;
