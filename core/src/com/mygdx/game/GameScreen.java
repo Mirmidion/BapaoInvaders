@@ -88,12 +88,15 @@ public class GameScreen implements Screen {
 	int framesPerSecond;
 	long lastChecked;
 
+	InputMultiplexer inputMultiplexer;
+
 
 	public GameScreen () {
 
 
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
+		inputMultiplexer = new InputMultiplexer();
 		
 		//Initializing Textures
 		gameBackground = new Texture("gameBackground.png");
@@ -120,6 +123,8 @@ public class GameScreen implements Screen {
 
 		settingsScene = new SettingsMenu(this);
 		mainMenuScene = new MainMenu(this);
+
+
 		levelScene = new Level(this);
 		mapScene = new Map(this);
 
@@ -127,8 +132,6 @@ public class GameScreen implements Screen {
 
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
-
-
 	}
 
 
@@ -322,6 +325,45 @@ else if (currentScene == scene.settings){
 
 	public BitmapFont getNormalFont() {
 		return normalFont;
+	}
+
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	public void setMusic1Vol(float value){
+
+		if (music.getVolume() + value <= 0){
+			music.setVolume(0);
+		}
+		else if (music.getVolume() + value >= 1){
+			music.setVolume(1);
+		}
+		else{
+			music.setVolume(music.getVolume() + value);
+		}
+	}
+	public void setMusic2Vol(float value){
+		if (music2.getVolume() + value <= 0){
+			music2.setVolume(0);
+		}
+		else if (music2.getVolume() + value >= 1){
+			music2.setVolume(1);
+		}
+		else{
+			music2.setVolume(music2.getVolume() + value);
+		}
+	}
+	public void setMusic3Vol(float value){
+		if (music3.getVolume() + value <= 0){
+			music3.setVolume(0);
+		}
+		else if (music3.getVolume() + value >= 1){
+			music3.setVolume(1);
+		}
+		else{
+			music3.setVolume(music3.getVolume() + value);
+		}
 	}
 }
 

@@ -1,27 +1,31 @@
 package com.mygdx.game.Scenes;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
 import org.w3c.dom.Text;
 
-public class MainMenu implements Screen {
+import java.sql.Time;
+
+public class MainMenu extends ScreenAdapter implements Screen {
 
     //The spritebatch
     SpriteBatch batch = new SpriteBatch();
+    ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     //The stage for drawing and getting input from buttons
     Stage stage = new Stage();
@@ -49,8 +53,14 @@ public class MainMenu implements Screen {
     private Skin buttonSkin;
     private TextureAtlas atlas;
 
+    private int buttonSelect = 1;
+    private static long prevSelect = 0;
+    private static long switchDelay = 0;
+
     public MainMenu(GameScreen renderScreen){
         mainRenderScreen = renderScreen;
+
+        mainRenderScreen.getInputMultiplexer().addProcessor(stage);
 
         //Initializing Sprites
         bapaoSprite = new Sprite(new Texture("Bapao1.png"));
@@ -60,7 +70,6 @@ public class MainMenu implements Screen {
             bapaoSprites[i] = new Sprite(new Texture("Bapao1.png"));
         }
 
-        Gdx.input.setInputProcessor(stage);
         mainMenuTable = new Table();
         mainMenuTable.setPosition(250,600);
         mainMenuTable.left();
@@ -74,28 +83,6 @@ public class MainMenu implements Screen {
 
         exit = new TextButton("Exit",buttonSkin);
 
-        start.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                mainRenderScreen.setCurrentScene(GameScreen.scene.map);
-            }
-        });
-        settings.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                mainRenderScreen.setCurrentScene(GameScreen.scene.settings);
-            }
-
-        });
-        exit.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                dispose();
-                System.exit(0);
-            }
-
-        });
-
         start.setTransform(true);
         settings.setTransform(true);
         exit.setTransform(true);
@@ -108,6 +95,7 @@ public class MainMenu implements Screen {
         mainMenuTable.add(exit).padTop(50);
 
         stage.addActor(mainMenuTable);
+        shapeRenderer.setAutoShapeType(true);
     }
 
     @Override
@@ -117,11 +105,13 @@ public class MainMenu implements Screen {
 
     @Override
     public void show() {
-
+        buttonSelect = 1;
+        prevSelect = TimeUtils.millis();
     }
 
     @Override
     public void render(float delta) {
+
         mainRenderScreen.getMusic().play();
         mainRenderScreen.getMusic2().dispose();
         mainRenderScreen.getMusic3().dispose();
@@ -138,10 +128,52 @@ public class MainMenu implements Screen {
         mainRenderScreen.getTitleFont().draw(batch, "Bapao Invaders", 200, 800);
         batch.end();
 
-
         stage.draw();
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        shapeRenderer.begin();
+        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
 
+        switch (buttonSelect){
+            case 1: {
+                shapeRenderer.rect( start.getX() + mainMenuTable.getX(), start.getY() + mainMenuTable.getY(), start.getWidth(), start.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.map);
+                    switchDelay = TimeUtils.millis();
+                }
+                break;
+            }
+            case 2: {
+                shapeRenderer.rect( settings.getX() + mainMenuTable.getX(), settings.getY() + mainMenuTable.getY(), settings.getWidth(), settings.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.settings);
+                    switchDelay = TimeUtils.millis();
+                }
+                break;
+            }
+            case 3: {
+                shapeRenderer.rect( exit.getX() + mainMenuTable.getX(), exit.getY() + mainMenuTable.getY(), exit.getWidth(), exit.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    dispose();
+                    System.exit(0);
+                }
+                break;
+            }
+        }
+        shapeRenderer.end();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - prevSelect > 500){
+            if (buttonSelect < 3){
+                buttonSelect++;
+            }
+            prevSelect = TimeUtils.millis();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && TimeUtils.millis() - prevSelect > 500){
+            if (buttonSelect > 1){
+                buttonSelect--;
+            }
+            prevSelect = TimeUtils.millis();
+        }
 
 
     }
@@ -158,7 +190,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void hide() {
-
+        mainMenuTable.setTouchable(Touchable.disabled);
     }
 
     @Override
@@ -187,5 +219,13 @@ public class MainMenu implements Screen {
             }
             bapaoY[i] -= (bapaoSpeed[i] * delta);
         }
+    }
+
+    public static long getSwitchDelay() {
+        return switchDelay;
+    }
+
+    public static void setSwitchDelay(long switchDelay) {
+        MainMenu.switchDelay = switchDelay;
     }
 }
