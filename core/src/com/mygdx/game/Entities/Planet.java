@@ -231,7 +231,7 @@ public class Planet implements Serializable {
                 int padding = (1920 - amountOfEnemiesOnLine * 140 - (amountOfEnemiesOnLine - 1) * 80) / 2;
 
                 int posXEnemy = (amountOfEnemiesOnLine * 140 + (amountOfEnemiesOnLine - 1) * 80) / amountOfEnemiesOnLine;
-                enemyWaves.add(new Enemy(waves.get(wave - 1).get(amount+1), count * posXEnemy + padding, lineCount * 220 + 900, count * posXEnemy + padding - 50, count * posXEnemy + padding + 50));
+                enemyWaves.add(new Enemy(waves.get(wave - 1).get(amount+1), count * posXEnemy + padding, lineCount * 220 + 900, count * posXEnemy + padding - 50, count * posXEnemy + padding + 50,this));
                 count++;
             }
             lineCount++;

@@ -54,7 +54,7 @@ public class MainMenu implements Screen {
     private Sprite bapaoSprite;
 
     //Object visuals
-    private Skin buttonSkin;
+    private static Skin buttonSkin;
     private TextureAtlas atlas;
 
     BitmapFont titleFont;
@@ -276,5 +276,9 @@ public class MainMenu implements Screen {
 
     public static int getSelectedSaveGame() {
         return selectedSaveGame;
+    }
+
+    public static Skin getButtonSkin() {
+        return buttonSkin;
     }
 }

@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
 
 	//Scene control
 	public enum scene  {mainMenu, map, level, gameOver, win}
-	private scene currentScene =  scene.mainMenu;
+	private scene currentScene =  scene.win;
 	private int level = 0; //TODO -- to save
 
 

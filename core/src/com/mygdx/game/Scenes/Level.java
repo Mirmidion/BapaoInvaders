@@ -35,6 +35,7 @@ public class Level  implements Screen {
     private int currentWaveOfPlanet = 1;
 
     private SolarSystem solarSystem;
+    private Texture healthBar = new Texture("healthBar.png");
 
 
     public Level(GameScreen gameScreen){
@@ -88,11 +89,17 @@ public class Level  implements Screen {
         }
 
         for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()){
-            enemy.moveEnemy();
+            if (enemy.getSprite() == null){
+                enemy.refreshTextures();
+            }
+            //System.out.println(enemy.getPosX() + "\n" + enemy.getPosY() );
+            //System.out.println(enemy.getTargetX() + "\n" + enemy.getTargetY() + "\n");
+            enemy.update(player);
         }
+        System.out.println("");
 
         if (mainRenderScreen.getCurrentPlanet() != null) {
-            batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
+            batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
 
             for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
                 Enemy enemy = enemyIterator.next();
@@ -101,6 +108,7 @@ public class Level  implements Screen {
                 }
                 if (enemy.getHealth() != 0) {
                     batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
+                    batch.draw(healthBar,enemy.getPosX() + (enemy.getSprite().getWidth()-80f)/2f, enemy.getPosY()-10, 80f * enemy.getHealth()/enemy.getMaxHealth(), 10 );
                     for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                         Bullet bullet = bulletIterator.next();
                         Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getSprite().getHeight());
@@ -114,6 +122,7 @@ public class Level  implements Screen {
                         } else if (enemy.getHealth() != 0 && bullet.isExists() && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly()) {
                             bullet.setExists(false);
                             enemy.setHealth(-50);
+                            enemy.setGotHit();
                             bulletIterator.remove();
                         }
                         else if (enemy.getHealth() <= 0){
