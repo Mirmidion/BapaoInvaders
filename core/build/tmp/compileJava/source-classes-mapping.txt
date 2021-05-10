@@ -25,6 +25,8 @@ com/mygdx/game/Scenes/SettingsMenu.java
  com.mygdx.game.Scenes.SettingsMenu$1
  com.mygdx.game.Scenes.SettingsMenu$2
  com.mygdx.game.Scenes.SettingsMenu$3
+ com.mygdx.game.Scenes.SettingsMenu$4
+ com.mygdx.game.Scenes.SettingsMenu$5
 com/mygdx/game/Scenes/Map.java
  com.mygdx.game.Scenes.Map
 com/mygdx/game/BapoaInvaders.java

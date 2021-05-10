@@ -179,12 +179,15 @@ else if (currentScene == scene.settings){
 			lastChecked = TimeUtils.millis();
 		}
 
-
-		batch.begin();
-		normalFont.getData().setScale(0.4f);
-		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
-		batch.end();
-
+if(settingsScene.fpsCounterCheck = true) {
+	batch.begin();
+	normalFont.getData().setScale(0.4f);
+	normalFont.draw(batch, framesPerSecond + "", 10, 1070);
+	batch.end();
+} else{
+	batch.begin();
+	batch.end();
+}
 
 
 	}

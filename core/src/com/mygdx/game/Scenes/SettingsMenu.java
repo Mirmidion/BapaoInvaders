@@ -35,12 +35,16 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
     //The main settings screen
     GameScreen mainRenderScreen;
 
+    private TextButton volume;
     private TextButton volumeUp;
     private TextButton volumeDown;
     private TextButton exit;
     private Label volumeDisplay;
     private Text title;
-    private SelectBox fpsCounter;
+    private TextButton fpsCounter;
+    private TextButton fpsCounterOn;
+    private TextButton fpsCounterOff;
+    public boolean fpsCounterCheck;
 
     private int buttonSelect = 1;
     private long prevSelect = 0;
@@ -60,10 +64,13 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         volumeDisplay = new Label(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)), volumeDisplayScreen);
 
 
+        volume = new TextButton("Volume", volumeDisplayScreen);
         volumeUp = new TextButton("+", volumeDisplayScreen);
         volumeDown = new TextButton("-", volumeDisplayScreen);
-        fpsCounter = new SelectBox(buttonSkin);
-        fpsCounter.setItems("Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right");
+        fpsCounter = new TextButton("FPS-counter", volumeDisplayScreen);
+        fpsCounterOn = new TextButton("On", volumeDisplayScreen);
+        fpsCounterOff = new TextButton("Off", volumeDisplayScreen);
+
 
         mainRenderScreen.setSettingsMenuSwitch(false);
 
@@ -93,6 +100,22 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
             }
         });
 
+        fpsCounterOn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                fpsCounterCheck = false;
+            }
+
+        });
+
+        fpsCounterOff.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                fpsCounterCheck = true;
+            }
+
+        });
+
         exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -104,11 +127,14 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
         //Implementation buttons
         settingsTable.row();
+        settingsTable.add(volume).padTop(50);
         settingsTable.add(volumeDown).padTop(50);
         settingsTable.add(volumeDisplay).padTop(50);
         settingsTable.add(volumeUp).padTop(50);
         settingsTable.row();
         settingsTable.add(fpsCounter).padTop(50);
+        settingsTable.add(fpsCounterOn).padTop(50);
+        settingsTable.add(fpsCounterOff).padTop(50);
         exit.setTransform(true);
         settingsTable.row();
         settingsTable.add(exit).padTop(50);
@@ -147,10 +173,10 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
 
-        switch (buttonSelect){
+        switch (buttonSelect) {
             case 1: {
-                shapeRenderer.rect( volumeDown.getX() + settingsTable.getX(), volumeDown.getY() + settingsTable.getY(), volumeDown.getWidth(), volumeDown.getHeight());
-                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200 ) {
+                shapeRenderer.rect(volumeDown.getX() + settingsTable.getX(), volumeDown.getY() + settingsTable.getY(), volumeDown.getWidth(), volumeDown.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
                     mainRenderScreen.setMusic1Vol(-0.1f);
                     mainRenderScreen.setMusic2Vol(-0.1f);
                     mainRenderScreen.setMusic3Vol(-0.1f);
@@ -160,8 +186,8 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
                 break;
             }
             case 2: {
-                shapeRenderer.rect( volumeUp.getX() + settingsTable.getX(), volumeUp.getY() + settingsTable.getY(), volumeUp.getWidth(), volumeUp.getHeight());
-                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200 ) {
+                shapeRenderer.rect(volumeUp.getX() + settingsTable.getX(), volumeUp.getY() + settingsTable.getY(), volumeUp.getWidth(), volumeUp.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
                     mainRenderScreen.setMusic1Vol(0.1f);
                     mainRenderScreen.setMusic2Vol(0.1f);
                     mainRenderScreen.setMusic3Vol(0.1f);
@@ -171,12 +197,27 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
                 break;
             }
             case 3: {
-                shapeRenderer.rect( exit.getX() + settingsTable.getX(), exit.getY() + settingsTable.getY(), exit.getWidth(), exit.getHeight());
-                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200 ) {
+                shapeRenderer.rect(fpsCounterOn.getX() + settingsTable.getX(), fpsCounterOn.getY() + settingsTable.getY(), fpsCounterOn.getWidth(), fpsCounterOn.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
+                    fpsCounterCheck = false;
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 4: {
+                shapeRenderer.rect(fpsCounterOff.getX() + settingsTable.getX(), fpsCounterOff.getY() + settingsTable.getY(), fpsCounterOff.getWidth(), fpsCounterOff.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
+                    fpsCounterCheck = true;
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 5: {
+                shapeRenderer.rect(exit.getX() + settingsTable.getX(), exit.getY() + settingsTable.getY(), exit.getWidth(), exit.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
                     MainMenu.setSwitchDelay(TimeUtils.millis());
                     mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
                     prevChange = TimeUtils.millis();
-
                 }
                 break;
             }
@@ -184,7 +225,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         shapeRenderer.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - prevSelect > 500){
-            if (buttonSelect < 3){
+            if (buttonSelect < 5){
                 buttonSelect++;
             }
             prevSelect = TimeUtils.millis();
