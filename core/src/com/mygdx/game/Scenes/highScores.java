@@ -62,13 +62,13 @@ public class highScores implements Screen {
         if (names != null) {
             normalFont.draw(batch, "Rank:",360,930);
             normalFont.draw(batch, "Name:",660,930);
-            normalFont.draw(batch, "Score:",1260,930);
+            normalFont.draw(batch, "Score:",1310,930);
             for (String name : names) {
                 normalFont.draw(batch, (names.indexOf(name)+1) + ".", 360, 900 - names.indexOf(name) * 30);
                 normalFont.draw(batch, name, 660, 900 - names.indexOf(name) * 30);
             }
             for (int i = 0; i < scores.size(); i++){
-                normalFont.draw(batch, String.valueOf((scores.get(i))), 1260, 900 - i * 30);
+                normalFont.draw(batch, String.valueOf((scores.get(i))), 1310, 900 - i * 30);
                 System.out.println(scores.get(i));
             }
         }

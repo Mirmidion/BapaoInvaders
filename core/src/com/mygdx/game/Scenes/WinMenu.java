@@ -114,7 +114,12 @@ public class WinMenu implements Screen {
                 mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
             } else if (selectedButton == 2) {
                 saveHighScore(score, currentName);
-                mainRenderScreen.newSaveGame();
+                try {
+                    mainRenderScreen.newSaveGame();
+                }
+                catch (Exception e){
+
+                }
                 mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
             } else if (selectedButton == 3) {
                 mainRenderScreen.newSaveGame();
