@@ -17,25 +17,7 @@ import java.sql.Driver;
 
 public class DesktopLauncher {
 	public static void main(String[] args) {
-/*
 
-		String url = "jdbc:mysql://localhost/cursus";
-		String username = "root", password = "";
-
-		try{
-			Connection connection = DriverManager.getConnection(url,username,password);
-			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT naam FROM medewerker");
-			//int gelukt = statement.executeUpdate("INSERT INTO cursus VALUES(‘JAV’, ‘Java’,’S’,5)");
-			while(rs.next()){
-				System.out.println(rs.getString(1));
-			}
-			statement.close(); //sluit ook de resultset
-			connection.close();
-		}
-		catch(Exception e){
-			System.out.println(e);
-		}*/
 
 
 		

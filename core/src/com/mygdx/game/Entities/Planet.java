@@ -316,10 +316,10 @@ public class Planet implements Serializable {
                 this.currentPlanetTexture = planet1Texture;
             }
             else if (whichPlanetTexture == 2) {
-                this.currentPlanetTexture = planet3Texture;
+                this.currentPlanetTexture = planet2Texture;
             }
             else if (whichPlanetTexture == 3) {
-                this.currentPlanetTexture = planet2Texture;
+                this.currentPlanetTexture = planet3Texture;
             }
         }
         else if (planetClass == 4) {
@@ -330,5 +330,9 @@ public class Planet implements Serializable {
         else{
             this.currentPlanetTexture = planet1Texture;
         }
+    }
+
+    public void setEnemyWaves(ArrayList<Enemy> enemyWaves) {
+        this.enemyWaves = enemyWaves;
     }
 }

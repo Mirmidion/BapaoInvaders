@@ -28,8 +28,8 @@ import java.awt.*;
 public class MainMenu implements Screen {
 
     //The spritebatch
-    SpriteBatch batch = new SpriteBatch();
-    ShapeRenderer shapeRenderer = new ShapeRenderer();
+    SpriteBatch batch;
+    ShapeRenderer shapeRenderer;
 
     //The stage for drawing and getting input from buttons
     Stage stage = new Stage();
@@ -126,6 +126,9 @@ public class MainMenu implements Screen {
         mainMenuTable.add(exit).padTop(50);
 
         stage.addActor(mainMenuTable);
+
+        batch = mainRenderScreen.getSpriteBatch();
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
     }
 
     @Override
@@ -215,6 +218,7 @@ public class MainMenu implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
                 mainRenderScreen.setCurrentSaveGame(selectedSaveGame);
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
+                mainRenderScreen.setSaveGameMenuSwitch(false);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
                 mainRenderScreen.setSaveGameMenuSwitch(false);
