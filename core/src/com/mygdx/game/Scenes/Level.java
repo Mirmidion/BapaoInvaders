@@ -103,14 +103,15 @@ public class Level implements Screen {
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
 
-            //player.draw(batch);
-            //player.update(delta);
+            player.draw(batch);
+            player.update(delta);
 
-            batch.draw(player.getSprite(), player.getPosX(), player.getPosY());
+            //batch.draw(player.getSprite(), player.getPosX(), player.getPosY());
 
         } else {
             mainRenderScreen.getSolarSystem().setPlanetListOfDifficulty(new LinkedList<Planet>());
             solarSystem.setGlobalDifficulty(0);
+            //mainRenderScreen.setCurrentPlanet(null);
             mainRenderScreen.setSolarSystem(new SolarSystem(mainRenderScreen.getWidth(), mainRenderScreen.getHeight()));
             mainRenderScreen.setCurrentScene(GameScreen.scene.gameOver);
             player = new Player(mainRenderScreen.getWidth());
