@@ -39,11 +39,11 @@ public class GameScreen implements Screen {
 
 
 	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores}
-	private scene currentScene =  scene.win;
+	private scene currentScene =  scene.mainMenu;
 
 	private int level = 0; //TODO -- to save
 
-
+ 	private boolean firstLoad = true;
 
 	//Fonts
 	private BitmapFont normalFont;
@@ -573,6 +573,14 @@ public class GameScreen implements Screen {
 
 	public highScores getHighScoreScene() {
 		return highScoreScene;
+	}
+
+	public boolean isFirstLoad() {
+		return firstLoad;
+	}
+
+	public void setFirstLoad(boolean firstLoad) {
+		this.firstLoad = firstLoad;
 	}
 
 	//	public void saveSaveGame(){

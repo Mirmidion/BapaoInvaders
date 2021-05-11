@@ -69,7 +69,7 @@ public class highScores implements Screen {
             }
             for (int i = 0; i < scores.size(); i++){
                 normalFont.draw(batch, String.valueOf((scores.get(i))), 1310, 900 - i * 30);
-                System.out.println(scores.get(i));
+                //System.out.println(scores.get(i));
             }
         }
         batch.end();

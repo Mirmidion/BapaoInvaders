@@ -179,17 +179,17 @@ public class MainMenu implements Screen {
                 normalFont.draw(batch, "Savegame "+(i+1),225 + 560 * i, 880);
                 try {
                     if (i == 0 && mainRenderScreen.getSaveGame1SolarSystem().isPlayed()) {
-                        System.out.println("1");
+                        //System.out.println("1");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame1SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270 + 560 * i, 550);
                     } else if (i == 1 && mainRenderScreen.getSaveGame2SolarSystem().isPlayed()) {
-                        System.out.println("2");
+                        //System.out.println("2");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame2SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame2Score(), 270 + 560 * i, 550);
                     } else if (i == 2 && mainRenderScreen.getSaveGame3SolarSystem().isPlayed()) {
-                        System.out.println("3");
+                        //System.out.println("3");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame3SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame3Score(), 270 + 560 * i, 550);
@@ -201,7 +201,7 @@ public class MainMenu implements Screen {
 
                 }
                 catch (Exception e){
-                    System.out.println(e);
+                    //System.out.println(e);
                     titleFont.getData().setScale(1f);
                     titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
                 }

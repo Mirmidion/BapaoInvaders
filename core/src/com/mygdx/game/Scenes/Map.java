@@ -121,13 +121,6 @@ public class Map implements Screen {
                      batch.end();
                      shapeRenderer.begin();
 
-                     // If the moon is the next level you are going to play, outline this moon
-                     if (moon == mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek()){
-                         mainRenderScreen.setCurrentPlanet(moon);
-                         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                         shapeRenderer.setColor(new Color(255,255,255,255));
-                         shapeRenderer.ellipse((moon.getPosX() + planetPositionX - moon.getRadius()/2f), (moon.getPosY() + planetPositionY - moon.getRadius()/2f) , moon.getRadius(), moon.getRadius());
-                     }
                      moonOrbit += 25;
                 }
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
@@ -136,32 +129,36 @@ public class Map implements Screen {
 
             // Calculate the planets position in the orbit
             planet.orbit();
-            if (mainRenderScreen.getLevel() == 0) {
+            if (mainRenderScreen.isFirstLoad()){
                 planet.orbit();
             }
 
 
+            planet.checkList(mainRenderScreen.getSolarSystem());
 
-            // If the planet is the next level, outline the planet
-            if (planet == mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek() ){
-                shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-                shapeRenderer.setColor(new Color(255,255,255,255));
-                shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + planet.getPosX()/mapScale - planet.getRadius()/2f), (mainRenderScreen.getSolarSystem().getPosYStar() + planet.getPosY()/mapScale - planet.getRadius()/2f) , planet.getRadius(), planet.getRadius());
-                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            }
             if (shapeRenderer.isDrawing()){
                 shapeRenderer.end();
             }
             batch.begin();
             batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,  planetPositionY - planet.getPlanetTexture().getHeight()/2f );
             batch.end();
+            System.out.println(planetPositionX);
+            System.out.println();
         }
         if (!shapeRenderer.isDrawing()){
             shapeRenderer.begin();
         }
+
+
         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(new Color(255,255,255,255));
-        shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getPosX() / mapScale - mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getPosY() / mapScale - mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getRadius() / 2f), mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getRadius(), mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getRadius());
+        Planet peekPlanet = mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek();
+        if (peekPlanet.isMoon()) {
+            shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + (peekPlanet.getOrbitPlanet().getPosX() + peekPlanet.getPosX()) / mapScale - peekPlanet.getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + (peekPlanet.getOrbitPlanet().getPosY() + peekPlanet.getPosY()) / mapScale - peekPlanet.getRadius() / 2f), peekPlanet.getRadius(), peekPlanet.getRadius());
+        }
+        else if (!peekPlanet.isMoon()){
+            shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + peekPlanet.getPosX() / mapScale - peekPlanet.getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + peekPlanet.getPosY() / mapScale - peekPlanet.getRadius() / 2f), peekPlanet.getRadius(), peekPlanet.getRadius());
+        }
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.end();
 
