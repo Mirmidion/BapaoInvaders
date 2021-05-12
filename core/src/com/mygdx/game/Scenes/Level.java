@@ -52,7 +52,7 @@ public class Level implements Screen {
 
     public Level(GameScreen gameScreen){
         rasp = new RaspController("192.168.2.4");
-        //arduino = new Arduino();
+        arduino = new Arduino();
         this.mainRenderScreen = gameScreen;
         player = new Player(mainRenderScreen.getWidth());
         Planet.regenerateDefenses();
@@ -141,7 +141,7 @@ public class Level implements Screen {
 
                     batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
                     batch.draw(healthBar,enemy.getPosX() + (enemy.getSprite().getWidth()-80f)/2f, enemy.getPosY()-10, 80f * enemy.getHealth()/enemy.getMaxHealth(), 10 );
-                    mainRenderScreen.getNormalFont().draw(batch, enemy.getCurrentStateName(),enemy.getPosX()+20, enemy.getPosY()+enemy.getSprite().getHeight()+10);
+                    //mainRenderScreen.getNormalFont().draw(batch, enemy.getCurrentStateName(),enemy.getPosX()+20, enemy.getPosY()+enemy.getSprite().getHeight()+10);
 
                     for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                         Bullet bullet = bulletIterator.next();
@@ -260,12 +260,12 @@ public class Level implements Screen {
 
 
             // Change the position of the player depending on the keys pressed
-            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || rasp.is_pressed("left") /*|| arduino.is_pressed("left")*/)&& !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || rasp.is_pressed("left") || arduino.is_pressed("left"))&& !GameScreen.isPaused()) {
                 player.setPosX(-2, mainRenderScreen.getWidth());
-            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || rasp.is_pressed("right") /*|| arduino.is_pressed("right")*/) && !GameScreen.isPaused()) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || rasp.is_pressed("right") || arduino.is_pressed("right")) && !GameScreen.isPaused()) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
-            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || rasp.is_pressed("up") /*|| arduino.is_pressed("up") */) && !GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || rasp.is_pressed("up") || arduino.is_pressed("up") ) && !GameScreen.isPaused()) {
 
                 player.shoot();
             }
