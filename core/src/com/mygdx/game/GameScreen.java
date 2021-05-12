@@ -38,7 +38,7 @@ public class GameScreen implements Screen {
 
 
 
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores}
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu}
 	private scene currentScene =  scene.loadingScreen;
 
 	private int level = 0; //TODO -- to save
@@ -181,7 +181,7 @@ public class GameScreen implements Screen {
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
-
+	Settings
 	loadingScreen loadingScreenScene;
 
 	GameOverMenu gameOverScene;
@@ -581,6 +581,41 @@ public class GameScreen implements Screen {
 
 	public void setFirstLoad(boolean firstLoad) {
 		this.firstLoad = firstLoad;
+	}
+
+	public void setMusic1Vol(float value){
+
+		if (music.getVolume() + value <= 0){
+			music.setVolume(0);
+		}
+		else if (music.getVolume() + value >= 1){
+			music.setVolume(1);
+		}
+		else{
+			music.setVolume(music.getVolume() + value);
+		}
+	}
+	public void setMusic2Vol(float value){
+		if (music2.getVolume() + value <= 0){
+			music2.setVolume(0);
+		}
+		else if (music2.getVolume() + value >= 1){
+			music2.setVolume(1);
+		}
+		else{
+			music2.setVolume(music2.getVolume() + value);
+		}
+	}
+	public void setMusic3Vol(float value){
+		if (music3.getVolume() + value <= 0){
+			music3.setVolume(0);
+		}
+		else if (music3.getVolume() + value >= 1){
+			music3.setVolume(1);
+		}
+		else{
+			music3.setVolume(music3.getVolume() + value);
+		}
 	}
 
 	//	public void saveSaveGame(){

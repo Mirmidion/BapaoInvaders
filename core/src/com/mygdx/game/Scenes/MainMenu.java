@@ -194,7 +194,7 @@ public class MainMenu implements Screen {
             batch.draw(mainRenderScreen.getSettingsMenu(), 200,200, 1520, 680);
             batch.end();
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                mainRenderScreen.setSettingsMenuSwitch(false);
+                mainRenderScreen.setCurrentScene(scene);
             }
         }
         else if (mainRenderScreen.isSaveGameMenuSwitch()){
