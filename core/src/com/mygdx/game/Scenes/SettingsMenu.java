@@ -48,7 +48,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
     private int buttonSelect = 1;
     private long prevSelect = 0;
-    private long prevChange = 0;
+    private static long prevChange = 0;
 
     public SettingsMenu(GameScreen renderScreen) {
         mainRenderScreen = renderScreen;
@@ -199,7 +199,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
             case 3: {
                 shapeRenderer.rect(fpsCounterOn.getX() + settingsTable.getX(), fpsCounterOn.getY() + settingsTable.getY(), fpsCounterOn.getWidth(), fpsCounterOn.getHeight());
                 if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
-                    fpsCounterCheck = false;
+                    GameScreen.setFpsCounterCheck(true);
                     prevChange = TimeUtils.millis();
                 }
                 break;
@@ -207,7 +207,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
             case 4: {
                 shapeRenderer.rect(fpsCounterOff.getX() + settingsTable.getX(), fpsCounterOff.getY() + settingsTable.getY(), fpsCounterOff.getWidth(), fpsCounterOff.getHeight());
                 if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - prevChange > 200) {
-                    fpsCounterCheck = true;
+                    GameScreen.setFpsCounterCheck(false);
                     prevChange = TimeUtils.millis();
                 }
                 break;
@@ -262,5 +262,9 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
     public void dispose() {
         stage.dispose();
         batch.dispose();
+    }
+
+    public static void setPrevChange() {
+        SettingsMenu.prevChange = TimeUtils.millis();
     }
 }

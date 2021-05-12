@@ -35,6 +35,8 @@ public class GameScreen implements Screen {
 	private scene currentScene =  scene.loadingScreen;
 	private int level = 0;
 
+	static boolean fpsCounterCheck = false;
+
 
 	//Fonts
 	private BitmapFont normalFont;
@@ -179,15 +181,12 @@ else if (currentScene == scene.settings){
 			lastChecked = TimeUtils.millis();
 		}
 
-if(settingsScene.fpsCounterCheck = true) {
-	batch.begin();
-	normalFont.getData().setScale(0.4f);
-	normalFont.draw(batch, framesPerSecond + "", 10, 1070);
-	batch.end();
-} else{
-	batch.begin();
-	batch.end();
-}
+		if(GameScreen.fpsCounterCheck) {
+			batch.begin();
+			normalFont.getData().setScale(0.4f);
+			normalFont.draw(batch, framesPerSecond + "", 10, 1070);
+			batch.end();
+		}
 
 
 	}
@@ -367,6 +366,14 @@ if(settingsScene.fpsCounterCheck = true) {
 		else{
 			music3.setVolume(music3.getVolume() + value);
 		}
+	}
+
+	public static void setFpsCounterCheck(boolean fpsCounterCheck) {
+		GameScreen.fpsCounterCheck = fpsCounterCheck;
+	}
+
+	public static boolean isFpsCounterCheck() {
+		return fpsCounterCheck;
 	}
 }
 
