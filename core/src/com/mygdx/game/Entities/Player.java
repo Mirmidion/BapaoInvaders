@@ -15,15 +15,16 @@ import com.mygdx.game.Entities.Bullet;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Player extends Actions {
-    private int posX = 0;
-    private int posY = 100;
+
+    
+
+
+public class Player extends Ship{
+
     private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
     private Texture shield = new Texture(Gdx.files.internal("shield.png"));
    // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
-    private int gun = 1;
     private long time = 0;
-    private int health = 100;
     private boolean invulnerable = false;
 
     private float timeInvulnerable = 0;
@@ -31,12 +32,15 @@ public class Player extends Actions {
 
 
     public Player (int width){
-        this.posX = (int) (width/2-playerSprite.getWidth()/2);
+        shipSprite = new Texture(Gdx.files.internal("Playership.png"));
+        posX = width/2f-shipSprite.getWidth()/2f;
+        health = 100;
+        posY = 100;
     }
 
     public void setPosX(int x, int width){
-        if (posX + x > width - playerSprite.getWidth()){
-            posX = (int) (width - playerSprite.getWidth());
+        if (posX + x > width - shipSprite.getWidth()){
+            posX = width - shipSprite.getWidth();
         }
         else if (posX + x < 0){
             posX = 0;
@@ -60,10 +64,11 @@ public class Player extends Actions {
         return playerSprite;
     }
 
+
     public void shoot(){
         System.out.println(time);
         if (TimeUtils.millis() - time > 500){
-            Bullet.allBullets.add(new Bullet((int)playerSprite.getWidth()-((gun == 1)?40:104), (int) playerSprite.getHeight()-32, true, this));
+            Bullet.allBullets.add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-32, true, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
@@ -90,12 +95,15 @@ public class Player extends Actions {
         return health;
     }
 
+
     public void setHealth(int health) {
         this.health = Math.max(Math.min(this.health + health, 100), 0);
     }
 
     public void resetPosition(int width){
-        this.posX = (int) (width/2-playerSprite.getWidth()/2);
+
+        this.posX = width/2f-shipSprite.getWidth()/2f;
+
     }
 
 

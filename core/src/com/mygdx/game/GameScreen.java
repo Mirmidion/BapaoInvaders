@@ -13,13 +13,18 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.game.Entities.*;
+
 import com.mygdx.game.Scenes.Level;
 import com.mygdx.game.Scenes.MainMenu;
 import com.mygdx.game.Scenes.Map;
 import com.mygdx.game.Scenes.loadingScreen;
+
+import com.mygdx.game.SaveSystem.SerializeManager;
+
 import com.mygdx.game.Scenes.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,14 +36,12 @@ public class GameScreen implements Screen {
 
 	//Scene control
 
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, settings}
-
 
 
 	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores}
-	
-	static boolean fpsCounterCheck = false;
+	private scene currentScene =  scene.loadingScreen;
 
+	private int level = 0; //TODO -- to save
 
  	private boolean firstLoad = true;
 
@@ -46,14 +49,21 @@ public class GameScreen implements Screen {
 	private BitmapFont normalFont;
 	private BitmapFont titleFont;
 
+	// Textures
+	static Texture asteroidTexture = new Texture("Asteroid.png");
+	static Texture gasGiantTexture = new Texture("GasGiant.png");
+	static Texture iceGiantTexture = new Texture("IceGiant.png");
+	static Texture moonTexture = new Texture("Moon.png");
+
 	//Music
 	private Music music;
 	private Music music2;
 	private Music music3;
 
 	//Settings Menu
-	private SettingsMenu settingsScene;
+	private Texture settingsMenu;
 	private boolean settingsMenuSwitch;
+	private boolean saveGameMenuSwitch;
 
 	//Camera
 	private OrthographicCamera camera;
@@ -70,8 +80,8 @@ public class GameScreen implements Screen {
 	private Texture gameBackground;
 
 	//Solar Systems
-	private SolarSystem solarSystem;
-	private Planet currentPlanet;
+
+	private Planet currentPlanet; //TODO -- to save
 
 	//Paused variables
 	private static boolean paused = false;
@@ -188,14 +198,13 @@ public class GameScreen implements Screen {
 		shapeRenderer = new ShapeRenderer();
 
 
-
+		settingsMenu = new Texture(Gdx.files.internal("button.png"));
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
-		inputMultiplexer = new InputMultiplexer();
-		
+
 		//Initializing Textures
 		gameBackground = new Texture("gameBackground.png");
-		
+
 		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
 		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
 		music3 = Gdx.audio.newMusic(Gdx.files.internal("Theme3.mp3"));
@@ -204,22 +213,32 @@ public class GameScreen implements Screen {
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
 		titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
 		titleFont.getData().setScale(2);
-		
+
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width, height);
 
 		viewport = new StretchViewport(1920, 1080, camera);
 
-		solarSystem = new SolarSystem(width, height);
+
+//		try {
+//			solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("ByteStream_ArrayList"));
+//			solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("ByteStream_LinkedList"));
+//			solarSystem.resetList();
+//			solarSystem.setFresh(false);
+//		}
+//		catch (Exception e) {
+//			System.out.println(e);
+//
+//		}
+
+
+
 
 		music.setLooping(true);
 		music2.setLooping(true);
 		music3.setLooping(true);
 
-		settingsScene = new SettingsMenu(this);
 		mainMenuScene = new MainMenu(this);
-
-
 		levelScene = new Level(this);
 		mapScene = new Map(this);
 
@@ -260,9 +279,7 @@ public class GameScreen implements Screen {
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
 		}
-else if (currentScene == scene.settings){
-	settingsScene.render(delta);
-		}
+
 
 		else if (currentScene == scene.loadingScreen){
 			loadingScreenScene.render(delta);
@@ -285,13 +302,11 @@ else if (currentScene == scene.settings){
 			lastChecked = TimeUtils.millis();
 		}
 
-		if(GameScreen.fpsCounterCheck) {
-			batch.begin();
-			normalFont.getData().setScale(0.4f);
-			normalFont.draw(batch, framesPerSecond + "", 10, 1070);
-			batch.end();
-		}
 
+		batch.begin();
+		normalFont.getData().setScale(0.2f);
+		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
+		batch.end();
 
 	}
 
@@ -331,9 +346,44 @@ else if (currentScene == scene.settings){
 		music3.dispose();
 	}
 
+	public void saveSaveGame(int saveGame){
+		try {
+			if (saveGame == 1) {
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame1_", "Planets");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame1_", "PlanetDifficulty");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame1_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame1_", "Played");
+			} else if (saveGame == 2) {
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame2_", "Planets");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame2_", "PlanetDifficulty");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame2_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame2_", "Played");
+			} else if (saveGame == 3) {
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame3_", "Planets");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame3_", "PlanetDifficulty");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame3_", "Score");
+				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame3_", "Played");
+			}
+		}
+		catch(Exception e){
 
+		}
+	}
 
-
+	public SolarSystem getSolarSystem(int saveGame){
+		switch (saveGame){
+			case 1:{
+				return saveGame1.getSolarSystem();
+			}
+			case 2:{
+				return saveGame2.getSolarSystem();
+			}
+			case 3:{
+				return saveGame3.getSolarSystem();
+			}
+		}
+		return saveGame1.getSolarSystem();
+	}
 
 	public Music getMusic() {
 		return music;
@@ -359,7 +409,9 @@ else if (currentScene == scene.settings){
 		return gameBackground;
 	}
 
-
+	public Texture getSettingsMenu() {
+		return settingsMenu;
+	}
 
 	public boolean isSettingsMenuSwitch() {
 		return settingsMenuSwitch;
@@ -377,10 +429,6 @@ else if (currentScene == scene.settings){
 		this.currentScene = currentScene;
 	}
 
-	public SolarSystem getSolarSystem() {
-		return solarSystem;
-	}
-
 	public void setCurrentPlanet(Planet currentPlanet) {
 		this.currentPlanet = currentPlanet;
 	}
@@ -391,10 +439,6 @@ else if (currentScene == scene.settings){
 
 	public static boolean isPaused() {
 		return paused;
-	}
-
-	public void setSolarSystem(SolarSystem solarSystem) {
-		this.solarSystem = solarSystem;
 	}
 
 	public Planet getCurrentPlanet() {
@@ -413,14 +457,6 @@ else if (currentScene == scene.settings){
 		this.pauseDelay = pauseDelay;
 	}
 
-	public static int getScore() {
-		return score;
-	}
-
-	public static void setScore(int score) {
-		GameScreen.score += score;
-	}
-
 	public void addLevel(){
 		this.level++;
 	}
@@ -433,51 +469,84 @@ else if (currentScene == scene.settings){
 		return normalFont;
 	}
 
-	public InputMultiplexer getInputMultiplexer() {
-		return inputMultiplexer;
+	public static Texture getAsteroidTexture() {
+		return asteroidTexture;
 	}
 
-	public void setMusic1Vol(float value){
-
-		if (music.getVolume() + value <= 0){
-			music.setVolume(0);
-		}
-		else if (music.getVolume() + value >= 1){
-			music.setVolume(1);
-		}
-		else{
-			music.setVolume(music.getVolume() + value);
-		}
-	}
-	public void setMusic2Vol(float value){
-		if (music2.getVolume() + value <= 0){
-			music2.setVolume(0);
-		}
-		else if (music2.getVolume() + value >= 1){
-			music2.setVolume(1);
-		}
-		else{
-			music2.setVolume(music2.getVolume() + value);
-		}
-	}
-	public void setMusic3Vol(float value){
-		if (music3.getVolume() + value <= 0){
-			music3.setVolume(0);
-		}
-		else if (music3.getVolume() + value >= 1){
-			music3.setVolume(1);
-		}
-		else{
-			music3.setVolume(music3.getVolume() + value);
-		}
+	public static Texture getMoonTexture() {
+		return moonTexture;
 	}
 
-	public static void setFpsCounterCheck(boolean fpsCounterCheck) {
-		GameScreen.fpsCounterCheck = fpsCounterCheck;
+	public static Texture getGasGiantTexture() {
+		return gasGiantTexture;
 	}
 
-	public static boolean isFpsCounterCheck() {
-		return fpsCounterCheck;
+	public static Texture getIceGiantTexture() {
+		return iceGiantTexture;
+	}
+
+	public boolean isSaveGameMenuSwitch() {
+		return saveGameMenuSwitch;
+	}
+
+	public void setSaveGameMenuSwitch(boolean saveGameMenuSwitch) {
+		this.saveGameMenuSwitch = saveGameMenuSwitch;
+	}
+
+	public saveGames getCurrentSaveGame() {
+		return currentSaveGame;
+	}
+
+	public SolarSystem getSolarSystem() {
+		return currentSaveGame.getSolarSystem();
+	}
+
+	public int getScore(){
+		return currentSaveGame.getScore();
+	}
+
+	public void setScore(int score){
+		this.currentSaveGame.setScore(score);
+	}
+
+	public void setSolarSystem(SolarSystem solarSystem) {
+		this.currentSaveGame.setSolarSystem(solarSystem);
+	}
+
+	public void setCurrentSaveGame(int selected) {
+		if (selected == 1){
+			currentSaveGame = saveGame1;
+		}
+		else if (selected == 2){
+			currentSaveGame = saveGame2;
+		}
+		else if (selected == 3){
+			currentSaveGame = saveGame3;
+		}
+		currentSaveGame.solarSystem.setPlayed(true);
+		saveSaveGame(selected);
+	}
+
+	public SolarSystem getSaveGame1SolarSystem() {
+		return saveGame1.getSolarSystem();
+	}
+
+	public SolarSystem getSaveGame2SolarSystem() {
+		return saveGame2.getSolarSystem();
+	}
+
+	public SolarSystem getSaveGame3SolarSystem() {
+		return saveGame3.getSolarSystem();
+	}
+
+	public int getSaveGame1Score() {
+		return saveGame1.getScore();
+	}
+	public int getSaveGame2Score() {
+		return saveGame2.getScore();
+	}
+	public int getSaveGame3Score() {
+		return saveGame3.getScore();
 	}
 
 	public void newSaveGame(){

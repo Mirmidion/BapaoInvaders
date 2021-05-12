@@ -358,20 +358,8 @@ public class Enemy extends Ship{
     }
 
     public void shoot(){
-        Bullet.allBullets.add(new Bullet(enemySprite.getWidth()-((gun == 1)?40:104),enemySprite.getHeight()-140, false, this));
+        Bullet.allBullets.add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-140, false, this));
         this.gun *= -1;
-    }
-
-    public float getPosX() {
-        return posX;
-    }
-
-    public float getPosY() {
-        return posY;
-    }
-
-    public Texture getEnemySprite() {
-        return enemySprite;
     }
 
     public void setHealth(int health) {
