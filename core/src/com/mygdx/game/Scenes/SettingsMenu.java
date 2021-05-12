@@ -60,7 +60,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
         buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
         try {
-            volumeDisplayScreen = new Skin(Gdx.files.internal("Skins/ui.json"));
+            volumeDisplayScreen = new Skin(Gdx.files.internal("vhs-ui.json"));
         }
         catch (Exception e){
             e.printStackTrace();
