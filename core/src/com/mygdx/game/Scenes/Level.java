@@ -50,7 +50,7 @@ public class Level implements Screen {
 
 
     public Level(GameScreen gameScreen){
-        rasp = new RaspController("192.168.137.54");
+        rasp = new RaspController("192.168.2.4");
         arduino = new Arduino();
         this.mainRenderScreen = gameScreen;
         player = new Player(mainRenderScreen.getWidth());
