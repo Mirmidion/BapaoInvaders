@@ -64,7 +64,7 @@ public class MainMenu implements Screen {
     private long previousSelected = 0;
 
     private int buttonSelect = 1;
-    private long switchDelay = 0;
+    private static long switchDelay = 0;
     private long prevSelect = 0;
 
     public MainMenu(GameScreen renderScreen){
@@ -194,7 +194,7 @@ public class MainMenu implements Screen {
             batch.draw(mainRenderScreen.getSettingsMenu(), 200,200, 1520, 680);
             batch.end();
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                mainRenderScreen.setCurrentScene(scene);
+                mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
             }
         }
         else if (mainRenderScreen.isSaveGameMenuSwitch()){
@@ -310,5 +310,10 @@ public class MainMenu implements Screen {
 
     public static Skin getButtonSkin() {
         return buttonSkin;
+    }
+
+    public static void setSwitchDelay(long switchDelay) {
+
+        MainMenu.switchDelay = switchDelay;
     }
 }

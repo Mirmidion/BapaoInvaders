@@ -44,6 +44,7 @@ public class GameScreen implements Screen {
 	private int level = 0; //TODO -- to save
 
  	private boolean firstLoad = true;
+ 	private static boolean fpsCounterCheck = false;
 
 	//Fonts
 	private BitmapFont normalFont;
@@ -181,7 +182,7 @@ public class GameScreen implements Screen {
 	MainMenu mainMenuScene;
 	Level levelScene;
 	Map mapScene;
-	Settings
+	SettingsMenu settingsMenuScene;
 	loadingScreen loadingScreenScene;
 
 	GameOverMenu gameOverScene;
@@ -243,7 +244,7 @@ public class GameScreen implements Screen {
 		mapScene = new Map(this);
 
 		loadingScreenScene = new loadingScreen(this);
-
+		settingsMenuScene = new SettingsMenu(this);
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
 		highScoreScene = new highScores(this);
@@ -583,6 +584,7 @@ public class GameScreen implements Screen {
 		this.firstLoad = firstLoad;
 	}
 
+
 	public void setMusic1Vol(float value){
 
 		if (music.getVolume() + value <= 0){
@@ -606,16 +608,23 @@ public class GameScreen implements Screen {
 			music2.setVolume(music2.getVolume() + value);
 		}
 	}
-	public void setMusic3Vol(float value){
-		if (music3.getVolume() + value <= 0){
+	public void setMusic3Vol(float value) {
+		if (music3.getVolume() + value <= 0) {
 			music3.setVolume(0);
-		}
-		else if (music3.getVolume() + value >= 1){
+		} else if (music3.getVolume() + value >= 1) {
 			music3.setVolume(1);
-		}
-		else{
+		} else {
 			music3.setVolume(music3.getVolume() + value);
 		}
+	}
+
+	public static void setFpsCounterCheck(boolean fpsCounterCheck) {
+		GameScreen.fpsCounterCheck = fpsCounterCheck;
+	}
+
+	public static boolean isFpsCounterCheck() {
+		return fpsCounterCheck;
+
 	}
 
 	//	public void saveSaveGame(){
