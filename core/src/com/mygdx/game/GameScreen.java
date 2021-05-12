@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
 
 
 	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores}
-	private scene currentScene =  scene.mainMenu;
+	private scene currentScene =  scene.loadingScreen;
 
 	private int level = 0; //TODO -- to save
 
@@ -90,13 +90,12 @@ public class GameScreen implements Screen {
 	private SpriteBatch spriteBatch;
 	private ShapeRenderer shapeRenderer;
 
-
-
 	SerializeManager serializeManager = new SerializeManager();
 	enum saveGames{
 		saveGame1(1),
 		saveGame2(2),
 		saveGame3(3);
+
 		int score;
 		SolarSystem solarSystem;
 
@@ -104,6 +103,7 @@ public class GameScreen implements Screen {
 
 			SerializeManager serializeManager = new SerializeManager();
 			solarSystem = new SolarSystem();
+
 			try {
 				if (saveGame == 1) {
 					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Planets"));
