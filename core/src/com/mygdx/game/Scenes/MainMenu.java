@@ -1,31 +1,27 @@
 package com.mygdx.game.Scenes;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mygdx.game.Entities.SolarSystem;
 import com.mygdx.game.GameScreen;
 import org.w3c.dom.Text;
 
-import java.awt.*;
+import java.sql.Time;
 
-public class MainMenu implements Screen {
+public class MainMenu extends ScreenAdapter implements Screen {
 
     //The spritebatch
     SpriteBatch batch;
@@ -57,11 +53,9 @@ public class MainMenu implements Screen {
     private static Skin buttonSkin;
     private TextureAtlas atlas;
 
-    BitmapFont titleFont;
-    BitmapFont normalFont;
-
-    private static int selectedSaveGame = 1;
-    private long previousSelected = 0;
+    private int buttonSelect = 1;
+    private static long prevSelect = 0;
+    private static long switchDelay = 0;
 
     private int buttonSelect = 1;
     private long switchDelay = 0;
@@ -70,8 +64,7 @@ public class MainMenu implements Screen {
     public MainMenu(GameScreen renderScreen){
         mainRenderScreen = renderScreen;
 
-        normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
-        titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
+        mainRenderScreen.getInputMultiplexer().addProcessor(stage);
 
         //Initializing Sprites
         bapaoSprite = new Sprite(new Texture("Bapao1.png"));
@@ -81,7 +74,6 @@ public class MainMenu implements Screen {
             bapaoSprites[i] = new Sprite(new Texture("Bapao1.png"));
         }
 
-        Gdx.input.setInputProcessor(stage);
         mainMenuTable = new Table();
         mainMenuTable.setPosition(250,600);
         mainMenuTable.left();
@@ -110,6 +102,7 @@ public class MainMenu implements Screen {
 
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
     }
 
     @Override
@@ -119,14 +112,16 @@ public class MainMenu implements Screen {
 
     @Override
     public void show() {
-
+        buttonSelect = 1;
+        prevSelect = TimeUtils.millis();
     }
 
     @Override
     public void render(float delta) {
-        //mainRenderScreen.getMusic().play();
-        //mainRenderScreen.getMusic2().dispose();
-        //mainRenderScreen.getMusic3().dispose();
+
+        mainRenderScreen.getMusic().play();
+        mainRenderScreen.getMusic2().dispose();
+        mainRenderScreen.getMusic3().dispose();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -137,10 +132,8 @@ public class MainMenu implements Screen {
         renderBapaos(delta);  //todo
 
         batch.begin();
-        titleFont.getData().setScale(2f);
-        titleFont.draw(batch, "Bapao Invaders", 200, 800);
+        mainRenderScreen.getTitleFont().draw(batch, "Bapao Invaders", 200, 800);
         batch.end();
-
 
         stage.draw();
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -159,7 +152,8 @@ public class MainMenu implements Screen {
                 case 2: {
                     shapeRenderer.rect(settings.getX() + mainMenuTable.getX(), settings.getY() + mainMenuTable.getY(), settings.getWidth(), settings.getHeight());
                     if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
-                        mainRenderScreen.setSettingsMenuSwitch(!mainRenderScreen.isSettingsMenuSwitch());
+                        mainRenderScreen.setCurrentScene(GameScreen.scene.settings);
+                        SettingsMenu.setPrevChange();
                         switchDelay = TimeUtils.millis();
                     }
                     break;
@@ -246,18 +240,30 @@ public class MainMenu implements Screen {
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
                 mainRenderScreen.setSaveGameMenuSwitch(false);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                mainRenderScreen.setSaveGameMenuSwitch(false);
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && selectedSaveGame > 1 && TimeUtils.millis() - previousSelected > 300){
-                selectedSaveGame--;
-                previousSelected = TimeUtils.millis();
-            }
-            else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && selectedSaveGame < 3 && TimeUtils.millis() - previousSelected > 300){
-                selectedSaveGame++;
-                previousSelected = TimeUtils.millis();
+            case 3: {
+                shapeRenderer.rect( exit.getX() + mainMenuTable.getX(), exit.getY() + mainMenuTable.getY(), exit.getWidth(), exit.getHeight());
+                if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    dispose();
+                    System.exit(0);
+                }
+                break;
             }
         }
+        shapeRenderer.end();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - prevSelect > 500){
+            if (buttonSelect < 3){
+                buttonSelect++;
+            }
+            prevSelect = TimeUtils.millis();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && TimeUtils.millis() - prevSelect > 500){
+            if (buttonSelect > 1){
+                buttonSelect--;
+            }
+            prevSelect = TimeUtils.millis();
+        }
+
 
     }
 
@@ -273,7 +279,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void hide() {
-
+        mainMenuTable.setTouchable(Touchable.disabled);
     }
 
     @Override
@@ -304,8 +310,12 @@ public class MainMenu implements Screen {
         }
     }
 
-    public static int getSelectedSaveGame() {
-        return selectedSaveGame;
+    public static long getSwitchDelay() {
+        return switchDelay;
+    }
+
+    public static void setSwitchDelay(long switchDelay) {
+        MainMenu.switchDelay = switchDelay;
     }
 
     public static Skin getButtonSkin() {

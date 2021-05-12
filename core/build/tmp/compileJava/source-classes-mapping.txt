@@ -37,13 +37,19 @@ com/mygdx/game/Scenes/highScores.java
  com.mygdx.game.Scenes.highScores
 com/mygdx/game/Scenes/Level.java
  com.mygdx.game.Scenes.Level
+com/mygdx/game/Scenes/SettingsMenu.java
+ com.mygdx.game.Scenes.SettingsMenu
+ com.mygdx.game.Scenes.SettingsMenu$1
+ com.mygdx.game.Scenes.SettingsMenu$2
+ com.mygdx.game.Scenes.SettingsMenu$3
+ com.mygdx.game.Scenes.SettingsMenu$4
+ com.mygdx.game.Scenes.SettingsMenu$5
 com/mygdx/game/Scenes/Map.java
  com.mygdx.game.Scenes.Map
 com/mygdx/game/BapoaInvaders.java
  com.mygdx.game.BapoaInvaders
 com/mygdx/game/GameScreen.java
  com.mygdx.game.GameScreen
- com.mygdx.game.GameScreen$saveGames
  com.mygdx.game.GameScreen$scene
 com/mygdx/game/Scenes/MainMenu.java
  com.mygdx.game.Scenes.MainMenu

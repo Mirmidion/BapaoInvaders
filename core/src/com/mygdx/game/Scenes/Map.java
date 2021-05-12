@@ -1,14 +1,12 @@
 package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.Planet;
-import com.mygdx.game.Entities.SolarSystem;
 import com.mygdx.game.GameScreen;
 
 public class Map implements Screen {
@@ -53,7 +51,7 @@ public class Map implements Screen {
         batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(new Color(0.8f,0.8f,0.8f,1));
+        shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
 
         // Orbits around the sun being drawn, limited to the amount of planets present
         int localOrbitCounter = 0;
@@ -72,19 +70,6 @@ public class Map implements Screen {
         batch.draw(starTexture, mainRenderScreen.getSolarSystem().getPosXStar()-starTexture.getWidth()/2f/mapScale, (mainRenderScreen.getSolarSystem().getPosYStar()-starTexture.getHeight()/2f/mapScale+9), starTexture.getWidth()/mapScale, starTexture.getHeight()/mapScale);
         batch.end();
         shapeRenderer.begin();
-        if (!mainRenderScreen.getSolarSystem().isFresh()) {
-            for (Planet planet : mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty()) {
-                planet.orbit();
-
-                int moonOrbit = planet.getRadius() + 25;
-                for (Planet moon : planet.getMoonList()) {
-
-                    moon.setOrbit(moonOrbit / 2);
-                    moon.setMoonOrbit(moon.getOrbit());
-                    moonOrbit += 25;
-                }
-            }
-        }
 
         // Loop for going through every planet in the system
         for (Planet planet : mainRenderScreen.getSolarSystem().getPlanets()){
@@ -108,7 +93,7 @@ public class Map implements Screen {
                      shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 
                      // Draw the orbit with a grey-ish colour
-                     shapeRenderer.setColor(new Color(0.8f,0.8f,0.8f,1));
+                     shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(0.8f,0.8f,0.8f,1));
                      shapeRenderer.ellipse(planetPositionX - moonOrbit/2f,(planetPositionY - moonOrbit/2f), moonOrbit, moonOrbit);
                      shapeRenderer.end();
 
@@ -124,7 +109,7 @@ public class Map implements Screen {
                      moonOrbit += 25;
                 }
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(new Color(1f,0.95686f,0.2627f,1));
+                shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(1f,0.95686f,0.2627f,1));
             }
 
             // Calculate the planets position in the orbit
@@ -165,7 +150,7 @@ public class Map implements Screen {
         // If ENTER is pressed, start the next level
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             mainRenderScreen.setCurrentScene(GameScreen.scene.level);
-            mainRenderScreen.setCurrentPlanet(mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek());
+            mainRenderScreen.setCurrentPlanet(Planet.getPlanetListOfDifficulty().peek());
         }
 
         // If the left or right arrow is pressed, zoom in/out
@@ -194,10 +179,8 @@ public class Map implements Screen {
         // Draw the current score
         batch.begin();
         mainRenderScreen.getTitleFont().getData().setScale(1f);
-        mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
-        mainRenderScreen.getTitleFont().draw(batch, "Level: " + (mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek().getDifficulty()+1), 80, 950);
-        mainRenderScreen.getTitleFont().getData().setScale(2f);
-
+        mainRenderScreen.getTitleFont().draw(batch, "Score: " + GameScreen.getScore(), 80, 1000);
+        mainRenderScreen.getTitleFont().draw(batch, "Level: " + (Planet.getPlanetListOfDifficulty().peek().getDifficulty()+1), 80, 950);
         mainRenderScreen.getNormalFont().getData().setScale(0.7f);
         if (blink) {
             mainRenderScreen.getNormalFont().draw(batch, "Press ENTER to start the level", 630, 100);
