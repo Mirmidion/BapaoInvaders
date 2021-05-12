@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -58,7 +59,13 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         settingsTable.left();
 
         buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
-        volumeDisplayScreen = new Skin(Gdx.files.internal("vhs-ui.json"));
+        try {
+            volumeDisplayScreen = new Skin(Gdx.files.internal("Skins/ui.json"));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         volumeDisplay = new Label(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)), volumeDisplayScreen);
 

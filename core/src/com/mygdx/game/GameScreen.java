@@ -276,6 +276,10 @@ public class GameScreen implements Screen {
 			}
 		}
 
+		else if (currentScene == scene.settingsMenu){
+			settingsMenuScene.render(delta);
+		}
+
 		// If in a level, draw everything of that level
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
