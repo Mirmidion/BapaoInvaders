@@ -307,11 +307,12 @@ public class GameScreen implements Screen {
 			lastChecked = TimeUtils.millis();
 		}
 
-
-		batch.begin();
-		normalFont.getData().setScale(0.2f);
-		normalFont.draw(batch,framesPerSecond + "", 10, 1070);
-		batch.end();
+		if (fpsCounterCheck) {
+			batch.begin();
+			normalFont.getData().setScale(0.2f);
+			normalFont.draw(batch, framesPerSecond + "", 10, 1070);
+			batch.end();
+		}
 
 	}
 

@@ -160,6 +160,7 @@ public class MainMenu implements Screen {
                     shapeRenderer.rect(settings.getX() + mainMenuTable.getX(), settings.getY() + mainMenuTable.getY(), settings.getWidth(), settings.getHeight());
                     if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
                         mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
+                        SettingsMenu.setPrevChange();
                         switchDelay = TimeUtils.millis();
                     }
                     break;

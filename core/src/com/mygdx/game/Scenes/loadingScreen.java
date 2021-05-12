@@ -46,7 +46,7 @@ public class loadingScreen implements Screen {
         batch.end();
 
 
-        if (manager.update() && TimeUtils.millis() - previousTime > 3000){
+        if (manager.update() && TimeUtils.millis() - previousTime > 5000){
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
 
@@ -56,7 +56,7 @@ public class loadingScreen implements Screen {
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GOLD);
-        shapeRenderer.rect(300, 300, 1320 * progress * ((TimeUtils.millis() - previousTime)/ 3000f), 50);
+        shapeRenderer.rect(300, 300, 1320 * progress * ((TimeUtils.millis() - previousTime)/ 5000f), 50);
         shapeRenderer.end();
 
     }
