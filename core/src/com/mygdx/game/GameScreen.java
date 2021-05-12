@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -36,11 +37,13 @@ public class GameScreen implements Screen {
 	//Scene control
 
 
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen}
-	private scene currentScene =  scene.loadingScreen;
+
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores}
+	private scene currentScene =  scene.mainMenu;
+
 	private int level = 0; //TODO -- to save
 
-
+ 	private boolean firstLoad = true;
 
 	//Fonts
 	private BitmapFont normalFont;
@@ -83,6 +86,9 @@ public class GameScreen implements Screen {
 	//Paused variables
 	private static boolean paused = false;
 	private long pauseDelay = 0;
+
+	private SpriteBatch spriteBatch;
+	private ShapeRenderer shapeRenderer;
 
 
 
@@ -180,12 +186,17 @@ public class GameScreen implements Screen {
 
 	GameOverMenu gameOverScene;
 	WinMenu winScene;
+	highScores highScoreScene;
 
 	//FPS counter
 	int framesPerSecond;
 	long lastChecked;
 
-	public GameScreen () {
+
+	public GameScreen (){
+		spriteBatch = new SpriteBatch();
+		shapeRenderer = new ShapeRenderer();
+
 
 		settingsMenu = new Texture(Gdx.files.internal("button.png"));
 		//Inititializing SpriteBatches
@@ -235,6 +246,7 @@ public class GameScreen implements Screen {
 
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
+		highScoreScene = new highScores(this);
 
 	}
 
@@ -255,7 +267,12 @@ public class GameScreen implements Screen {
 
 		// If on the map, draw the solar system
 		else if (currentScene == scene.map) {
-			mapScene.render(delta);
+			try {
+				mapScene.render(delta);
+			}
+			catch (NullPointerException e){
+				currentScene = scene.win;
+			}
 		}
 
 		// If in a level, draw everything of that level
@@ -274,6 +291,10 @@ public class GameScreen implements Screen {
 
 		else if (currentScene == scene.win) {
 			winScene.render(delta);
+		}
+
+		else if (currentScene == scene.highScores){
+			highScoreScene.render(delta);
 		}
 
 		if (TimeUtils.millis() - lastChecked >= 1000){
@@ -526,6 +547,40 @@ public class GameScreen implements Screen {
 	}
 	public int getSaveGame3Score() {
 		return saveGame3.getScore();
+	}
+
+	public void newSaveGame(){
+		this.currentSaveGame.solarSystem = new SolarSystem(1920,1080);
+		this.currentSaveGame.score = 0;
+		if (currentSaveGame == saveGame1){
+			saveSaveGame(1);
+		}
+		else if (currentSaveGame == saveGame2){
+			saveSaveGame(2);
+		}
+		else if (currentSaveGame == saveGame3){
+			saveSaveGame(3);
+		}
+	}
+
+	public SpriteBatch getSpriteBatch() {
+		return spriteBatch;
+	}
+
+	public ShapeRenderer getShapeRenderer() {
+		return shapeRenderer;
+	}
+
+	public highScores getHighScoreScene() {
+		return highScoreScene;
+	}
+
+	public boolean isFirstLoad() {
+		return firstLoad;
+	}
+
+	public void setFirstLoad(boolean firstLoad) {
+		this.firstLoad = firstLoad;
 	}
 
 	//	public void saveSaveGame(){

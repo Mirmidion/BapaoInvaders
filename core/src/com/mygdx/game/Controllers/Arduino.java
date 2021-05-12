@@ -21,7 +21,7 @@ public class Arduino {
         }
 
         Scanner s = new Scanner(System.in);
-        int chosenPort = s.nextInt();
+        int chosenPort = 1; //s.nextInt();
 
         SerialPort port = ports[chosenPort - 1];
 

@@ -52,11 +52,11 @@ public class Player extends Ship{
     }
 
 
-    public int getPosY() {
+    public float getPosY() {
         return posY;
     }
 
-    public int getPosX() {
+    public float getPosX() {
         return posX;
     }
 

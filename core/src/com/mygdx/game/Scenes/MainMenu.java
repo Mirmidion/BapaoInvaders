@@ -28,8 +28,8 @@ import java.awt.*;
 public class MainMenu implements Screen {
 
     //The spritebatch
-    SpriteBatch batch = new SpriteBatch();
-    ShapeRenderer shapeRenderer = new ShapeRenderer();
+    SpriteBatch batch;
+    ShapeRenderer shapeRenderer;
 
     //The stage for drawing and getting input from buttons
     Stage stage = new Stage();
@@ -54,7 +54,7 @@ public class MainMenu implements Screen {
     private Sprite bapaoSprite;
 
     //Object visuals
-    private Skin buttonSkin;
+    private static Skin buttonSkin;
     private TextureAtlas atlas;
 
     BitmapFont titleFont;
@@ -125,6 +125,9 @@ public class MainMenu implements Screen {
         mainMenuTable.add(exit).padTop(50);
 
         stage.addActor(mainMenuTable);
+
+        batch = mainRenderScreen.getSpriteBatch();
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
     }
 
     @Override
@@ -176,17 +179,17 @@ public class MainMenu implements Screen {
                 normalFont.draw(batch, "Savegame "+(i+1),225 + 560 * i, 880);
                 try {
                     if (i == 0 && mainRenderScreen.getSaveGame1SolarSystem().isPlayed()) {
-                        System.out.println("1");
+                        //System.out.println("1");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame1SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270 + 560 * i, 550);
                     } else if (i == 1 && mainRenderScreen.getSaveGame2SolarSystem().isPlayed()) {
-                        System.out.println("2");
+                        //System.out.println("2");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame2SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame2Score(), 270 + 560 * i, 550);
                     } else if (i == 2 && mainRenderScreen.getSaveGame3SolarSystem().isPlayed()) {
-                        System.out.println("3");
+                        //System.out.println("3");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame3SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame3Score(), 270 + 560 * i, 550);
@@ -198,7 +201,7 @@ public class MainMenu implements Screen {
 
                 }
                 catch (Exception e){
-                    System.out.println(e);
+                    //System.out.println(e);
                     titleFont.getData().setScale(1f);
                     titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
                 }
@@ -214,6 +217,7 @@ public class MainMenu implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
                 mainRenderScreen.setCurrentSaveGame(selectedSaveGame);
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
+                mainRenderScreen.setSaveGameMenuSwitch(false);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
                 mainRenderScreen.setSaveGameMenuSwitch(false);
@@ -275,5 +279,9 @@ public class MainMenu implements Screen {
 
     public static int getSelectedSaveGame() {
         return selectedSaveGame;
+    }
+
+    public static Skin getButtonSkin() {
+        return buttonSkin;
     }
 }
