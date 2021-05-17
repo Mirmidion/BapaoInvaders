@@ -1,6 +1,5 @@
 package com.mygdx.game.Scenes;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -12,18 +11,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mygdx.game.Entities.SolarSystem;
 import com.mygdx.game.GameScreen;
-import org.w3c.dom.Text;
-
-import java.awt.*;
 
 public class MainMenu implements Screen {
 
@@ -38,24 +31,21 @@ public class MainMenu implements Screen {
     GameScreen mainRenderScreen;
 
     //Main Menu Layout and Objects
-    private Table mainMenuTable;
-    private TextButton start;
-    private TextButton settings;
-    private TextButton exit;
-    private Text title;
+    private final Table mainMenuTable;
+    private final TextButton start;
+    private final TextButton settings;
+    private final TextButton exit;
 
     //Other
-    private float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
-    private float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
-    private int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
+    private final float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
+    private final float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
+    private final int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
 
     //Sprites
-    private Sprite[] bapaoSprites;
-    private Sprite bapaoSprite;
+    private final Sprite[] bapaoSprites;
 
     //Object visuals
     private static Skin buttonSkin;
-    private TextureAtlas atlas;
 
     BitmapFont titleFont;
     BitmapFont normalFont;
@@ -66,6 +56,7 @@ public class MainMenu implements Screen {
     private int buttonSelect = 1;
     private static long switchDelay = 0;
     private long prevSelect = 0;
+    private long select;
 
     public MainMenu(GameScreen renderScreen){
         mainRenderScreen = renderScreen;
@@ -74,7 +65,6 @@ public class MainMenu implements Screen {
         titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
 
         //Initializing Sprites
-        bapaoSprite = new Sprite(new Texture("Bapao1.png"));
         bapaoSprites = new Sprite[15];
         for(int i = 0; i<bapaoSprites.length; i++)
         {
@@ -124,9 +114,9 @@ public class MainMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        //mainRenderScreen.getMusic().play();
-        //mainRenderScreen.getMusic2().dispose();
-        //mainRenderScreen.getMusic3().dispose();
+        mainRenderScreen.getMusic().play();
+        mainRenderScreen.getMusic2().dispose();
+        mainRenderScreen.getMusic3().dispose();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -150,15 +140,16 @@ public class MainMenu implements Screen {
             switch (buttonSelect) {
                 case 1: {
                     shapeRenderer.rect(start.getX() + mainMenuTable.getX(), start.getY() + mainMenuTable.getY(), start.getWidth(), start.getHeight());
-                    if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - switchDelay > 500 && !mainRenderScreen.isSaveGameMenuSwitch()) {
                         mainRenderScreen.setSaveGameMenuSwitch(true);
                         switchDelay = TimeUtils.millis();
+                        select = TimeUtils.millis();
                     }
                     break;
                 }
                 case 2: {
                     shapeRenderer.rect(settings.getX() + mainMenuTable.getX(), settings.getY() + mainMenuTable.getY(), settings.getWidth(), settings.getHeight());
-                    if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - switchDelay > 500 ) {
                         mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
                         SettingsMenu.setPrevChange();
                         switchDelay = TimeUtils.millis();
@@ -167,7 +158,7 @@ public class MainMenu implements Screen {
                 }
                 case 3: {
                     shapeRenderer.rect(exit.getX() + mainMenuTable.getX(), exit.getY() + mainMenuTable.getY(), exit.getWidth(), exit.getHeight());
-                    if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - switchDelay > 500) {
+                    if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - switchDelay > 500) {
                         dispose();
                         System.exit(0);
                     }
@@ -176,28 +167,19 @@ public class MainMenu implements Screen {
             }
             shapeRenderer.end();
 
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - prevSelect > 500) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right")) && TimeUtils.millis() - prevSelect > 500) {
                 if (buttonSelect < 3) {
                     buttonSelect++;
                 }
                 prevSelect = TimeUtils.millis();
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) && TimeUtils.millis() - prevSelect > 500) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.UP) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left")) && TimeUtils.millis() - prevSelect > 500) {
                 if (buttonSelect > 1) {
                     buttonSelect--;
                 }
                 prevSelect = TimeUtils.millis();
             }
 
-
-        else if (mainRenderScreen.isSettingsMenuSwitch()){
-            batch.begin();
-            batch.draw(mainRenderScreen.getSettingsMenu(), 200,200, 1520, 680);
-            batch.end();
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
-            }
-        }
         else if (mainRenderScreen.isSaveGameMenuSwitch()){
             shapeRenderer.setAutoShapeType(true);
             for (int i = 0; i < 3; i++) {
@@ -207,17 +189,14 @@ public class MainMenu implements Screen {
                 normalFont.draw(batch, "Savegame "+(i+1),225 + 560 * i, 880);
                 try {
                     if (i == 0 && mainRenderScreen.getSaveGame1SolarSystem().isPlayed()) {
-                        //System.out.println("1");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame1SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
-                        titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270 + 560 * i, 550);
+                        titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270 + 560, 550);
                     } else if (i == 1 && mainRenderScreen.getSaveGame2SolarSystem().isPlayed()) {
-                        //System.out.println("2");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame2SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame2Score(), 270 + 560 * i, 550);
                     } else if (i == 2 && mainRenderScreen.getSaveGame3SolarSystem().isPlayed()) {
-                        //System.out.println("3");
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame3SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
                         titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame3Score(), 270 + 560 * i, 550);
@@ -229,7 +208,7 @@ public class MainMenu implements Screen {
 
                 }
                 catch (Exception e){
-                    //System.out.println(e);
+                    e.printStackTrace();
                     titleFont.getData().setScale(1f);
                     titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
                 }
@@ -242,10 +221,11 @@ public class MainMenu implements Screen {
             shapeRenderer.rect(200 + 560 * (selectedSaveGame-1), 300,400,600);
             shapeRenderer.end();
 
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
+            if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && TimeUtils.millis() - select > 500){
                 mainRenderScreen.setCurrentSaveGame(selectedSaveGame);
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
                 mainRenderScreen.setSaveGameMenuSwitch(false);
+                Map.setSelect();
             }
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
                 mainRenderScreen.setSaveGameMenuSwitch(false);
@@ -284,10 +264,9 @@ public class MainMenu implements Screen {
 
     public void renderBapaos(float delta)
     {
-        for(int i = 0; i<bapaoSprites.length; i++)
-        {
+        for (Sprite sprite : bapaoSprites) {
             batch.begin();
-            bapaoSprites[i].draw(batch);
+            sprite.draw(batch);
             batch.end();
         }
 

@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.Planet;
-import com.mygdx.game.Entities.SolarSystem;
 import com.mygdx.game.GameScreen;
 
 public class Map implements Screen {
@@ -17,13 +16,14 @@ public class Map implements Screen {
     SpriteBatch batch;
     private float mapScale = 1;
 
-    private Texture starTexture;
+    private final Texture starTexture;
 
     //Drawer of shapes
-    private ShapeRenderer shapeRenderer;
+    private final ShapeRenderer shapeRenderer;
 
     private boolean blink = true;
     private long blinkTime = 0;
+    private static long select;
 
     public Map(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
@@ -142,8 +142,6 @@ public class Map implements Screen {
             batch.begin();
             batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,  planetPositionY - planet.getPlanetTexture().getHeight()/2f );
             batch.end();
-            System.out.println(planetPositionX);
-            System.out.println();
         }
         if (!shapeRenderer.isDrawing()){
             shapeRenderer.begin();
@@ -163,13 +161,13 @@ public class Map implements Screen {
         shapeRenderer.end();
 
         // If ENTER is pressed, start the next level
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+        if (TimeUtils.millis() - select > 500 && (Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))){
             mainRenderScreen.setCurrentScene(GameScreen.scene.level);
             mainRenderScreen.setCurrentPlanet(mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek());
         }
 
         // If the left or right arrow is pressed, zoom in/out
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left"))){
             if (mapScale == 2 || mapScale + 0.01f >= 2){
                 mapScale = 2;
             }
@@ -177,7 +175,7 @@ public class Map implements Screen {
                 mapScale += 0.01f;
             }
         }
-        else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+        else if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right"))){
             if (mapScale == 1 || mapScale + 0.01f <= 1){
                 mapScale = 1;
             }
@@ -228,5 +226,9 @@ public class Map implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    public static void setSelect() {
+        Map.select = TimeUtils.millis();
     }
 }

@@ -4,24 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 
 public class Planet implements Serializable {
 
-    // Difficulty of the waves
-    int difficulty = 0;
-    int currentWave;
+    //Difficulty of the waves
+    private final int difficulty;
 
-    // Waves consist of arraylist<int> that contain amount and types of enemies
-    // The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
-    ArrayList<ArrayList<Integer>> waves = new ArrayList<ArrayList<Integer>>();
-    int lastWave;
+    //Waves consist of arraylist<int> that contain amount and types of enemies
+    //The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
+    private final ArrayList<ArrayList<Integer>> waves = new ArrayList<>();
 
-    ArrayList<Enemy> enemyWaves = new ArrayList<Enemy>();
+    private ArrayList<Enemy> enemyWaves = new ArrayList<>();
 
     /* Planet classes:
     1 - Asteroid 15%
@@ -30,34 +25,35 @@ public class Planet implements Serializable {
     4 - Gas Giant 10%
     5 - Ice Giant 10%
     */
-    int planetClass = 0;
-    int whichPlanetTexture;
+    private int planetClass = 0;
+    private int whichPlanetTexture;
 
     private static final long serialVersionUID = 6529685098267757690L;
 
-    // Boolean for if it can have moons and which planet this moon orbits
-    ArrayList<Planet> moonList = new ArrayList<Planet>();
+    //Boolean for if it can have moons and which planet this moon orbits
+    private final ArrayList<Planet> moonList = new ArrayList<>();
 
-    // Position in Solar System
-    float posX;
-    float posY;
+    //Position in Solar System
+    private float posX;
+    private float posY;
     private float angle;
-    int orbit = 100;
+
+    //Orbit
+    private int orbit = 100;
     private boolean orbitClockWise = true;
-    private float rotationSpeed = 1;
-    private boolean isMoon = false;
+    private final float rotationSpeed;
     private Planet orbitPlanet;
 
+    //Is this a moon?
+    private boolean isMoon = false;
 
+    //Color and texture of the Planet
+    private transient Texture currentPlanetTexture = new Texture("Asteroid.png");
 
-    // Color and texture of the Planet
-    Color planetColor = new Color(100,100,100);
-    transient Texture currentPlanetTexture = new Texture("Asteroid.png");
+    //Radius of planet
+    private int radius = 0;
 
-    // Radius of planet
-    int radius = 0;
-
-    // Textures
+    //Textures
     transient static Texture asteroidTexture = new Texture("Asteroid.png");
     transient static Texture gasGiantTexture = new Texture("GasGiant.png");
     transient static Texture iceGiantTexture = new Texture("IceGiant.png");
@@ -66,20 +62,14 @@ public class Planet implements Serializable {
     transient static Texture planet2Texture = new Texture(Gdx.files.internal("Planet2.png"));
     transient static Texture planet3Texture = new Texture(Gdx.files.internal("Planet3.png"));
 
-    // Moon colour
-    Color moonColor = new Color(73, 72, 72);
-
-    // All defenses
-    static ArrayList<Defense> defenses = new ArrayList<Defense>();
+    //All defenses
+    static ArrayList<Defense> defenses = new ArrayList<>();
 
 
     public Planet(int orbit, SolarSystem solarSystem){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
-        this.difficulty = solarSystem.globalDifficulty;
 
-        //System.out.println(solarSystem.planetListOfDifficulty.size());
-        solarSystem.globalDifficulty++;
         if (isBetween(random, 0, 50)){
             int randomColor = MathUtils.random(1,5);
             currentPlanetTexture = (randomColor == 1)? planet1Texture: (randomColor == 2)? planet3Texture:(randomColor == 3)? planet2Texture:(randomColor == 4)? new Texture(Gdx.files.internal("Planet2.png")): new Texture(Gdx.files.internal("Planet2.png"));
@@ -109,7 +99,9 @@ public class Planet implements Serializable {
             System.out.println("Added an asteroid");
             this.radius = 10;
         }
-        solarSystem.planetListOfDifficulty.offer(this);
+        this.difficulty = solarSystem.getGlobalDifficulty();
+
+        solarSystem.setGlobalDifficulty(solarSystem.getGlobalDifficulty()+1);
         orbitClockWise = randomDirection <= 50;
         angle = (float) ((Math.random()*(360)+0)/180*Math.PI);
         posX = (float)Math.cos(angle)*orbit;
@@ -119,13 +111,11 @@ public class Planet implements Serializable {
 
         this.generateWaves();
         this.generateEnemies(1);
-        System.out.println(enemyWaves.size());
-        this.lastWave = this.enemyWaves.size()-1;
-
+        solarSystem.getPlanetListOfDifficulty().offer(this);
     }
 
     public Planet(boolean isMoon, Planet orbitPlanet, SolarSystem solarSystem){
-        this.planetColor = moonColor;
+        //Moon properties
         this.isMoon = isMoon;
         this.orbitPlanet = orbitPlanet;
         this.currentPlanetTexture = moonTexture;
@@ -135,11 +125,11 @@ public class Planet implements Serializable {
         posX = (float)Math.cos(angle)*orbit;
         posY = (float)Math.sin(angle)*orbit;
         this.rotationSpeed = MathUtils.random(1.5f,3);
-        this.difficulty = solarSystem.globalDifficulty;
-        solarSystem.globalDifficulty++;
+        this.difficulty = solarSystem.getGlobalDifficulty();
+        solarSystem.setGlobalDifficulty(solarSystem.getGlobalDifficulty()+1);
         this.generateWaves();
         this.generateEnemies(1);
-        solarSystem.planetListOfDifficulty.offer(this);
+        solarSystem.getPlanetListOfDifficulty().offer(this);
     }
 
     public void GenerateMoons(int planetType, SolarSystem solarSystem){
@@ -147,11 +137,11 @@ public class Planet implements Serializable {
         amountOfMoons = Math.max(amountOfMoons, 0);
         for (int i = amountOfMoons; i > 0; i--){
             if (50 > ((i < amountOfMoons && planetType == 3)? MathUtils.random(0,100):100) || (10 > ((planetType == 4 || planetType == 5)? MathUtils.random(0,100):100))){
-                System.out.println("break");
+                //System.out.println("break");
                 break;
             }
             addMoon(new Planet(true, this, solarSystem));
-            System.out.println("Added a Moon");
+            //System.out.println("Added a Moon");
         }
     }
 
@@ -198,7 +188,7 @@ public class Planet implements Serializable {
     public void generateWaves(){
         int amountOfWaves = 4 + Math.round(difficulty/2f);
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
-            ArrayList<Integer> wave = new ArrayList<Integer>();
+            ArrayList<Integer> wave = new ArrayList<>();
             int amountOfTypesOfEnemies = Math.min(4,Math.max(2,Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))))));
             for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
                 int randomAmount = MathUtils.random(4,12);
@@ -207,7 +197,6 @@ public class Planet implements Serializable {
                 this.waves.add(wave);
             }
         }
-        //System.out.println(this.waves);
     }
 
     public void generateEnemies(int wave) {
@@ -242,57 +231,12 @@ public class Planet implements Serializable {
             lineCount++;
 
         }
-        System.out.println(enemyWaves.size());
     }
 
-    public static ArrayList<Defense> getDefenses() {
-        return defenses;
-    }
-
-    public static void setDefenses(ArrayList<Defense> defenses) {
-        Planet.defenses = defenses;
-    }
-
-    public ArrayList<Enemy> getEnemyWaves() {
-        return enemyWaves;
-    }
-
-    public int getDifficulty() {
-        return difficulty;
-    }
-
-    public float getPosX() {
-        return posX;
-    }
-
-    public float getPosY() {
-        return posY;
-    }
-
-    public Texture getPlanetTexture() {
-        return currentPlanetTexture;
-    }
-
-    public int getRadius() {
-        return radius;
-    }
-
-    public Color getPlanetColor() {
-        return planetColor;
-    }
-
-    public int getOrbit() {
-        return orbit;
-    }
-
-
-
-    public void setOrbit(int orbit) {
-        this.orbit = orbit;
-    }
-
-    public ArrayList<Planet> getMoonList() {
-        return moonList;
+    public void checkList(SolarSystem solarSystem){
+        for (Planet planet : solarSystem.getPlanetListOfDifficulty()){
+            System.out.println(planet.difficulty);
+        }
     }
 
     public static void regenerateDefenses(){
@@ -301,14 +245,6 @@ public class Planet implements Serializable {
         defenses.add(new Defense(904, 300));
         defenses.add(new Defense(1241, 300));
         defenses.add(new Defense(1578, 300));
-    }
-
-    public ArrayList<ArrayList<Integer>> getWaves() {
-        return waves;
-    }
-
-    public int getPlanetClass() {
-        return planetClass;
     }
 
     public void setCurrentPlanetTexture() {
@@ -339,15 +275,52 @@ public class Planet implements Serializable {
         }
     }
 
-    public void setEnemyWaves(ArrayList<Enemy> enemyWaves) {
-        this.enemyWaves = enemyWaves;
+    public static ArrayList<Defense> getDefenses() {
+        return defenses;
     }
 
-    public void checkList(SolarSystem solarSystem){
-        for (Planet planet : solarSystem.planetListOfDifficulty){
-            System.out.println(planet.difficulty);
+    public ArrayList<Enemy> getEnemyWaves() {
+        return enemyWaves;
+    }
 
-        }
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public Texture getPlanetTexture() {
+        return currentPlanetTexture;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public int getOrbit() {
+        return orbit;
+    }
+
+    public void setOrbit(int orbit) {
+        this.orbit = orbit;
+    }
+
+    public ArrayList<Planet> getMoonList() {
+        return moonList;
+    }
+
+    public ArrayList<ArrayList<Integer>> getWaves() {
+        return waves;
+    }
+
+    public void setEnemyWaves(ArrayList<Enemy> enemyWaves) {
+        this.enemyWaves = enemyWaves;
     }
 
     public boolean isMoon() {

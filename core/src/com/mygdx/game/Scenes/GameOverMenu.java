@@ -1,6 +1,5 @@
 package com.mygdx.game.Scenes;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Input;
@@ -11,44 +10,50 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class GameOverMenu implements Screen {
 
+    //Main screen
+    private final GameScreen mainRenderScreen;
 
-    private GameScreen mainRenderScreen;
-    private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
-    private Stage stage;
+    //Different batches
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
+    private final Stage stage;
 
-    TextButton tryAgain;
-    TextButton registerScore;
-    TextButton exit;
-    TextButton otherName;
+    //All buttons
+    private final TextButton tryAgain;
+    private final TextButton registerScore;
+    private final TextButton exit;
+    private final TextButton otherName;
 
-    int score = 0;
-    int selectedButton = 1;
+    //The selected button
+    private int selectedButton = 1;
+
+    //Time when last button has been switched
     private long prevSelect = 0;
 
-    BitmapFont normalFont;
-    String currentName;
+    //The used font
+    private final BitmapFont normalFont;
+
+    //Name of player
+    private String currentName;
 
     public GameOverMenu(GameScreen renderScreen) {
         mainRenderScreen = renderScreen;
+
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
         stage = new Stage();
 
-        //Gdx.input.setInputProcessor(stage);
         registerScore = new TextButton("Register score", MainMenu.getButtonSkin());
         tryAgain = new TextButton("Try Again", MainMenu.getButtonSkin());
         exit = new TextButton("exit", MainMenu.getButtonSkin());
@@ -67,173 +72,144 @@ public class GameOverMenu implements Screen {
         stage.addActor(exit);
 
         normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
-        shapeRenderer = new ShapeRenderer();
+
         shapeRenderer.setAutoShapeType(true);
-
-
-        GameScreen mainRenderScreen;
-        SpriteBatch batch;
-        Stage stage;
-
-        TextButton tryAgain;
-
-        int score = 0;
-
-        BitmapFont normalFont;
     }
 
-//    public GameOverMenu(GameScreen renderScreen) {
-//            mainRenderScreen = renderScreen;
-//            batch = new SpriteBatch();
-//            stage = new Stage();
-//
-//            Gdx.input.setInputProcessor(stage);
-//
-//
-//            tryAgain = new TextButton("Try Again", MainMenu.getButtonSkin());
-//
-//            tryAgain.addListener(new ClickListener() {
-//                @Override
-//                public void clicked(InputEvent event, float x, float y) {
-//                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
-//                }
-//            });
-//
-//            tryAgain.setBounds(785, 300, 350, 100);
-//            stage.addActor(tryAgain);
-//
-//            normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
-//        }
+    @Override
+    public void show() {
 
-        @Override
-        public void show () {
+    }
 
+    @Override
+    public void render(float delta) {
+        mainRenderScreen.getMusic().play();
+        mainRenderScreen.getMusic2().dispose();
+        mainRenderScreen.getMusic3().dispose();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        //The score the player has
+        int score;
+        try {
+            score = mainRenderScreen.getScore();
+        } catch (Exception e) {
+            score = 0;
         }
 
-        @Override
-        public void render ( float delta){
-            mainRenderScreen.getMusic().play();
-            mainRenderScreen.getMusic2().dispose();
-            mainRenderScreen.getMusic3().dispose();
-            Gdx.gl.glClearColor(0, 0, 0, 1);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+        batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
+        mainRenderScreen.getTitleFont().draw(batch, "GAME OVER", 640, 750);
+        normalFont.draw(batch, "Score: " + score, 850, 640);
+        normalFont.draw(batch, "Name: " + currentName, 815 - currentName.length() * 13, 610);
+        batch.end();
 
-            try {
-                score = mainRenderScreen.getScore();
-            } catch (Exception e) {
-                score = 0;
+        stage.draw();
 
-            }
+        shapeRenderer.begin();
+        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
 
-            batch.begin();
-            batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
-            mainRenderScreen.getTitleFont().draw(batch, "GAME OVER", 640, 750);
-            normalFont.draw(batch, "Score: " + score, 850, 640);
-            normalFont.draw(batch, "Name: " + currentName, 815 - currentName.length() * 13, 610);
-            batch.end();
-
-            stage.draw();
-
-            shapeRenderer.begin();
-            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(Color.WHITE);
-
-            if (selectedButton == 0) {
+        switch (selectedButton) {
+            case 0: {
                 shapeRenderer.rect(otherName.getX(), otherName.getY(), otherName.getWidth(), otherName.getHeight());
-            } else if (selectedButton == 1) {
-                shapeRenderer.rect(tryAgain.getX(), tryAgain.getY(), tryAgain.getWidth(), tryAgain.getHeight());
-            } else if (selectedButton == 2) {
-                shapeRenderer.rect(registerScore.getX(), registerScore.getY(), registerScore.getWidth(), registerScore.getHeight());
-            } else if (selectedButton == 3) {
-                shapeRenderer.rect(exit.getX(), exit.getY(), exit.getWidth(), exit.getHeight());
-            }
-            shapeRenderer.end();
-
-            if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-                if (selectedButton == 0) {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
                     otherName();
-                } else if (selectedButton == 1) {
+                }
+                break;
+            }
+            case 1: {
+                shapeRenderer.rect(tryAgain.getX(), tryAgain.getY(), tryAgain.getWidth(), tryAgain.getHeight());
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
                     mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
-                } else if (selectedButton == 2) {
+                }
+                break;
+            }
+            case 2: {
+                shapeRenderer.rect(registerScore.getX(), registerScore.getY(), registerScore.getWidth(), registerScore.getHeight());
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
                     saveHighScore(score, currentName);
                     mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
-                } else if (selectedButton == 3) {
+                }
+                break;
+            }
+            case 3: {
+                shapeRenderer.rect(exit.getX(), exit.getY(), exit.getWidth(), exit.getHeight());
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
                     dispose();
                     System.exit(0);
                 }
-
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) && selectedButton > 0 && TimeUtils.millis() - prevSelect > 300) {
-                selectedButton--;
-                prevSelect = TimeUtils.millis();
-            } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && selectedButton < 3 && TimeUtils.millis() - prevSelect > 300) {
-                selectedButton++;
-                prevSelect = TimeUtils.millis();
+                break;
             }
         }
+        shapeRenderer.end();
 
-        @Override
-        public void resize ( int width, int height){
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left")) && selectedButton > 0 && TimeUtils.millis() - prevSelect > 300) {
+            selectedButton--;
+            prevSelect = TimeUtils.millis();
+        } else if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right")) && selectedButton < 3 && TimeUtils.millis() - prevSelect > 300) {
+            selectedButton++;
+            prevSelect = TimeUtils.millis();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        shapeRenderer.dispose();
+        stage.dispose();
+        mainRenderScreen.dispose();
+    }
+
+    public void saveHighScore(int score, String name) {
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec("C:\\xampp\\xampp_start.exe");
+        } catch (Exception ignored) {
 
         }
+        String url = "jdbc:mysql://localhost/highScores";
+        String username = "game", password = "admin";
 
-        @Override
-        public void pause () {
-
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("INSERT INTO scores (score, name) VALUES(" + score + ", \"" + name + "\")");
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void resume () {
-
+        if (process != null) {
+            process.destroy();
         }
+        mainRenderScreen.getHighScoreScene().getHighscores();
+    }
 
-        @Override
-        public void hide () {
-
-        }
-
-        @Override
-        public void dispose () {
-            batch.dispose();
-            shapeRenderer.dispose();
-            stage.dispose();
-            mainRenderScreen.dispose();
-        }
-
-        public void saveHighScore ( int score, String name){
-            Process process = null;
-            try {
-                process = Runtime.getRuntime().exec("C:\\xampp\\xampp_start.exe");
-            } catch (Exception e) {
-
-            }
-            String url = "jdbc:mysql://localhost/highScores";
-            String username = "game", password = "admin";
-
-            try {
-                Connection connection = DriverManager.getConnection(url, username, password);
-                Statement statement = connection.createStatement();
-                //ResultSet rs = statement.executeQuery("SELECT naam FROM medewerker");
-                int gelukt = statement.executeUpdate("INSERT INTO scores (score, name) VALUES(" + score + ", \"" + name + "\")");
-                //while(rs.next()){
-                //	System.out.println(rs.getString(1));
-                //}
-                statement.close(); //sluit ook de resultset
-                connection.close();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-            if (process != null) {
-                process.destroy();
-            }
-            mainRenderScreen.getHighScoreScene().getHighscores();
-        }
-
-        public void otherName () {
-            int randomFirst = MathUtils.random(0, WinMenu.getFirstNames().length - 1);
-            int randomLast = MathUtils.random(0, WinMenu.getLastNames().length - 1);
-            this.currentName = WinMenu.getFirstNames()[randomFirst] + " " + WinMenu.getLastNames()[randomLast];
-        }
-
-
+    public void otherName() {
+        int randomFirst = MathUtils.random(0, WinMenu.getFirstNames().length - 1);
+        int randomLast = MathUtils.random(0, WinMenu.getLastNames().length - 1);
+        this.currentName = WinMenu.getFirstNames()[randomFirst] + " " + WinMenu.getLastNames()[randomLast];
+    }
 }

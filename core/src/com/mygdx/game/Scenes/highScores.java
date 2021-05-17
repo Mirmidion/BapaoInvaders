@@ -5,12 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.game.GameScreen;
-import com.mysql.cj.xdevapi.Result;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,16 +17,15 @@ import java.util.ArrayList;
 
 public class highScores implements Screen {
 
-    GameScreen mainRenderScreen;
+    private final GameScreen mainRenderScreen;
 
-    SpriteBatch batch;
-    ShapeRenderer shapeRenderer;
-    Stage stage;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
 
-    ArrayList<String> names;
-    ArrayList<Integer> scores;
+    private ArrayList<String> names;
+    private ArrayList<Integer> scores;
 
-    BitmapFont normalFont;
+    private final BitmapFont normalFont;
 
     public highScores(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
@@ -40,7 +36,7 @@ public class highScores implements Screen {
 
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
-        this.shapeRenderer = new ShapeRenderer();
+
     }
 
     @Override
@@ -108,11 +104,11 @@ public class highScores implements Screen {
         ArrayList<String> names = new ArrayList<>();
         ArrayList<Integer> scores = new ArrayList<>();
         Process process = null;
-        //try {
-            //process = Runtime.getRuntime().exec("C:\\xampp\\xampp_start.exe");
-        //} catch (Exception e) {
+        try {
+            process = Runtime.getRuntime().exec("C:\\xampp\\xampp_start.exe");
+        } catch (Exception ignored) {
 
-        //}
+        }
         String url = "jdbc:mysql://localhost/highScores";
         String username = "game", password = "admin";
 
@@ -134,10 +130,10 @@ public class highScores implements Screen {
             connection.close();
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
-        //if (process != null) {
-        //    process.destroy();
-        //}
+        if (process != null) {
+            process.destroy();
+        }
     }
 }

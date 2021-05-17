@@ -1,34 +1,20 @@
 package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mygdx.game.Entities.Bullet;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-
-    
-
 
 public class Player extends Ship{
 
-    private Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
-    private Texture shield = new Texture(Gdx.files.internal("shield.png"));
+    private final Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
+    private final Texture shield = new Texture(Gdx.files.internal("shield.png"));
    // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private long time = 0;
     private boolean invulnerable = false;
 
     private float timeInvulnerable = 0;
-    private float invulnerableTime = 3;
 
 
     public Player (int width){
@@ -48,22 +34,7 @@ public class Player extends Ship{
         else {
             posX += x;
         }
-
     }
-
-
-    public float getPosY() {
-        return posY;
-    }
-
-    public float getPosX() {
-        return posX;
-    }
-
-    public Sprite getPlayerSprite() {
-        return playerSprite;
-    }
-
 
     public void shoot(){
         System.out.println(time);
@@ -74,38 +45,9 @@ public class Player extends Ship{
         }
     }
 
-    public void bulletRemove(Bullet bulletToRemove) {
-
-    }
-
-
-    public boolean isInvulnerable() {
-
-        return this.invulnerable;
-
-    }
-
-    public void setInvulnerable(boolean invulnerable) {
-        this.invulnerable = invulnerable;
-    }
-
-
-
-    public int getHealth() {
-        return health;
-    }
-
-
-    public void setHealth(int health) {
-        this.health = Math.max(Math.min(this.health + health, 100), 0);
-    }
-
     public void resetPosition(int width){
-
         this.posX = width/2f-shipSprite.getWidth()/2f;
-
     }
-
 
     public void update(float delta)
     {
@@ -113,11 +55,11 @@ public class Player extends Ship{
         {
             timeInvulnerable += delta;
         }
+        float invulnerableTime = 3;
         if(timeInvulnerable - invulnerableTime >= 0)
         {
             invulnerable = false;
             timeInvulnerable = 0;
-
         }
     }
 
@@ -135,8 +77,29 @@ public class Player extends Ship{
         {
             playerSprite.setAlpha(1f);
         }
-
     }
 
+    public float getPosY() {
+        return posY;
+    }
 
+    public float getPosX() {
+        return posX;
+    }
+
+    public boolean isInvulnerable() {
+        return this.invulnerable;
+    }
+
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = Math.max(Math.min(this.health + health, 100), 0);
+    }
 }

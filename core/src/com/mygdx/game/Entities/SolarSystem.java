@@ -1,8 +1,6 @@
 package com.mygdx.game.Entities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.mygdx.game.Entities.Planet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,23 +8,27 @@ import java.util.LinkedList;
 
 public class SolarSystem implements Serializable {
 
-    // Properties of the star
-    int posXStar = 960;
-    int posYStar = 540;
-    int radiusInPixels = 100;
-    float yScaleOfOrbits = 0.9f;
-    boolean fresh = true;
-    int globalDifficulty = 0;
-    int currentlevel = 1;
-    boolean isPlayed = false;
-    LinkedList<Planet> planetListOfDifficulty = new LinkedList<Planet>(); //TODO -- to save
+    //Properties of the star
+    private int posXStar = 960;
+    private int posYStar = 540;
+
+    //Is this a new savegame?
+    private boolean fresh = true;
+
+    //Difficulty of hardest planet in the solar system
+    private int globalDifficulty = 0;
+
+    //The current level
+    private boolean isPlayed = false;
+
+    //Planets ranked in order of difficulty
+    private LinkedList<Planet> planetListOfDifficulty = new LinkedList<>();
 
     // Planets inside the Solar System
-    ArrayList<Planet> planets = new ArrayList<Planet>();
+    private ArrayList<Planet> planets = new ArrayList<>();
 
     // Amount of orbits around the star
-    int[] orbitRings = {200, 275, 375, 500, 575, 650};
-
+    private final int[] orbitRings = {200, 275, 375, 500, 575, 650};
 
     public SolarSystem(int width, int height){
         posYStar = height/2;
@@ -36,11 +38,19 @@ public class SolarSystem implements Serializable {
         for (int i = randomAmountOfPlanets; i > 0; i--){
             Planet planet = new Planet(this.orbitRings[randomOrbit],this);
             this.planets.add(planet);
-            planetListOfDifficulty.offer(planet);
             randomOrbit++;
         }
-        currentlevel = 1;
         //System.out.println(planetListOfDifficulty);
+    }
+
+    public void resetList(){
+        LinkedList<Planet> temp = new LinkedList<>();
+        for (Planet planet : planetListOfDifficulty){
+            temp.offer(planet);
+            System.out.println(temp.indexOf(planet));
+        }
+        planetListOfDifficulty = new LinkedList<>();
+        planetListOfDifficulty = temp;
     }
 
     public SolarSystem(){
@@ -51,24 +61,16 @@ public class SolarSystem implements Serializable {
         return posXStar;
     }
 
-    public ArrayList<Planet> getPlanets() {
-        return planets;
-    }
-
     public int getPosYStar() {
         return posYStar;
     }
 
-    public float getyScaleOfOrbits() {
-        return yScaleOfOrbits;
-    }
-
-    public int getRadiusInPixels() {
-        return radiusInPixels;
-    }
-
     public int[] getOrbitRings() {
         return orbitRings;
+    }
+
+    public ArrayList<Planet> getPlanets() {
+        return planets;
     }
 
     public void setPlanets(ArrayList<Planet> planets) {
@@ -81,16 +83,6 @@ public class SolarSystem implements Serializable {
 
     public void setPlanetListOfDifficulty(LinkedList<Planet> planetListOfDifficulty) {
         this.planetListOfDifficulty = planetListOfDifficulty;
-    }
-
-    public void resetList(){
-        LinkedList<Planet> temp = new LinkedList<>();
-        for (Planet planet : planetListOfDifficulty){
-            temp.offer(planet);
-            System.out.println(temp.indexOf(planet));
-        }
-        planetListOfDifficulty = new LinkedList<>();
-        planetListOfDifficulty = temp;
     }
 
     public void setFresh(boolean fresh) {
@@ -107,10 +99,6 @@ public class SolarSystem implements Serializable {
 
     public int getGlobalDifficulty() {
         return globalDifficulty;
-    }
-
-    public void setCurrentlevel(int currentlevel) {
-        this.currentlevel += currentlevel;
     }
 
     public boolean isPlayed() {

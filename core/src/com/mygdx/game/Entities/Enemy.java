@@ -3,47 +3,64 @@ package com.mygdx.game.Entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mygdx.game.Entities.Bullet;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
 
 public class Enemy extends Ship{
 
     //For the random position
     //targetX is in the range of 50 and 1870 - width of the sprite
     //targetY is in the range of 400 and 1050 - height of the sprite
-    private Rectangle targetArea;
-    private Rectangle flyArea;
-    private Rectangle hideArea;
-    private Rectangle protectArea;
     private float targetX;
     private float targetY;
+
+    //Variables to store a temporary position
     private float tempX;
     private float tempY;
-    private int limitXLeft;
-    private int limitXRight;
-    private int enemyClass;
+
+    //Needed when enemies enter the level, how far they can go left and right
+    private final int limitXLeft;
+    private final int limitXRight;
+
+    //Type of enemy
+    private final int enemyClass;
+
+    //The speed of flying
     private float speed = 1;
 
+    //Different areas to fly in
+    private Rectangle targetArea;
+    private final Rectangle flyArea;
+    private final Rectangle hideArea;
+    private final Rectangle protectArea;
+
+    //Max health to make a health bar
     private int maxHealth;
+
+    //Can it take damage? (Only when in screenspace)
     private boolean invulnerable = true;
 
 
     // 1 == right	-1 == left
     private int directionOfMoving = -1;
 
-    States currentState;
+    //The current state of the enemy
+    private States currentState;
+
+    //Time of the previous state change
     private long previousStateChange = 0;
 
+    //Was it hit?
     private boolean gotHit = false;
+
+    //Time after it got hit
     private long timeAfterHit = 0;
 
-    private Planet homePlanet;
+    //Home planet of the enemy
+    private final Planet homePlanet;
 
+    //All vulnerable enemies in the current level
     static LinkedList<Enemy> vulnerableEnemies = new LinkedList<>();
 
     // Finite state machine:
@@ -136,6 +153,7 @@ public class Enemy extends Ship{
                 enemy.moveEnemy();
             }
         },
+        //Enemy tries to avoid all bullets from the player
         Avoid{
 
             @Override
@@ -178,6 +196,7 @@ public class Enemy extends Ship{
                 enemy.moveEnemy();
             }
         },
+        //Enemy hides behind other enemies
         Hide{
 
             @Override
@@ -209,6 +228,7 @@ public class Enemy extends Ship{
                 enemy.moveEnemy();
             }
         },
+        //Enemy tries to protect the enemies that are hiding
         Protect{
 
             @Override
@@ -257,13 +277,14 @@ public class Enemy extends Ship{
     public Enemy(int enemyClass, int x, int y, int limitXLeft, int limitXRight, Planet homePlanet){
         this.enemyClass = enemyClass;
         this.homePlanet = homePlanet;
+        this.posX = x;
+        this.posY = y;
+        this.limitXLeft = limitXLeft;
+        this.limitXRight = limitXRight;
+
         if (enemyClass==1) {
             // Cruiser (average speed and damage)
             this.shipSprite = new Texture("Enemyship.png");
-            this.limitXLeft = limitXLeft;
-            this.limitXRight = limitXRight;
-            this.posX = x;
-            this.posY = y;
             this.speed = 1;
             this.health = 100;
             this.maxHealth = 100;
@@ -271,10 +292,6 @@ public class Enemy extends Ship{
         // Falcon (very agile, not much damage)
         else if (enemyClass == 2){
             this.shipSprite = new Texture("Falcon.png");
-            this.limitXLeft = limitXLeft;
-            this.limitXRight = limitXRight;
-            this.posX = x;
-            this.posY = y;
             this.speed = 1.5f;
             this.health = 50;
             this.maxHealth = 50;
@@ -282,10 +299,6 @@ public class Enemy extends Ship{
         // Fighter (little above average damage, average speed)
         else if (enemyClass == 3) {
             this.shipSprite = new Texture("Enemyship.png");
-            this.limitXLeft = limitXLeft;
-            this.limitXRight = limitXRight;
-            this.posX = x;
-            this.posY = y;
             this.speed = 1;
             this.health = 150;
             this.maxHealth = 150;
@@ -293,10 +306,6 @@ public class Enemy extends Ship{
         // Tank (high health, high damage but slow)
         else if (enemyClass == 4) {
             this.shipSprite = new Texture("Enemyship.png");
-            this.limitXLeft = limitXLeft;
-            this.limitXRight = limitXRight;
-            this.posX = x;
-            this.posY = y;
             this.speed = 1;
             this.health = 300;
             this.maxHealth = 300;
@@ -362,14 +371,6 @@ public class Enemy extends Ship{
         this.gun *= -1;
     }
 
-    public void setHealth(int health) {
-        this.health = Math.max(Math.min(this.health + health, 100), 0);
-    }
-
-    public int getEnemyClass() {
-        return enemyClass;
-    }
-
     public void refreshTextures(){
         if (this.enemyClass == 1){
             this.shipSprite = new Texture("Enemyship.png");
@@ -430,10 +431,7 @@ public class Enemy extends Ship{
             }
             return true;
         }
-        else if (gotHit){
-            return true;
-        }
-        return false;
+        else return gotHit;
     }
 
     public boolean enemyIsNearDeath(Enemy enemyHurt){
@@ -444,6 +442,40 @@ public class Enemy extends Ship{
             }
         }
         return false;
+    }
+
+    public void avoidBullet(){
+        int bulletFriendlyCount = 0;
+        for (Bullet bullet : Bullet.getAllBullets()){
+            if (!bullet.getFriendly()){
+                bulletFriendlyCount++;
+            }
+        }
+        if (bulletFriendlyCount != Bullet.getAllBullets().size()) {
+            for (int i = 0; i < 4; i++) {
+                this.tryNewPosition();
+                Rectangle enemyRect = new Rectangle(this.tempX - 40, 0, this.shipSprite.getWidth() + 80, 1000);
+                Rectangle bulletRect = new Rectangle(Bullet.getAllBullets().get(0).getPosX(), Bullet.getAllBullets().get(0).getPosY(), Bullet.getAllBullets().get(0).getLaser().getWidth(), 1000);
+                for (Bullet bullet : Bullet.allBullets) {
+                    if (!bullet.getFriendly()) {
+                        bulletRect = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), 1000);
+
+                        if (this.overlaps(enemyRect, bulletRect)) {
+                            break;
+                        }
+                    }
+                }
+                if (!this.overlaps(enemyRect, bulletRect)) {
+                    this.targetX = this.tempX;
+                    this.targetY = this.tempY;
+                    break;
+                }
+            }
+        }
+    }
+
+    public boolean overlaps (Rectangle r, Rectangle r2){
+        return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
     }
 
     public void setGotHit() {
@@ -462,10 +494,6 @@ public class Enemy extends Ship{
     public void setGotHit(boolean gotHit) {
         this.gotHit = gotHit;
 
-    }
-
-    public boolean overlaps (Rectangle r, Rectangle r2){
-        return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
     }
 
     public void setPreviousStateChange(long previousStateChange) {
@@ -492,44 +520,15 @@ public class Enemy extends Ship{
         return maxHealth;
     }
 
-    public String getCurrentStateName() {
-        return currentState.getName();
-    }
-
     public boolean isInvulnerable() {
         return invulnerable;
     }
 
-    public void avoidBullet(){
-        int bulletFriendlyCount = 0;
-        for (Bullet bullet : Bullet.getAllBullets()){
-            if (!bullet.getFriendly()){
-                bulletFriendlyCount++;
-            }
-        }
-        if (bulletFriendlyCount != Bullet.getAllBullets().size()) {
-            for (int i = 0; i < 4; i++) {
-                this.tryNewPosition();
-                Rectangle enemyRect = new Rectangle(this.tempX - 40, 0, this.shipSprite.getWidth() + 80, 1000);
-                Rectangle bulletRect = new Rectangle(Bullet.getAllBullets().get(0).getPosX(), Bullet.getAllBullets().get(0).getPosY(), Bullet.getAllBullets().get(0).getLaser().getWidth(), 1000);
-                for (Bullet bullet : Bullet.allBullets) {
-                    if (bullet.getFriendly()) {
-                    } else {
+    public void setHealth(int health) {
+        this.health = Math.max(Math.min(this.health + health, 100), 0);
+    }
 
-                        bulletRect = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), 1000);
-
-                        if (this.overlaps(enemyRect, bulletRect)) {
-                            break;
-                        }
-                    }
-                }
-                if (this.overlaps(enemyRect, bulletRect)) {
-                } else {
-                    this.targetX = this.tempX;
-                    this.targetY = this.tempY;
-                    break;
-                }
-            }
-        }
+    public int getEnemyClass() {
+        return enemyClass;
     }
 }

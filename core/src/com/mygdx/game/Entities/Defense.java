@@ -4,11 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Defense {
+
+    //Health of the defense
     private int health;
-    private Texture texture1 = new Texture(Gdx.files.internal("Bapao1.png"));
-    private Texture texture = new Texture(Gdx.files.internal("Bapao.png"));
-    private int posY;
-    private int posX;
+
+    //Different textures
+    private final Texture texture1 = new Texture(Gdx.files.internal("Bapao1.png"));
+    private final Texture texture = new Texture(Gdx.files.internal("Bapao.png"));
+
+    //Position
+    private final int posY;
+    private final int posX;
 
     public Defense(int posX, int posY){
         this.health = 100;
@@ -30,14 +36,6 @@ public class Defense {
 
     public Texture getTexture() {
         return (health > 50)? texture : texture1;
-    }
-
-    public void setPosY(int posY) {
-        this.posY = posY;
-    }
-
-    public void setPosX(int posX) {
-        this.posX = posX;
     }
 
     public void setHealth(int health) {

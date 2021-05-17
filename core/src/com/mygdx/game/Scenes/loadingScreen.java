@@ -14,11 +14,11 @@ import com.mygdx.game.GameScreen;
 
 public class loadingScreen implements Screen {
 
-    GameScreen mainRenderScreen;
-    SpriteBatch batch = new SpriteBatch();
+    private final GameScreen mainRenderScreen;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
 
-    ShapeRenderer shapeRenderer = new ShapeRenderer();
-    AssetManager manager = new AssetManager();
+    private final AssetManager manager = new AssetManager();
     float progress;
     long previousTime;
 
@@ -26,6 +26,8 @@ public class loadingScreen implements Screen {
     public loadingScreen (GameScreen renderScreen){
         mainRenderScreen = renderScreen;
         previousTime = TimeUtils.millis();
+        batch = mainRenderScreen.getSpriteBatch();
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
     }
 
     @Override
@@ -56,9 +58,14 @@ public class loadingScreen implements Screen {
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GOLD);
-        shapeRenderer.rect(300, 300, 1320 * progress * ((TimeUtils.millis() - previousTime)/ 5000f), 50);
+        if (progress > ((TimeUtils.millis() - previousTime)/ 5000f)) {
+            shapeRenderer.rect(300, 300, 1320 * ((TimeUtils.millis() - previousTime) / 5000f), 50);
+        }
+        else{
+            shapeRenderer.rect(300, 300, 1320 * progress, 50);
+        }
+        shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.end();
-
     }
 
     @Override
