@@ -115,6 +115,10 @@ public class Enemy extends Ship{
     }
 
     public void update(Player player){
+        if (getSprite() == null) {
+            refreshTextures();
+        }
+
         this.currentState.update(this,player);
 
         if (TimeUtils.millis() - previousStateChange > 500) {

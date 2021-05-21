@@ -69,9 +69,7 @@ public class GameScreen implements Screen {
 	//Solar Systems
 	private Planet currentPlanet;
 
-	//Paused variables
-	private static boolean paused = false;
-	private long pauseDelay = 0;
+
 
 	private final SpriteBatch spriteBatch;
 	private final ShapeRenderer shapeRenderer;
@@ -416,10 +414,6 @@ public class GameScreen implements Screen {
 
 	public void setCurrentPlanet(Planet currentPlanet) {
 		this.currentPlanet = currentPlanet;
-	}
-
-	public static boolean isPaused() {
-		return !paused;
 	}
 
 	public Planet getCurrentPlanet() {

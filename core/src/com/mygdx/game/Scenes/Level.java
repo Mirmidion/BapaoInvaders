@@ -64,7 +64,7 @@ public class Level implements Screen {
 
         batch.begin();
         // Move the background down
-        backgroundPosY -= (GameScreen.isPaused()) ? 2 : 0;
+        backgroundPosY -= 2;
         if (backgroundPosY % mainRenderScreen.getHeight() == 0) {
             backgroundPosY = 0;
         }
@@ -94,45 +94,6 @@ public class Level implements Screen {
 
             batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
 
-            for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
-                Enemy enemy = enemyIterator.next();
-                if (enemy.getSprite() == null) {
-                    enemy.refreshTextures();
-                }
-                if (enemy.getHealth() != 0) {
-
-                    batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
-                    batch.draw(healthBar, enemy.getPosX() + (enemy.getSprite().getWidth() - 80f) / 2f, enemy.getPosY() - 10, 80f * enemy.getHealth() / enemy.getMaxHealth(), 10);
-                    //mainRenderScreen.getNormalFont().draw(batch, enemy.getCurrentStateName(),enemy.getPosX()+20, enemy.getPosY()+enemy.getSprite().getHeight()+10);
-
-                    for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
-                        Bullet bullet = bulletIterator.next();
-
-                        Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getSprite().getHeight());
-                        Rectangle playerRectangle = new Rectangle((int) player.getPosX(), (int) player.getPosY(), 140, player.getSprite().getHeight());
-                        Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
-
-                        if (player.getHealth() != 0 && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
-                            player.setInvulnerable(true);
-                            player.setHealth(bullet.getDamage() * -1);
-                            bulletIterator.remove();
-                        } else if (player.getHealth() != 0 && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
-                            bulletIterator.remove();
-                        } else if (enemy.getHealth() != 0 && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly() && enemy.isInvulnerable()) {
-                            enemy.setHealth(bullet.getDamage() * -1);
-                            enemy.setGotHit();
-                            bulletIterator.remove();
-                        } else if (enemy.getHealth() <= 0) {
-                            mainRenderScreen.setScore(50 * enemy.getEnemyClass());
-                            break;
-                        }
-                    }
-                } else {
-                    enemyIterator.remove();
-                }
-            }
-
-
             if (mainRenderScreen.getCurrentPlanet().getEnemyWaves().size() == 0 && mainRenderScreen.getCurrentPlanet().getWaves().size() != currentWaveOfPlanet + 1) {
                 currentWaveOfPlanet++;
                 mainRenderScreen.getCurrentPlanet().generateEnemies(currentWaveOfPlanet);
@@ -152,51 +113,24 @@ public class Level implements Screen {
                 mainRenderScreen.saveSaveGame(MainMenu.getSelectedSaveGame());
             }
 
-            // Draw every bullet and move them up/down
-            for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
-                Bullet bullet = iter.next();
-                batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-                if (GameScreen.isPaused()) {
-                    bullet.setPosY(3f);
-                }
-                if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
-                    iter.remove();
-                }
-            }
-
             for (Planet planet : mainRenderScreen.getSolarSystem().getPlanets()) {
                 if (planet.getDifficulty() == solarSystem.getGlobalDifficulty()) {
                     mainRenderScreen.setCurrentPlanet(planet);
                 }
             }
 
-            // draw all defenses present
-            /*for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
-                Defense defense = iter.next();
-                Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
-                for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
-                    Bullet bullet = iter2.next();
-                    Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), bullet.getLaser().getHeight());
-                    if (defense.getHealth() != 0 && bullet.isExists() && overlaps(defenseRectangle, bulletRectangle)) {
-                        iter2.remove();
-                        defense.setHealth(-50);
-                    }
-                }
-                if (defense.getHealth() > 0) {
-                    batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
-                } else {
-                    iter.remove();
-                }
-            }*/
+
+        checkCollisions();
+        updateEntities();
 
 
             // Change the position of the player depending on the keys pressed
-            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left")) && GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left"))) {
                 player.setPosX(-2, mainRenderScreen.getWidth());
-            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right")) && GameScreen.isPaused()) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right"))) {
                 player.setPosX(2, mainRenderScreen.getWidth());
             }
-            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && GameScreen.isPaused()) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
                 player.shoot();
             }
 
@@ -258,16 +192,65 @@ public class Level implements Screen {
                 iter.remove();
             }
         }
+
+        for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy.getHealth() != 0) {
+                for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
+                    Bullet bullet = bulletIterator.next();
+
+                    Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getSprite().getHeight());
+                    Rectangle playerRectangle = new Rectangle((int) player.getPosX(), (int) player.getPosY(), 140, player.getSprite().getHeight());
+                    Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
+
+                    if (overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
+                        player.setInvulnerable(true);
+                        player.setHealth(bullet.getDamage() * -1);
+                        bulletIterator.remove();
+                    } else if (overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
+                        bulletIterator.remove();
+                    } else if (overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly() && enemy.isInvulnerable()) {
+                        enemy.setHealth(bullet.getDamage() * -1);
+                        enemy.setGotHit();
+                        bulletIterator.remove();
+                    } else if (enemy.getHealth() <= 0) {
+                        mainRenderScreen.setScore(50 * enemy.getEnemyClass());
+                        break;
+                    }
+                }
+            } else {
+                enemyIterator.remove();
+            }
+        }
     }
 
     public void updateEntities(){
+        //Defenses
         for (Defense defense : Planet.getDefenses()){
             if (defense.getHealth() > 0) {
                 batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
             }
         }
 
+        //Bullets
+        for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
+            Bullet bullet = iter.next();
+            batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+            bullet.setPosY(3f);
+            if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
+                iter.remove();
+            }
+        }
 
+        //Enemies
+        for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()) {
+            if (enemy.getSprite() == null) {
+                enemy.refreshTextures();
+            }
+            if (enemy.getHealth() != 0) {
+                batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
+                batch.draw(healthBar, enemy.getPosX() + (enemy.getSprite().getWidth() - 80f) / 2f, enemy.getPosY() - 10, 80f * enemy.getHealth() / enemy.getMaxHealth(), 10);
+            }
+        }
     }
-
 }

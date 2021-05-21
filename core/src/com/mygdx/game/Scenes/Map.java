@@ -114,7 +114,7 @@ public class Map implements Screen {
 
                      // Calculate the position of the moon on the orbit
                      moon.setMoonOrbit(moon.getOrbit());
-
+                     moon.setMoonOrbit(moon.getOrbit());
                      //Draw the moon with its own texture
                      batch.begin();
                      batch.draw(moon.getPlanetTexture(), moon.getPosX() + planetPositionX - moon.getPlanetTexture().getWidth()/2f, moon.getPosY() +planetPositionY - moon.getPlanetTexture().getHeight()/2f);
@@ -130,7 +130,7 @@ public class Map implements Screen {
             // Calculate the planets position in the orbit
             planet.orbit();
             if (mainRenderScreen.isFirstLoad()){
-                planet.orbit();
+                //planet.orbit();
             }
 
 
@@ -143,6 +143,13 @@ public class Map implements Screen {
             batch.draw(planet.getPlanetTexture(), (planetPositionX - planet.getPlanetTexture().getWidth()/2f) ,  planetPositionY - planet.getPlanetTexture().getHeight()/2f );
             batch.end();
         }
+
+        for (Planet planet : mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty()) {
+            if (!planet.isMoon()) {
+                //planet.orbit();
+            }
+        }
+
         if (!shapeRenderer.isDrawing()){
             shapeRenderer.begin();
         }
@@ -152,7 +159,7 @@ public class Map implements Screen {
         shapeRenderer.setColor(new Color(255,255,255,255));
         Planet peekPlanet = mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek();
         if (peekPlanet.isMoon()) {
-            shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + (peekPlanet.getOrbitPlanet().getPosX() + peekPlanet.getPosX()) / mapScale - peekPlanet.getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + (peekPlanet.getOrbitPlanet().getPosY() + peekPlanet.getPosY()) / mapScale - peekPlanet.getRadius() / 2f), peekPlanet.getRadius(), peekPlanet.getRadius());
+            shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + (peekPlanet.getOrbitPlanet().getPosX() / mapScale + peekPlanet.getPosX()) - peekPlanet.getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + (peekPlanet.getOrbitPlanet().getPosY() / mapScale + peekPlanet.getPosY()) - peekPlanet.getRadius() / 2f), peekPlanet.getRadius(), peekPlanet.getRadius());
         }
         else if (!peekPlanet.isMoon()){
             shapeRenderer.ellipse((mainRenderScreen.getSolarSystem().getPosXStar() + peekPlanet.getPosX() / mapScale - peekPlanet.getRadius() / 2f), (mainRenderScreen.getSolarSystem().getPosYStar() + peekPlanet.getPosY() / mapScale - peekPlanet.getRadius() / 2f), peekPlanet.getRadius(), peekPlanet.getRadius());

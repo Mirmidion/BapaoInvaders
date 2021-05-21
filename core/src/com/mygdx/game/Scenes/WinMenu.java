@@ -76,7 +76,9 @@ public class WinMenu implements Screen {
             score = 0;
         }
 
-        batch.begin();
+        if (!batch.isDrawing()) {
+            batch.begin();
+        }
         batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
         mainRenderScreen.getTitleFont().draw(batch, "YOU WIN", 710, 750);
         normalFont.draw(batch, "Score: " + score, 850, 640);

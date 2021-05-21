@@ -191,7 +191,7 @@ public class MainMenu implements Screen {
                     if (i == 0 && mainRenderScreen.getSaveGame1SolarSystem().isPlayed()) {
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame1SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
-                        titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270 + 560, 550);
+                        titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270, 550);
                     } else if (i == 1 && mainRenderScreen.getSaveGame2SolarSystem().isPlayed()) {
                         titleFont.getData().setScale(1f);
                         titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame2SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
