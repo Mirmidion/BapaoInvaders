@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.mygdx.game.BapoaInvaders;
 import com.mygdx.game.Controllers.Arduino;
+import com.mygdx.game.Entities.Ship;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +19,6 @@ import java.sql.Driver;
 
 public class DesktopLauncher {
 	public static void main(String[] args) {
-
 
 
 		

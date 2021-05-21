@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class highScores implements Screen {
+public class HighScores implements Screen {
 
     private final GameScreen mainRenderScreen;
 
@@ -27,7 +27,7 @@ public class highScores implements Screen {
 
     private final BitmapFont normalFont;
 
-    public highScores(GameScreen gameScreen){
+    public HighScores(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
 
         getHighscores();
@@ -97,7 +97,8 @@ public class highScores implements Screen {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        shapeRenderer.dispose();
     }
 
     public void getHighscores() {

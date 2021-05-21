@@ -15,20 +15,22 @@ import com.mygdx.game.GameScreen;
 
 public class SettingsMenu extends ScreenAdapter implements Screen {
 
+    //The main settings screen
+    private final GameScreen mainRenderScreen;
+
+    //The spritebatch
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
+
     //Settings menu Layout and Objects
     private final Table settingsTable;
 
-    //The spritebatch
-    SpriteBatch batch = new SpriteBatch();
-    ShapeRenderer shapeRenderer = new ShapeRenderer();
+
 
     //The stage for drawing and getting input from buttons
-    Stage stage = new Stage();
+    private final Stage stage = new Stage();
 
     private Skin volumeDisplayScreen;
-
-    //The main settings screen
-    GameScreen mainRenderScreen;
 
     private final TextButton volumeUp;
     private final TextButton volumeDown;
@@ -42,9 +44,10 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
     private long prevSelect = 0;
     private static long prevChange = 0;
 
-    public SettingsMenu(GameScreen renderScreen) {
-        mainRenderScreen = renderScreen;
-
+    public SettingsMenu(GameScreen gameScreen) {
+        mainRenderScreen = gameScreen;
+        batch = mainRenderScreen.getSpriteBatch();
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
         settingsTable = new Table();
         settingsTable.setPosition(250, 600);
         settingsTable.left();
@@ -68,8 +71,6 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         fpsCounterOn = new TextButton("On", volumeDisplayScreen);
         fpsCounterOff = new TextButton("Off", volumeDisplayScreen);
 
-
-        mainRenderScreen.setSettingsMenuSwitch(false);
 
         exit = new TextButton("Exit", buttonSkin);
 

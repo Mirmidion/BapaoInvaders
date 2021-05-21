@@ -76,21 +76,21 @@ public class Planet implements Serializable {
             whichPlanetTexture = (randomColor == 1)? 1: (randomColor == 2)? 3:(randomColor == 3)? 2:(randomColor == 4)? 2: 2;
             this.planetClass = 3;
             System.out.println("Added a Planet");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 30;
         }
         else if (isBetween(random, 51, 60)){
             this.currentPlanetTexture = gasGiantTexture;
             this.planetClass = 4;
             System.out.println("Added a Gas Giant");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 61, 70)){
             this.currentPlanetTexture = iceGiantTexture;
             this.planetClass = 5;
             System.out.println("Added a Ice Giant");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 71, 85)) {
@@ -132,7 +132,7 @@ public class Planet implements Serializable {
         solarSystem.getPlanetListOfDifficulty().offer(this);
     }
 
-    public void GenerateMoons(int planetType, SolarSystem solarSystem){
+    public void generateMoons(int planetType, SolarSystem solarSystem){
         int amountOfMoons = MathUtils.random(-3,3);
         amountOfMoons = Math.max(amountOfMoons, 0);
         for (int i = amountOfMoons; i > 0; i--){
@@ -150,12 +150,12 @@ public class Planet implements Serializable {
     }
 
     public void orbit(){
-        this.setOrbit(getOrbitDirection(this.rotationSpeed));
+        this.setCurrentOrbit(getOrbitDirection(this.rotationSpeed));
         this.posX = (float)Math.cos(angle)*orbit;
         this.posY = (float)Math.sin(angle)*orbit;
     }
 
-    public void setOrbit(float angle){
+    public void setCurrentOrbit(float angle){
         if ((this.angle + angle > 2*Math.PI && orbitClockWise)||(this.angle + angle > 2*Math.PI && !orbitClockWise)){
             this.angle = 0;
         }
@@ -190,7 +190,7 @@ public class Planet implements Serializable {
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
             ArrayList<Integer> wave = new ArrayList<>();
             int amountOfTypesOfEnemies = Math.min(4,Math.max(2,Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))))));
-            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
+            for (int enemyType = 1; enemyType <= (Math.min(amountOfTypesOfEnemies, 2)); enemyType++){
                 int randomAmount = MathUtils.random(4,12);
                 wave.add(randomAmount);
                 wave.add(enemyType);

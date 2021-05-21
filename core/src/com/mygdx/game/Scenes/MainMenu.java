@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -47,8 +46,8 @@ public class MainMenu implements Screen {
     //Object visuals
     private static Skin buttonSkin;
 
-    BitmapFont titleFont;
-    BitmapFont normalFont;
+    private final BitmapFont titleFont;
+    private final BitmapFont normalFont;
 
     private static int selectedSaveGame = 1;
     private long previousSelected = 0;
@@ -58,11 +57,14 @@ public class MainMenu implements Screen {
     private long prevSelect = 0;
     private long select;
 
-    public MainMenu(GameScreen renderScreen){
-        mainRenderScreen = renderScreen;
+    private Texture saveGameTexture;
+
+    public MainMenu(GameScreen gameScreen){
+        mainRenderScreen = gameScreen;
 
         normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
         titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
+        saveGameTexture = new Texture("button.png");
 
         //Initializing Sprites
         bapaoSprites = new Sprite[15];
@@ -80,8 +82,6 @@ public class MainMenu implements Screen {
 
         start = new TextButton("Start", buttonSkin);
         settings = new TextButton("Settings",buttonSkin);
-        
-        mainRenderScreen.setSettingsMenuSwitch(false);
 
         exit = new TextButton("Exit",buttonSkin);
 
@@ -184,7 +184,7 @@ public class MainMenu implements Screen {
             shapeRenderer.setAutoShapeType(true);
             for (int i = 0; i < 3; i++) {
                 batch.begin();
-                batch.draw(mainRenderScreen.getSettingsMenu(), 200 + 560 * i, 300, 400, 600);
+                batch.draw(saveGameTexture, 200 + 560 * i, 300, 400, 600);
                 normalFont.getData().setScale(1f);
                 normalFont.draw(batch, "Savegame "+(i+1),225 + 560 * i, 880);
                 try {
@@ -259,7 +259,9 @@ public class MainMenu implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
+        batch.dispose();
+        shapeRenderer.dispose();
     }
 
     public void renderBapaos(float delta)

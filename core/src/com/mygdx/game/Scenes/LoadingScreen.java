@@ -12,19 +12,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
 
-public class loadingScreen implements Screen {
+public class LoadingScreen implements Screen {
 
     private final GameScreen mainRenderScreen;
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
 
     private final AssetManager manager = new AssetManager();
-    float progress;
-    long previousTime;
+    private final long previousTime;
 
 
-    public loadingScreen (GameScreen renderScreen){
-        mainRenderScreen = renderScreen;
+    public LoadingScreen(GameScreen gameScreen){
+        mainRenderScreen = gameScreen;
         previousTime = TimeUtils.millis();
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
@@ -52,7 +51,7 @@ public class loadingScreen implements Screen {
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
 
-        progress = manager.getProgress();
+        float progress = manager.getProgress();
 
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.begin();
@@ -90,6 +89,8 @@ public class loadingScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        shapeRenderer.dispose();
+        manager.dispose();
     }
 }

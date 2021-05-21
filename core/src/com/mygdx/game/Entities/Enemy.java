@@ -4,7 +4,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.Enums.States;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Enemy extends Ship{
@@ -61,217 +63,9 @@ public class Enemy extends Ship{
     private final Planet homePlanet;
 
     //All vulnerable enemies in the current level
-    static LinkedList<Enemy> vulnerableEnemies = new LinkedList<>();
+    static ArrayList<Enemy> vulnerableEnemies = new ArrayList<>();
 
-    // Finite state machine:
-    private enum States{
-        //Enemy moves and shoots randomly
-        MoveRandom{
 
-            @Override
-            public States changeState(Enemy enemy, Player player){
-
-                if (enemy.playerInView(player)){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    return Attack;
-                }
-                else if (enemy.bulletInView()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.calculateNewPosition();
-                    enemy.avoidBullet();
-                    return Avoid;
-                }
-                else if (enemy.iGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.hideArea);
-                    enemy.calculateNewPosition();
-                    return Hide;
-                }
-                else if (enemy.enemyGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.protectArea);
-                    enemy.calculateNewPosition();
-                    return Protect;
-                }
-                return MoveRandom;
-            }
-
-            @Override
-            public String getName() {
-                return "MoveRandom";
-            }
-
-            @Override
-            public void update(Enemy enemy, Player player) {
-                System.out.println("random");
-                if (enemy.posX == enemy.targetX && enemy.posY == enemy.targetY){
-                    enemy.calculateNewPosition();
-                }
-                else{
-                    enemy.moveEnemy();
-                }
-            }
-        },
-        //Enemy tries to attack the player
-        Attack{
-
-            @Override
-            public States changeState(Enemy enemy, Player player){
-
-                if (!enemy.playerInView(player)){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.calculateNewPosition();
-                    return MoveRandom;
-                }
-                else if (enemy.bulletInView()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.calculateNewPosition();
-                    enemy.avoidBullet();
-                    return Avoid;
-                }
-                return Attack;
-            }
-
-            @Override
-            public String getName() {
-                return "Attack";
-            }
-
-            @Override
-            public void update(Enemy enemy, Player player) {
-                System.out.println("attack");
-                Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getSprite().getWidth(), player.getSprite().getHeight());
-                Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.shipSprite.getWidth()+30, 1080);
-                if (MathUtils.random(-100,100) > 98 && enemy.overlaps(playerRect, enemyAttackRect)){
-
-                    enemy.shoot();
-                }
-                enemy.moveEnemy();
-            }
-        },
-        //Enemy tries to avoid all bullets from the player
-        Avoid{
-
-            @Override
-            public States changeState(Enemy enemy, Player player){
-
-                if (!enemy.bulletInView()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.calculateNewPosition();
-                    return MoveRandom;
-                }
-                else if (enemy.iGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.hideArea);
-                    enemy.calculateNewPosition();
-                    return Hide;
-                }
-                else if (enemy.enemyGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.protectArea);
-                    enemy.calculateNewPosition();
-                    return Protect;
-                }
-                return Avoid;
-            }
-
-            @Override
-            public String getName() {
-                return "Avoid";
-            }
-
-            @Override
-            public void update(Enemy enemy, Player player) {
-                System.out.println("avoid");
-                //todo Set target position to area without bullets (try 3 times, else just use the last one calculated):
-                if (enemy.posX == enemy.targetX && enemy.posY == enemy.targetY){
-                    enemy.avoidBullet();
-                }
-                //
-                enemy.moveEnemy();
-            }
-        },
-        //Enemy hides behind other enemies
-        Hide{
-
-            @Override
-            public States changeState(Enemy enemy, Player player){
-
-                if (enemy.bulletInView()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.avoidBullet();
-                    return Avoid;
-                }
-                else if (enemy.enemyIsNearDeath(enemy)){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.protectArea);
-                    enemy.calculateNewPosition();
-                    return Protect;
-                }
-                return Hide;
-            }
-
-            @Override
-            public String getName() {
-                return "Hide";
-            }
-
-            @Override
-            public void update(Enemy enemy, Player player) {
-                System.out.println("hide");
-                enemy.moveEnemy();
-            }
-        },
-        //Enemy tries to protect the enemies that are hiding
-        Protect{
-
-            @Override
-            public States changeState(Enemy enemy, Player player){
-
-                if (enemy.iGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.hideArea);
-                    enemy.calculateNewPosition();
-                    return Hide;
-                }
-                else if (!enemy.enemyGotHit()){
-                    enemy.setPreviousStateChange(TimeUtils.millis());
-                    enemy.setTargetArea(enemy.flyArea);
-                    enemy.calculateNewPosition();
-                    return MoveRandom;
-                }
-                return Protect;
-            }
-
-            @Override
-            public String getName() {
-                return "Protect";
-            }
-
-            @Override
-            public void update(Enemy enemy, Player player) {
-                System.out.println("protect");
-                Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getSprite().getWidth(), player.getSprite().getHeight());
-                Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.shipSprite.getWidth()+30, 1080);
-                if (MathUtils.random(-100,100) > 98 && enemy.overlaps(playerRect, enemyAttackRect)){
-
-                    enemy.shoot();
-                }
-                enemy.moveEnemy();
-            }
-        };
-
-        public abstract States changeState(Enemy enemy, Player player);
-        public abstract String getName();
-        public abstract void update(Enemy enemy, Player player);
-
-    }
 
 
     public Enemy(int enemyClass, int x, int y, int limitXLeft, int limitXRight, Planet homePlanet){
@@ -367,7 +161,7 @@ public class Enemy extends Ship{
     }
 
     public void shoot(){
-        Bullet.allBullets.add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-140, false, this));
+        Bullet.getAllBullets().add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-140, this));
         this.gun *= -1;
     }
 
@@ -456,7 +250,7 @@ public class Enemy extends Ship{
                 this.tryNewPosition();
                 Rectangle enemyRect = new Rectangle(this.tempX - 40, 0, this.shipSprite.getWidth() + 80, 1000);
                 Rectangle bulletRect = new Rectangle(Bullet.getAllBullets().get(0).getPosX(), Bullet.getAllBullets().get(0).getPosY(), Bullet.getAllBullets().get(0).getLaser().getWidth(), 1000);
-                for (Bullet bullet : Bullet.allBullets) {
+                for (Bullet bullet : Bullet.getAllBullets()) {
                     if (!bullet.getFriendly()) {
                         bulletRect = new Rectangle(bullet.getPosX(), bullet.getPosY(), bullet.getLaser().getWidth(), 1000);
 
@@ -530,5 +324,33 @@ public class Enemy extends Ship{
 
     public int getEnemyClass() {
         return enemyClass;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public int getHealth() {
+        return this.health;
+    }
+
+    public Texture getSprite() {
+        return this.shipSprite;
+    }
+
+    public Rectangle getFlyArea() {
+        return flyArea;
+    }
+
+    public Rectangle getHideArea() {
+        return hideArea;
+    }
+
+    public Rectangle getProtectArea() {
+        return protectArea;
     }
 }

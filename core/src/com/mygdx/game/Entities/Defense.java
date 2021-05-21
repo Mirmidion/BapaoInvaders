@@ -9,7 +9,7 @@ public class Defense {
     private int health;
 
     //Different textures
-    private final Texture texture1 = new Texture(Gdx.files.internal("Bapao1.png"));
+    private final Texture textureBroken = new Texture(Gdx.files.internal("Bapao1.png"));
     private final Texture texture = new Texture(Gdx.files.internal("Bapao.png"));
 
     //Position
@@ -35,7 +35,7 @@ public class Defense {
     }
 
     public Texture getTexture() {
-        return (health > 50)? texture : texture1;
+        return (health > 50)? texture : textureBroken;
     }
 
     public void setHealth(int health) {

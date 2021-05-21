@@ -16,10 +16,11 @@ import com.mygdx.game.Controllers.Arduino;
 import com.mygdx.game.Controllers.raspController.RaspController;
 import com.mygdx.game.Entities.*;
 
+import com.mygdx.game.Enums.SaveGames;
 import com.mygdx.game.Scenes.Level;
 import com.mygdx.game.Scenes.MainMenu;
 import com.mygdx.game.Scenes.Map;
-import com.mygdx.game.Scenes.loadingScreen;
+import com.mygdx.game.Scenes.LoadingScreen;
 
 import com.mygdx.game.SaveSystem.SerializeManager;
 
@@ -49,8 +50,6 @@ public class GameScreen implements Screen {
 	private final Music music3;
 
 	//Settings Menu
-	private final Texture settingsMenu;
-	private boolean settingsMenuSwitch;
 	private boolean saveGameMenuSwitch;
 
 	//Camera
@@ -68,8 +67,7 @@ public class GameScreen implements Screen {
 	private final Texture gameBackground;
 
 	//Solar Systems
-
-	private Planet currentPlanet; //TODO -- to save
+	private Planet currentPlanet;
 
 	//Paused variables
 	private static boolean paused = false;
@@ -78,110 +76,32 @@ public class GameScreen implements Screen {
 	private final SpriteBatch spriteBatch;
 	private final ShapeRenderer shapeRenderer;
 
-	SerializeManager serializeManager = new SerializeManager();
-	enum saveGames{
-		saveGame1(1),
-		saveGame2(2),
-		saveGame3(3);
+	private final SerializeManager serializeManager = new SerializeManager();
 
-		int score;
-		SolarSystem solarSystem;
-
-		saveGames(int saveGame){
-
-			SerializeManager serializeManager = new SerializeManager();
-			solarSystem = new SolarSystem();
-
-			try {
-				if (saveGame == 1) {
-					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Planets"));
-					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "PlanetDifficulty"));
-					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Score"));
-					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame1_", "Played"));
-					solarSystem.resetList();
-					solarSystem.setFresh(false);
-					for (Planet planet : solarSystem.getPlanets()){
-						planet.setCurrentPlanetTexture();
-						for (Planet moon : planet.getMoonList()){
-							moon.setCurrentPlanetTexture();
-						}
-					}
-				} else if (saveGame == 2) {
-					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Planets"));
-					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "PlanetDifficulty"));
-					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Score"));
-					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame2_", "Played"));
-					solarSystem.resetList();
-					solarSystem.setFresh(false);
-					for (Planet planet : solarSystem.getPlanets()){
-						planet.setCurrentPlanetTexture();
-						for (Planet moon : planet.getMoonList()){
-							moon.setCurrentPlanetTexture();
-						}
-					}
-				} else if (saveGame == 3) {
-					solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Planets"));
-					solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "PlanetDifficulty"));
-					setScore((Integer) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Score"));
-					solarSystem.setPlayed((Boolean) serializeManager.readByteStreamFromFileAndDeSerializeToObject("SaveGame3_", "Played"));
-					solarSystem.resetList();
-					solarSystem.setFresh(false);
-					for (Planet planet : solarSystem.getPlanets()){
-						planet.setCurrentPlanetTexture();
-						for (Planet moon : planet.getMoonList()){
-							moon.setCurrentPlanetTexture();
-						}
-					}
-				}
-			}
-			catch (Exception e){
-				e.printStackTrace();
-				solarSystem = new SolarSystem(1920, 1080);
-
-			}
-		}
-
-
-
-		public int getScore() {
-			return this.score;
-		}
-
-		public SolarSystem getSolarSystem() {
-			return solarSystem;
-		}
-
-		public void setScore(int score) {
-			this.score += score;
-		}
-
-		public void setSolarSystem(SolarSystem solarSystem) {
-			this.solarSystem = solarSystem;
-		}
-
-	}
-	private final saveGames saveGame1 = saveGames.saveGame1;
-	private final saveGames saveGame2 = saveGames.saveGame2;
-	private final saveGames saveGame3 = saveGames.saveGame3;
-	private saveGames currentSaveGame;
+	private final SaveGames saveGame1 = SaveGames.saveGame1;
+	private final SaveGames saveGame2 = SaveGames.saveGame2;
+	private final SaveGames saveGame3 = SaveGames.saveGame3;
+	private SaveGames currentSaveGame;
 
 	//Different scenes used throughout the game
-	MainMenu mainMenuScene;
-	Level levelScene;
-	Map mapScene;
-	SettingsMenu settingsMenuScene;
-	loadingScreen loadingScreenScene;
+	private final MainMenu mainMenuScene;
+	private final Level levelScene;
+	private final Map mapScene;
+	private final SettingsMenu settingsMenuScene;
+	private final LoadingScreen loadingScreenScene;
 
-	GameOverMenu gameOverScene;
-	WinMenu winScene;
-	highScores highScoreScene;
+	private final GameOverMenu gameOverScene;
+	private final WinMenu winScene;
+	private final HighScores highScoreScene;
 
 	//FPS counter
-	int framesPerSecond;
-	long lastChecked;
+	private int framesPerSecond;
+	private long lastChecked;
 
 	private final RaspController rasp;
 	private final Arduino arduino;
+
+	
 
 	public GameScreen (){
 		spriteBatch = new SpriteBatch();
@@ -190,7 +110,6 @@ public class GameScreen implements Screen {
 		rasp = new RaspController("192.168.2.4");
 		arduino = new Arduino();
 
-		settingsMenu = new Texture(Gdx.files.internal("button.png"));
 		//Inititializing SpriteBatches
 		batch = new SpriteBatch();
 
@@ -211,21 +130,6 @@ public class GameScreen implements Screen {
 
 		viewport = new StretchViewport(1920, 1080, camera);
 
-
-//		try {
-//			solarSystem.setPlanets((ArrayList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("ByteStream_ArrayList"));
-//			solarSystem.setPlanetListOfDifficulty((LinkedList<Planet>) serializeManager.readByteStreamFromFileAndDeSerializeToObject("ByteStream_LinkedList"));
-//			solarSystem.resetList();
-//			solarSystem.setFresh(false);
-//		}
-//		catch (Exception e) {
-//			System.out.println(e);
-//
-//		}
-
-
-
-
 		music.setLooping(true);
 		music2.setLooping(true);
 		music3.setLooping(true);
@@ -234,12 +138,11 @@ public class GameScreen implements Screen {
 		levelScene = new Level(this);
 		mapScene = new Map(this);
 
-		loadingScreenScene = new loadingScreen(this);
+		loadingScreenScene = new LoadingScreen(this);
 		settingsMenuScene = new SettingsMenu(this);
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
-		highScoreScene = new highScores(this);
-
+		highScoreScene = new HighScores(this);
 	}
 
 
@@ -346,40 +249,25 @@ public class GameScreen implements Screen {
 	public void saveSaveGame(int saveGame){
 		try {
 			if (saveGame == 1) {
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame1_", "Planets");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame1_", "PlanetDifficulty");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame1_", "Score");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame1_", "Played");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame1_", "Planets");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame1_", "PlanetDifficulty");
+				serializeManager.save(currentSaveGame.getScore(), "SaveGame1_", "Score");
+				serializeManager.save(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame1_", "Played");
 			} else if (saveGame == 2) {
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame2_", "Planets");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame2_", "PlanetDifficulty");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame2_", "Score");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame2_", "Played");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame2_", "Planets");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame2_", "PlanetDifficulty");
+				serializeManager.save(currentSaveGame.getScore(), "SaveGame2_", "Score");
+				serializeManager.save(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame2_", "Played");
 			} else if (saveGame == 3) {
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame3_", "Planets");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame3_", "PlanetDifficulty");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getScore(), "SaveGame3_", "Score");
-				serializeManager.serializeObjectAndSaveToFile(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame3_", "Played");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame3_", "Planets");
+				serializeManager.save(currentSaveGame.getSolarSystem().getPlanetListOfDifficulty(), "SaveGame3_", "PlanetDifficulty");
+				serializeManager.save(currentSaveGame.getScore(), "SaveGame3_", "Score");
+				serializeManager.save(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame3_", "Played");
 			}
 		}
 		catch(Exception ignored){
 
 		}
-	}
-
-	public SolarSystem getSolarSystem(int saveGame){
-		switch (saveGame){
-			case 1:{
-				return saveGame1.getSolarSystem();
-			}
-			case 2:{
-				return saveGame2.getSolarSystem();
-			}
-			case 3:{
-				return saveGame3.getSolarSystem();
-			}
-		}
-		return saveGame1.getSolarSystem();
 	}
 
 	public void setCurrentSaveGame(int selected) {
@@ -392,13 +280,13 @@ public class GameScreen implements Screen {
 		else if (selected == 3){
 			currentSaveGame = saveGame3;
 		}
-		currentSaveGame.solarSystem.setPlayed(true);
+		currentSaveGame.getSolarSystem().setPlayed(true);
 		saveSaveGame(selected);
 	}
 
 	public void newSaveGame(){
-		this.currentSaveGame.solarSystem = new SolarSystem(1920,1080);
-		this.currentSaveGame.score = 0;
+		this.currentSaveGame.setSolarSystem(new SolarSystem(1920,1080));
+		this.currentSaveGame.setScore(0);
 		if (currentSaveGame == saveGame1){
 			saveSaveGame(1);
 		}
@@ -451,7 +339,7 @@ public class GameScreen implements Screen {
 		return shapeRenderer;
 	}
 
-	public highScores getHighScoreScene() {
+	public HighScores getHighScoreScene() {
 		return highScoreScene;
 	}
 
@@ -518,18 +406,6 @@ public class GameScreen implements Screen {
 		return gameBackground;
 	}
 
-	public Texture getSettingsMenu() {
-		return settingsMenu;
-	}
-
-	public boolean isSettingsMenuSwitch() {
-		return settingsMenuSwitch;
-	}
-
-	public void setSettingsMenuSwitch(boolean settingsMenuSwitch) {
-		this.settingsMenuSwitch = settingsMenuSwitch;
-	}
-
 	public BitmapFont getTitleFont() {
 		return titleFont;
 	}
@@ -548,18 +424,6 @@ public class GameScreen implements Screen {
 
 	public Planet getCurrentPlanet() {
 		return currentPlanet;
-	}
-
-	public static void setPaused(boolean paused) {
-		GameScreen.paused = paused;
-	}
-
-	public long getPauseDelay() {
-		return pauseDelay;
-	}
-
-	public void setPauseDelay(long pauseDelay) {
-		this.pauseDelay = pauseDelay;
 	}
 
 	public BitmapFont getNormalFont() {

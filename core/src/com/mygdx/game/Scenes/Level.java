@@ -210,13 +210,6 @@ public class Level implements Screen {
 
             batch.end();
 
-
-            // Enable using the ESCAPE KEY to pause the scene. Supported scenes for pausing are: level
-            if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && TimeUtils.millis() - mainRenderScreen.getPauseDelay() > 500) {
-                GameScreen.setPaused(GameScreen.isPaused());
-                mainRenderScreen.setPauseDelay(TimeUtils.millis());
-            }
-
             // Draw the current score
             batch.begin();
             mainRenderScreen.getTitleFont().getData().setScale(1f);

@@ -47,8 +47,8 @@ public class GameOverMenu implements Screen {
     //Name of player
     private String currentName;
 
-    public GameOverMenu(GameScreen renderScreen) {
-        mainRenderScreen = renderScreen;
+    public GameOverMenu(GameScreen gameScreen) {
+        mainRenderScreen = gameScreen;
 
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
