@@ -23,11 +23,10 @@ public class Bullet{
     //Damage it deals
     private int damage;
 
-    //Is it in screen space?
-    private boolean exists = true;
 
-    //All bullets in the current levelBullet
-    private static ArrayList<Bullet> allBullets = new ArrayList<>();
+    //All bullets in the current level
+    static ArrayList<Bullet> allBullets = new ArrayList<>();
+
 
     public Bullet (float x, float y, Player player){
         this.posX = x + player.getPosX();
@@ -56,17 +55,11 @@ public class Bullet{
         else if (enemy.getEnemyClass()==4) {
                 this.damage = 50;
                 this.bulletSpeed = 0.5f;
-
         }
     }
 
-    public void setPosY(float posY, int height) {
-        if (this.posY+posY > height || this.posY+posY < 0){
-            this.exists = false;
-        }
-        else{
-            this.posY += posY* this.bulletSpeed * ((this.friendly)?1:-1) ;
-        }
+    public void setPosY(float posY) {
+        this.posY += posY* this.bulletSpeed * ((this.friendly)?1:-1) ;
     }
 
     public float getPosX() {
@@ -87,14 +80,6 @@ public class Bullet{
 
     public static void setAllBullets(ArrayList<Bullet> allBullets) {
         Bullet.allBullets = allBullets;
-    }
-
-    public boolean isExists() {
-        return exists;
-    }
-
-    public void setExists(boolean exists) {
-        this.exists = exists;
     }
 
     public static ArrayList<Bullet> getAllBullets() {

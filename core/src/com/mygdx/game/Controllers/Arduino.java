@@ -35,9 +35,6 @@ public class Arduino {
         }catch (NullPointerException e){
             return false;
         }
-
-
-
     }
 
 }
@@ -59,9 +56,6 @@ class ArduinoConnection extends Thread{
         }
 
         port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-
-
-
     }
 
     @Override

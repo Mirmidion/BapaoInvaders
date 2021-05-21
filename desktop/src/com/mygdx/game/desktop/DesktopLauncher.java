@@ -20,8 +20,6 @@ import java.sql.Driver;
 public class DesktopLauncher {
 	public static void main(String[] args) {
 
-
-		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		
 		config.title = "Bapao Invaders";
@@ -31,8 +29,6 @@ public class DesktopLauncher {
 		config.x = -7;
 		config.y = 0;
 
-
 		new LwjglApplication(new BapoaInvaders(), config);
-
 	}
 }
