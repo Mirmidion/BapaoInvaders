@@ -88,13 +88,10 @@ public class Level implements Screen {
         }
 
         for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()) {
-            if (enemy.getSprite() == null) {
-                enemy.refreshTextures();
-            }
             enemy.update(player);
         }
 
-        if (mainRenderScreen.getCurrentPlanet() != null) {
+
             batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
 
             for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
@@ -116,15 +113,12 @@ public class Level implements Screen {
                         Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
 
                         if (player.getHealth() != 0 && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
-                            bullet.setExists(false);
                             player.setInvulnerable(true);
                             player.setHealth(bullet.getDamage() * -1);
                             bulletIterator.remove();
                         } else if (player.getHealth() != 0 && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && player.isInvulnerable()) {
-                            bullet.setExists(false);
                             bulletIterator.remove();
                         } else if (enemy.getHealth() != 0 && overlaps(bulletRectangle, enemyRectangle) && bullet.getFriendly() && enemy.isInvulnerable()) {
-                            bullet.setExists(false);
                             enemy.setHealth(bullet.getDamage() * -1);
                             enemy.setGotHit();
                             bulletIterator.remove();
@@ -161,11 +155,9 @@ public class Level implements Screen {
             // Draw every bullet and move them up/down
             for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
                 Bullet bullet = iter.next();
-                if (bullet.isExists()) {
-                    batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-                }
+                batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
                 if (GameScreen.isPaused()) {
-                    bullet.setPosY(3f, mainRenderScreen.getHeight());
+                    bullet.setPosY(3f);
                 }
                 if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
                     iter.remove();
@@ -179,7 +171,7 @@ public class Level implements Screen {
             }
 
             // draw all defenses present
-            for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
+            /*for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
                 Defense defense = iter.next();
                 Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
                 for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
@@ -195,7 +187,7 @@ public class Level implements Screen {
                 } else {
                     iter.remove();
                 }
-            }
+            }*/
 
 
             // Change the position of the player depending on the keys pressed
@@ -210,7 +202,6 @@ public class Level implements Screen {
 
             batch.end();
 
-
             // Enable using the ESCAPE KEY to pause the scene. Supported scenes for pausing are: level
             if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && TimeUtils.millis() - mainRenderScreen.getPauseDelay() > 500) {
                 GameScreen.setPaused(GameScreen.isPaused());
@@ -223,7 +214,7 @@ public class Level implements Screen {
             mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
             mainRenderScreen.getTitleFont().getData().setScale(2f);
             batch.end();
-        }
+
     }
 
     @Override
@@ -253,6 +244,35 @@ public class Level implements Screen {
 
     public boolean overlaps(Rectangle r, Rectangle r2) {
         return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
+    }
+
+    public void checkCollisions(){
+        for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
+            Defense defense = iter.next();
+            Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
+            for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
+                Bullet bullet = iter2.next();
+                Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), bullet.getLaser().getHeight());
+                if (defense.getHealth() != 0 && overlaps(defenseRectangle, bulletRectangle)) {
+                    iter2.remove();
+                    defense.setHealth(-50);
+                }
+            }
+
+            if (defense.getHealth() <= 0){
+                iter.remove();
+            }
+        }
+    }
+
+    public void updateEntities(){
+        for (Defense defense : Planet.getDefenses()){
+            if (defense.getHealth() > 0) {
+                batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
+            }
+        }
+
+
     }
 
 }
