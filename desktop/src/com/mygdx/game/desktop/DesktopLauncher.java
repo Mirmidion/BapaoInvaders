@@ -28,6 +28,7 @@ public class DesktopLauncher {
 		config.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
 		config.x = -7;
 		config.y = 0;
+		config.samples = 3;
 
 		new LwjglApplication(new BapoaInvaders(), config);
 	}

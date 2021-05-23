@@ -27,6 +27,7 @@ public class LoadingScreen implements Screen {
         previousTime = TimeUtils.millis();
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
     }
 
     @Override
@@ -36,9 +37,7 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.getMusic().play();
-        mainRenderScreen.getMusic2().dispose();
-        mainRenderScreen.getMusic3().dispose();
+        mainRenderScreen.setPlayingMusic(1);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -53,7 +52,7 @@ public class LoadingScreen implements Screen {
 
         float progress = manager.getProgress();
 
-        shapeRenderer.setAutoShapeType(true);
+
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GOLD);

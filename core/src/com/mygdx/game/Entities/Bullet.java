@@ -78,15 +78,15 @@ public class Bullet{
         return friendly;
     }
 
-    public static void setAllBullets(ArrayList<Bullet> allBullets) {
-        Bullet.allBullets = allBullets;
-    }
-
     public static ArrayList<Bullet> getAllBullets() {
         return allBullets;
     }
 
     public int getDamage() {
         return damage;
+    }
+
+    public static void removeAllBullets(){
+        allBullets = new ArrayList<>();
     }
 }

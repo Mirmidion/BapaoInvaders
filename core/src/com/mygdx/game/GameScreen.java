@@ -49,8 +49,7 @@ public class GameScreen implements Screen {
 	private final Music music2;
 	private final Music music3;
 
-	//Settings Menu
-	private boolean saveGameMenuSwitch;
+
 
 	//Camera
 	private final OrthographicCamera camera;
@@ -296,7 +295,7 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	public void setMusic1Vol(float value){
+	public void setMusicVol(float value){
 
 		if (music.getVolume() + value <= 0){
 			music.setVolume(0);
@@ -307,8 +306,7 @@ public class GameScreen implements Screen {
 		else{
 			music.setVolume(music.getVolume() + value);
 		}
-	}
-	public void setMusic2Vol(float value){
+
 		if (music2.getVolume() + value <= 0){
 			music2.setVolume(0);
 		}
@@ -318,13 +316,14 @@ public class GameScreen implements Screen {
 		else{
 			music2.setVolume(music2.getVolume() + value);
 		}
-	}
-	public void setMusic3Vol(float value) {
-		if (music3.getVolume() + value <= 0) {
+
+		if (music3.getVolume() + value <= 0){
 			music3.setVolume(0);
-		} else if (music3.getVolume() + value >= 1) {
+		}
+		else if (music3.getVolume() + value >= 1){
 			music3.setVolume(1);
-		} else {
+		}
+		else{
 			music3.setVolume(music3.getVolume() + value);
 		}
 	}
@@ -392,6 +391,24 @@ public class GameScreen implements Screen {
 		return music3;
 	}
 
+	public void setPlayingMusic(int whichOne){
+		if (whichOne == 1){
+			music.play();
+			music2.dispose();
+			music3.dispose();
+		}
+		else if (whichOne == 2){
+			music.dispose();
+			music2.play();
+			music3.dispose();
+		}
+		else if (whichOne == 3){
+			music.dispose();
+			music2.dispose();
+			music3.play();
+		}
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -422,14 +439,6 @@ public class GameScreen implements Screen {
 
 	public BitmapFont getNormalFont() {
 		return normalFont;
-	}
-
-	public boolean isSaveGameMenuSwitch() {
-		return saveGameMenuSwitch;
-	}
-
-	public void setSaveGameMenuSwitch(boolean saveGameMenuSwitch) {
-		this.saveGameMenuSwitch = saveGameMenuSwitch;
 	}
 
 	public SolarSystem getSolarSystem() {

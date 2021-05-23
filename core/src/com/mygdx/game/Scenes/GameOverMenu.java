@@ -18,6 +18,7 @@ import com.mygdx.game.GameScreen;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class GameOverMenu implements Screen {
 
@@ -35,20 +36,26 @@ public class GameOverMenu implements Screen {
     private final TextButton exit;
     private final TextButton otherName;
 
+    private ArrayList<TextButton> allButtons;
+
     //The selected button
     private int selectedButton = 1;
 
     //Time when last button has been switched
     private long prevSelect = 0;
+    private static long prevPress = 0;
 
     //The used font
     private final BitmapFont normalFont;
 
     //Name of player
     private String currentName;
+    private int score;
 
     public GameOverMenu(GameScreen gameScreen) {
         mainRenderScreen = gameScreen;
+
+        allButtons = new ArrayList<>();
 
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
@@ -71,6 +78,11 @@ public class GameOverMenu implements Screen {
         stage.addActor(registerScore);
         stage.addActor(exit);
 
+        allButtons.add(otherName);
+        allButtons.add(tryAgain);
+        allButtons.add(registerScore);
+        allButtons.add(exit);
+
         normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
 
         shapeRenderer.setAutoShapeType(true);
@@ -83,14 +95,10 @@ public class GameOverMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.getMusic().play();
-        mainRenderScreen.getMusic2().dispose();
-        mainRenderScreen.getMusic3().dispose();
+        mainRenderScreen.setPlayingMusic(1);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //The score the player has
-        int score;
         try {
             score = mainRenderScreen.getScore();
         } catch (Exception e) {
@@ -106,52 +114,9 @@ public class GameOverMenu implements Screen {
 
         stage.draw();
 
-        shapeRenderer.begin();
-        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-
-        switch (selectedButton) {
-            case 0: {
-                shapeRenderer.rect(otherName.getX(), otherName.getY(), otherName.getWidth(), otherName.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
-                    otherName();
-                }
-                break;
-            }
-            case 1: {
-                shapeRenderer.rect(tryAgain.getX(), tryAgain.getY(), tryAgain.getWidth(), tryAgain.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
-                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
-                }
-                break;
-            }
-            case 2: {
-                shapeRenderer.rect(registerScore.getX(), registerScore.getY(), registerScore.getWidth(), registerScore.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
-                    saveHighScore(score, currentName);
-                    mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
-                }
-                break;
-            }
-            case 3: {
-                shapeRenderer.rect(exit.getX(), exit.getY(), exit.getWidth(), exit.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up"))) {
-                    dispose();
-                    System.exit(0);
-                }
-                break;
-            }
-        }
-        shapeRenderer.end();
-
-
-        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left")) && selectedButton > 0 && TimeUtils.millis() - prevSelect > 300) {
-            selectedButton--;
-            prevSelect = TimeUtils.millis();
-        } else if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right")) && selectedButton < 3 && TimeUtils.millis() - prevSelect > 300) {
-            selectedButton++;
-            prevSelect = TimeUtils.millis();
-        }
+        drawOutlines();
+        handleButtonPress();
+        handleButtonSelect();
     }
 
     @Override
@@ -182,6 +147,69 @@ public class GameOverMenu implements Screen {
         mainRenderScreen.dispose();
     }
 
+    public void drawOutlines(){
+        shapeRenderer.begin();
+        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(allButtons.get(selectedButton).getX(), allButtons.get(selectedButton).getY(), allButtons.get(selectedButton).getWidth(), allButtons.get(selectedButton).getHeight());
+        shapeRenderer.end();
+    }
+
+    public void handleButtonSelect(){
+
+        boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
+        boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
+
+        boolean canPressButton = TimeUtils.millis() - prevPress > 500;
+
+        switch (selectedButton) {
+            case 0: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    otherName();
+                }
+                break;
+            }
+            case 1: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
+                }
+                break;
+            }
+            case 2: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    saveHighScore(score, currentName);
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
+                }
+                break;
+            }
+            case 3: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    dispose();
+                    System.exit(0);
+                }
+                break;
+            }
+        }
+    }
+
+    public void handleButtonPress(){
+
+        boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
+        boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");
+
+        boolean ardLeftPressed = mainRenderScreen.getArduino().is_pressed("left");
+        boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
+
+        boolean canSelectButton = TimeUtils.millis() - prevSelect > 300;
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || raspLeftPressed || ardLeftPressed) && canSelectButton && selectedButton > 0) {
+            selectedButton--;
+            prevSelect = TimeUtils.millis();
+        } else if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton && selectedButton < 3 ) {
+            selectedButton++;
+            prevSelect = TimeUtils.millis();
+        }
+    }
+
     public void saveHighScore(int score, String name) {
         Process process = null;
         try {
@@ -201,6 +229,7 @@ public class GameOverMenu implements Screen {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         if (process != null) {
             process.destroy();
         }
@@ -211,5 +240,9 @@ public class GameOverMenu implements Screen {
         int randomFirst = MathUtils.random(0, WinMenu.getFirstNames().length - 1);
         int randomLast = MathUtils.random(0, WinMenu.getLastNames().length - 1);
         this.currentName = WinMenu.getFirstNames()[randomFirst] + " " + WinMenu.getLastNames()[randomLast];
+    }
+
+    public static void setPrevPress() {
+        prevPress = TimeUtils.millis();
     }
 }

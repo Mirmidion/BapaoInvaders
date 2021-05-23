@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
 
+import java.util.ArrayList;
+
 public class SettingsMenu extends ScreenAdapter implements Screen {
 
     //The main settings screen
@@ -38,6 +40,9 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
     private Label volumeDisplay;
     private final TextButton fpsCounterOn;
     private final TextButton fpsCounterOff;
+
+    private ArrayList<TextButton> allButtons;
+
     public boolean fpsCounterCheck;
 
     private int buttonSelect = 1;
@@ -48,6 +53,9 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         mainRenderScreen = gameScreen;
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
+
+        allButtons = new ArrayList<>();
+
         settingsTable = new Table();
         settingsTable.setPosition(250, 600);
         settingsTable.left();
@@ -73,7 +81,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
 
         exit = new TextButton("Exit", buttonSkin);
-
+        exit.setTransform(true);
 
 
         //Buttons
@@ -129,16 +137,23 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         settingsTable.add(volumeDown).padTop(50);
         settingsTable.add(volumeDisplay).padTop(50);
         settingsTable.add(volumeUp).padTop(50);
+
         settingsTable.row();
         settingsTable.add(fpsCounter).padTop(50);
         settingsTable.add(fpsCounterOn).padTop(50);
         settingsTable.add(fpsCounterOff).padTop(50);
-        exit.setTransform(true);
+
         settingsTable.row();
         settingsTable.add(exit).padTop(50);
 
         stage.addActor(settingsTable);
         shapeRenderer.setAutoShapeType(true);
+
+        allButtons.add(volumeDown);
+        allButtons.add(volumeUp);
+        allButtons.add(fpsCounterOn);
+        allButtons.add(fpsCounterOff);
+        allButtons.add(exit);
     }
 
     @Override
@@ -148,18 +163,13 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
     @Override
     public void render(float delta) {
+        mainRenderScreen.setPlayingMusic(1);
 
-        mainRenderScreen.getMusic().play();
-        mainRenderScreen.getMusic2().dispose();
-        mainRenderScreen.getMusic3().dispose();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
         batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
-        batch.end();
-
-        batch.begin();
         mainRenderScreen.getTitleFont().draw(batch, "Settings", 200, 800);
         batch.end();
 
@@ -167,73 +177,9 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
 
-        shapeRenderer.begin();
-        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-
-        switch (buttonSelect) {
-            case 1: {
-                shapeRenderer.rect(volumeDown.getX() + settingsTable.getX(), volumeDown.getY() + settingsTable.getY(), volumeDown.getWidth(), volumeDown.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - prevChange > 200) {
-                    mainRenderScreen.setMusic1Vol(-0.1f);
-                    mainRenderScreen.setMusic2Vol(-0.1f);
-                    mainRenderScreen.setMusic3Vol(-0.1f);
-                    volumeDisplay.setText(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)));
-                    prevChange = TimeUtils.millis();
-                }
-                break;
-            }
-            case 2: {
-                shapeRenderer.rect(volumeUp.getX() + settingsTable.getX(), volumeUp.getY() + settingsTable.getY(), volumeUp.getWidth(), volumeUp.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - prevChange > 200) {
-                    mainRenderScreen.setMusic1Vol(0.1f);
-                    mainRenderScreen.setMusic2Vol(0.1f);
-                    mainRenderScreen.setMusic3Vol(0.1f);
-                    volumeDisplay.setText(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)));
-                    prevChange = TimeUtils.millis();
-                }
-                break;
-            }
-            case 3: {
-                shapeRenderer.rect(fpsCounterOn.getX() + settingsTable.getX(), fpsCounterOn.getY() + settingsTable.getY(), fpsCounterOn.getWidth(), fpsCounterOn.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - prevChange > 200) {
-                    GameScreen.setFpsCounterCheck(true);
-                    prevChange = TimeUtils.millis();
-                }
-                break;
-            }
-            case 4: {
-                shapeRenderer.rect(fpsCounterOff.getX() + settingsTable.getX(), fpsCounterOff.getY() + settingsTable.getY(), fpsCounterOff.getWidth(), fpsCounterOff.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - prevChange > 200) {
-                    GameScreen.setFpsCounterCheck(false);
-                    prevChange = TimeUtils.millis();
-                }
-                break;
-            }
-            case 5: {
-                shapeRenderer.rect(exit.getX() + settingsTable.getX(), exit.getY() + settingsTable.getY(), exit.getWidth(), exit.getHeight());
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || mainRenderScreen.getRasp().is_pressed("up") || mainRenderScreen.getArduino().is_pressed("up")) && TimeUtils.millis() - prevChange > 200) {
-                    MainMenu.setSwitchDelay(TimeUtils.millis());
-                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
-                    prevChange = TimeUtils.millis();
-                }
-                break;
-            }
-        }
-        shapeRenderer.end();
-
-        if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || mainRenderScreen.getRasp().is_pressed("right") || mainRenderScreen.getArduino().is_pressed("right")) && TimeUtils.millis() - prevSelect > 500){
-            if (buttonSelect < 5){
-                buttonSelect++;
-            }
-            prevSelect = TimeUtils.millis();
-        }
-        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || mainRenderScreen.getRasp().is_pressed("left") || mainRenderScreen.getArduino().is_pressed("left")) && TimeUtils.millis() - prevSelect > 500){
-            if (buttonSelect > 1){
-                buttonSelect--;
-            }
-            prevSelect = TimeUtils.millis();
-        }
+        drawOutlines();
+        handleInput();
+        handleButtonSelect();
     }
 
     @Override
@@ -264,5 +210,83 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
     public static void setPrevChange() {
         SettingsMenu.prevChange = TimeUtils.millis();
+    }
+
+    public void drawOutlines(){
+        shapeRenderer.begin();
+        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(allButtons.get(buttonSelect-1).getX() + settingsTable.getX(), allButtons.get(buttonSelect-1).getY() + settingsTable.getY(), allButtons.get(buttonSelect-1).getWidth(), allButtons.get(buttonSelect-1).getHeight());
+        shapeRenderer.end();
+    }
+
+    public void handleInput(){
+
+        boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
+        boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
+        boolean canPressButton = TimeUtils.millis() - prevChange > 200;
+
+        switch (buttonSelect) {
+            case 1: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.setMusicVol(-0.1f);
+                    volumeDisplay.setText(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)));
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 2: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.setMusicVol(0.1f);
+                    volumeDisplay.setText(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)));
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 3: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    GameScreen.setFpsCounterCheck(true);
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 4: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    GameScreen.setFpsCounterCheck(false);
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 5: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    MainMenu.setSwitchDelay(TimeUtils.millis());
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+        }
+    }
+
+    public void handleButtonSelect(){
+        boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
+        boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");
+
+        boolean ardLeftPressed = mainRenderScreen.getArduino().is_pressed("left");
+        boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
+        boolean canSelectButton = TimeUtils.millis() - prevSelect > 500;
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton){
+            if (buttonSelect < 5){
+                buttonSelect++;
+            }
+            prevSelect = TimeUtils.millis();
+        }
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || raspLeftPressed || ardLeftPressed) && canSelectButton){
+            if (buttonSelect > 1){
+                buttonSelect--;
+            }
+            prevSelect = TimeUtils.millis();
+        }
     }
 }

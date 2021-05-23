@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Planet implements Serializable {
 
     //Difficulty of the waves
-    private final int difficulty;
+    private int difficulty = 0;
 
     //Waves consist of arraylist<int> that contain amount and types of enemies
     //The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
@@ -169,7 +169,7 @@ public class Planet implements Serializable {
 
     public void setMoonOrbit(int orbit){
         this.orbit = orbit;
-        this.orbit();
+        //this.orbit();
     }
 
     public float getOrbitDirection(float speed){
