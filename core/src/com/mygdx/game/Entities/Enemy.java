@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Enums.States;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Enemy extends Ship{
 

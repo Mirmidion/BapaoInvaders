@@ -65,7 +65,6 @@ public enum SaveGames{
         catch (Exception e){
             e.printStackTrace();
             solarSystem = new SolarSystem(1920, 1080);
-
         }
     }
 

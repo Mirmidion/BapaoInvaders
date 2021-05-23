@@ -45,7 +45,6 @@ public class Map implements Screen {
     @Override
     public void render(float delta) {
 
-        mainRenderScreen.setPlayingMusic(2);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
         Gdx.gl.glLineWidth(1);
@@ -259,6 +258,7 @@ public class Map implements Screen {
         batch.begin();
         mainRenderScreen.getTitleFont().getData().setScale(1f);
         mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
+        assert currentSolarSystem.getPlanetListOfDifficulty().peek() != null;
         mainRenderScreen.getTitleFont().draw(batch, "Level: " + (currentSolarSystem.getPlanetListOfDifficulty().peek().getDifficulty()+1), 80, 950);
         mainRenderScreen.getNormalFont().getData().setScale(0.7f);
         if (blink) {

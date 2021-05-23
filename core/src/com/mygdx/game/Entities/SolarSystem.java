@@ -40,7 +40,6 @@ public class SolarSystem implements Serializable {
             this.planets.add(planet);
             randomOrbit++;
         }
-        //System.out.println(planetListOfDifficulty);
     }
 
     public void resetList(){

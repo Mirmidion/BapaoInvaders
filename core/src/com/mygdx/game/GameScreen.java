@@ -26,10 +26,6 @@ import com.mygdx.game.SaveSystem.SerializeManager;
 
 import com.mygdx.game.Scenes.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-
 public class GameScreen implements Screen {
 
 	//----- These are all the variables used in more than 1 scene ----//
@@ -46,10 +42,6 @@ public class GameScreen implements Screen {
 
 	//Music
 	private final Music music;
-	private final Music music2;
-	private final Music music3;
-
-
 
 	//Camera
 	private final OrthographicCamera camera;
@@ -68,8 +60,6 @@ public class GameScreen implements Screen {
 	//Solar Systems
 	private Planet currentPlanet;
 
-
-
 	private final SpriteBatch spriteBatch;
 	private final ShapeRenderer shapeRenderer;
 
@@ -86,7 +76,6 @@ public class GameScreen implements Screen {
 	private final Map mapScene;
 	private final SettingsMenu settingsMenuScene;
 	private final LoadingScreen loadingScreenScene;
-
 	private final GameOverMenu gameOverScene;
 	private final WinMenu winScene;
 	private final HighScores highScoreScene;
@@ -97,8 +86,6 @@ public class GameScreen implements Screen {
 
 	private final RaspController rasp;
 	private final Arduino arduino;
-
-	
 
 	public GameScreen (){
 		spriteBatch = new SpriteBatch();
@@ -113,9 +100,8 @@ public class GameScreen implements Screen {
 		//Initializing Textures
 		gameBackground = new Texture("gameBackground.png");
 
-		music = Gdx.audio.newMusic(Gdx.files.internal("Theme.mp3"));
-		music2 = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
-		music3 = Gdx.audio.newMusic(Gdx.files.internal("Theme3.mp3"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("Theme2.mp3"));
+		music.setVolume(0.5f);
 
 		//Initializing Fonts
 		normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
@@ -128,8 +114,6 @@ public class GameScreen implements Screen {
 		viewport = new StretchViewport(1920, 1080, camera);
 
 		music.setLooping(true);
-		music2.setLooping(true);
-		music3.setLooping(true);
 
 		mainMenuScene = new MainMenu(this);
 		levelScene = new Level(this);
@@ -146,6 +130,9 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render (float delta) {
+		if (!music.isPlaying()){
+			music.play();
+		}
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
@@ -238,9 +225,8 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		shapeRenderer.dispose();
 		music.dispose();
-		music2.dispose();
-		music3.dispose();
 	}
 
 	public void saveSaveGame(int saveGame){
@@ -306,26 +292,6 @@ public class GameScreen implements Screen {
 		else{
 			music.setVolume(music.getVolume() + value);
 		}
-
-		if (music2.getVolume() + value <= 0){
-			music2.setVolume(0);
-		}
-		else if (music2.getVolume() + value >= 1){
-			music2.setVolume(1);
-		}
-		else{
-			music2.setVolume(music2.getVolume() + value);
-		}
-
-		if (music3.getVolume() + value <= 0){
-			music3.setVolume(0);
-		}
-		else if (music3.getVolume() + value >= 1){
-			music3.setVolume(1);
-		}
-		else{
-			music3.setVolume(music3.getVolume() + value);
-		}
 	}
 
 	public SpriteBatch getSpriteBatch() {
@@ -340,31 +306,16 @@ public class GameScreen implements Screen {
 		return highScoreScene;
 	}
 
-	public boolean isFirstLoad() {
-		boolean firstLoad = true;
-		return firstLoad;
+	public SaveGames getSaveGame1() {
+		return saveGame1;
 	}
 
-	public SolarSystem getSaveGame1SolarSystem() {
-		return saveGame1.getSolarSystem();
+	public SaveGames getSaveGame2() {
+		return saveGame2;
 	}
 
-	public SolarSystem getSaveGame2SolarSystem() {
-		return saveGame2.getSolarSystem();
-	}
-
-	public SolarSystem getSaveGame3SolarSystem() {
-		return saveGame3.getSolarSystem();
-	}
-
-	public int getSaveGame1Score() {
-		return saveGame1.getScore();
-	}
-	public int getSaveGame2Score() {
-		return saveGame2.getScore();
-	}
-	public int getSaveGame3Score() {
-		return saveGame3.getScore();
+	public SaveGames getSaveGame3() {
+		return saveGame3;
 	}
 
 	public static void setFpsCounterCheck(boolean fpsCounterCheck) {
@@ -381,32 +332,6 @@ public class GameScreen implements Screen {
 
 	public Music getMusic() {
 		return music;
-	}
-
-	public Music getMusic2() {
-		return music2;
-	}
-
-	public Music getMusic3() {
-		return music3;
-	}
-
-	public void setPlayingMusic(int whichOne){
-		if (whichOne == 1){
-			music.play();
-			music2.dispose();
-			music3.dispose();
-		}
-		else if (whichOne == 2){
-			music.dispose();
-			music2.play();
-			music3.dispose();
-		}
-		else if (whichOne == 3){
-			music.dispose();
-			music2.dispose();
-			music3.play();
-		}
 	}
 
 	public int getWidth() {

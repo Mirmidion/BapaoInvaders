@@ -34,14 +34,9 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
     private Skin volumeDisplayScreen;
 
-    private final TextButton volumeUp;
-    private final TextButton volumeDown;
-    private final TextButton exit;
     private Label volumeDisplay;
-    private final TextButton fpsCounterOn;
-    private final TextButton fpsCounterOff;
 
-    private ArrayList<TextButton> allButtons;
+    private final ArrayList<TextButton> allButtons;
 
     public boolean fpsCounterCheck;
 
@@ -73,14 +68,14 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
 
         TextButton volume = new TextButton("Volume", volumeDisplayScreen);
-        volumeUp = new TextButton("+", volumeDisplayScreen);
-        volumeDown = new TextButton("-", volumeDisplayScreen);
+        TextButton volumeUp = new TextButton("+", volumeDisplayScreen);
+        TextButton volumeDown = new TextButton("-", volumeDisplayScreen);
         TextButton fpsCounter = new TextButton("FPS-counter", volumeDisplayScreen);
-        fpsCounterOn = new TextButton("On", volumeDisplayScreen);
-        fpsCounterOff = new TextButton("Off", volumeDisplayScreen);
+        TextButton fpsCounterOn = new TextButton("On", volumeDisplayScreen);
+        TextButton fpsCounterOff = new TextButton("Off", volumeDisplayScreen);
 
 
-        exit = new TextButton("Exit", buttonSkin);
+        TextButton exit = new TextButton("Exit", buttonSkin);
         exit.setTransform(true);
 
 
@@ -88,9 +83,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         volumeUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainRenderScreen.getMusic().setVolume((float) (mainRenderScreen.getMusic().getVolume() + 0.1)) ;
-                mainRenderScreen.getMusic2().setVolume((float) (mainRenderScreen.getMusic2().getVolume() + 0.1)) ;
-                mainRenderScreen.getMusic3().setVolume((float) (mainRenderScreen.getMusic3().getVolume() + 0.1)) ;
+                mainRenderScreen.setMusicVol(0.1f);
                 volumeDisplay = new Label(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)), volumeDisplayScreen);
             }
 
@@ -99,9 +92,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         volumeDown.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainRenderScreen.getMusic().setVolume((float) (mainRenderScreen.getMusic().getVolume() - 0.1)) ;
-                mainRenderScreen.getMusic2().setVolume((float) (mainRenderScreen.getMusic2().getVolume() - 0.1)) ;
-                mainRenderScreen.getMusic3().setVolume((float) (mainRenderScreen.getMusic3().getVolume() - 0.1)) ;
+                mainRenderScreen.setMusicVol(-0.1f);
                 volumeDisplay = new Label(String.valueOf(Math.round(mainRenderScreen.getMusic().getVolume() * 100)), volumeDisplayScreen);
             }
         });
@@ -163,8 +154,6 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.setPlayingMusic(1);
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

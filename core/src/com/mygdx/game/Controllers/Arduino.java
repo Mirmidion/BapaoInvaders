@@ -9,11 +9,11 @@ import java.util.Scanner;
 
 public class Arduino {
     public static int chosenPort;
-    private ArduinoConnection ard;
+    private final ArduinoConnection ard;
 
 
     public Arduino(){
-        SerialPort ports[] = SerialPort.getCommPorts();
+        SerialPort[] ports = SerialPort.getCommPorts();
 
         System.out.println("Selecteer een poort: ");
         for (SerialPort port : ports){
@@ -77,7 +77,6 @@ class ArduinoConnection extends Thread{
 
     public void disconnect(){
         connected = false;
-
     }
 }
 

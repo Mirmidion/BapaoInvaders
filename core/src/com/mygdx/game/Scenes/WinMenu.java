@@ -24,12 +24,7 @@ public class WinMenu implements Screen {
     private final ShapeRenderer shapeRenderer;
     private final Stage stage = new Stage();
 
-    private final TextButton tryAgain;
-    private final TextButton registerScore;
-    private final TextButton exit;
-    private final TextButton otherName;
-
-    private ArrayList<TextButton> allButtons;
+    private final ArrayList<TextButton> allButtons;
 
     private int selectedButton = 1;
     private long prevSelect = 0;
@@ -45,10 +40,10 @@ public class WinMenu implements Screen {
     public WinMenu(GameScreen renderScreen) {
         mainRenderScreen = renderScreen;
         normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
-        tryAgain = new TextButton("Try Again", MainMenu.getButtonSkin());
-        registerScore = new TextButton("Register score", MainMenu.getButtonSkin());
-        exit = new TextButton("exit", MainMenu.getButtonSkin());
-        otherName = new TextButton("generate name", MainMenu.getButtonSkin());
+        TextButton tryAgain = new TextButton("Try Again", MainMenu.getButtonSkin());
+        TextButton registerScore = new TextButton("Register score", MainMenu.getButtonSkin());
+        TextButton exit = new TextButton("exit", MainMenu.getButtonSkin());
+        TextButton otherName = new TextButton("generate name", MainMenu.getButtonSkin());
 
         allButtons = new ArrayList<>();
 
@@ -81,8 +76,6 @@ public class WinMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.setPlayingMusic(1);
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

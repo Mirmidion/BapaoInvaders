@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
@@ -14,7 +13,6 @@ import com.mygdx.game.GameScreen;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class Level implements Screen {
 
@@ -50,7 +48,6 @@ public class Level implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.setPlayingMusic(3);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

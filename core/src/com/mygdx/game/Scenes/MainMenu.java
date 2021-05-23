@@ -35,11 +35,8 @@ public class MainMenu implements Screen {
 
     //Main Menu Layout and Objects
     private final Table mainMenuTable;
-    private final TextButton start;
-    private final TextButton settings;
-    private final TextButton exit;
-    
-    private ArrayList<TextButton> allMainButtons;
+
+    private final ArrayList<TextButton> allMainButtons;
 
     //Other
     private final float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
@@ -63,7 +60,7 @@ public class MainMenu implements Screen {
     private long prevSelect = 0;
     private long select;
 
-    private Texture saveGameTexture;
+    private final Texture saveGameTexture;
 
     public MainMenu(GameScreen gameScreen) {
         mainRenderScreen = gameScreen;
@@ -87,10 +84,10 @@ public class MainMenu implements Screen {
 
         buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
-        start = new TextButton("Start", buttonSkin);
-        settings = new TextButton("Settings", buttonSkin);
+        TextButton start = new TextButton("Start", buttonSkin);
+        TextButton settings = new TextButton("Settings", buttonSkin);
 
-        exit = new TextButton("Exit", buttonSkin);
+        TextButton exit = new TextButton("Exit", buttonSkin);
 
         start.setTransform(true);
         settings.setTransform(true);
@@ -126,7 +123,6 @@ public class MainMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        mainRenderScreen.setPlayingMusic(1);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
@@ -240,18 +236,21 @@ public class MainMenu implements Screen {
             normalFont.getData().setScale(1f);
             normalFont.draw(batch, "Savegame " + (i + 1), 225 + 560 * i, 880);
             try {
-                if (i == 0 && mainRenderScreen.getSaveGame1SolarSystem().isPlayed()) {
+                if (i == 0 && mainRenderScreen.getSaveGame1().getSolarSystem().isPlayed()) {
                     titleFont.getData().setScale(1f);
-                    titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame1SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280, 700);
-                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1Score(), 270, 550);
-                } else if (i == 1 && mainRenderScreen.getSaveGame2SolarSystem().isPlayed()) {
+                    int saveGame1Level = mainRenderScreen.getSaveGame1().getSolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1;
+                    titleFont.draw(batch, "Level: " + saveGame1Level, 280, 700);
+                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame1().getScore(), 270, 550);
+                } else if (i == 1 && mainRenderScreen.getSaveGame2().getSolarSystem().isPlayed()) {
                     titleFont.getData().setScale(1f);
-                    titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame2SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
-                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame2Score(), 270 + 560 * i, 550);
-                } else if (i == 2 && mainRenderScreen.getSaveGame3SolarSystem().isPlayed()) {
+                    int saveGame2Level = mainRenderScreen.getSaveGame2().getSolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1;
+                    titleFont.draw(batch, "Level: " + saveGame2Level, 280 + 560 * i, 700);
+                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame2().getScore(), 270 + 560 * i, 550);
+                } else if (i == 2 && mainRenderScreen.getSaveGame3().getSolarSystem().isPlayed()) {
                     titleFont.getData().setScale(1f);
-                    titleFont.draw(batch, "Level: " + (mainRenderScreen.getSaveGame3SolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1), 280 + 560 * i, 700);
-                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame3Score(), 270 + 560 * i, 550);
+                    int saveGame3Level = mainRenderScreen.getSaveGame3().getSolarSystem().getPlanetListOfDifficulty().peek().getDifficulty() + 1;
+                    titleFont.draw(batch, "Level: " + saveGame3Level, 280 + 560 * i, 700);
+                    titleFont.draw(batch, "Score: " + mainRenderScreen.getSaveGame3().getScore(), 270 + 560 * i, 550);
                 } else {
                     titleFont.getData().setScale(1f);
                     titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
