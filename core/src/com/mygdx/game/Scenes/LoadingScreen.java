@@ -12,11 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
 
-public class LoadingScreen implements Screen {
-
-    private final GameScreen mainRenderScreen;
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
+public class LoadingScreen extends BaseScreen {
 
     private final AssetManager manager = new AssetManager();
     private final long previousTime;

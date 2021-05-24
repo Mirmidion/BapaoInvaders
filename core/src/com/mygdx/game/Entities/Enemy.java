@@ -64,9 +64,6 @@ public class Enemy extends Ship{
     //All vulnerable enemies in the current level
     static ArrayList<Enemy> vulnerableEnemies = new ArrayList<>();
 
-
-
-
     public Enemy(int enemyClass, int x, int y, int limitXLeft, int limitXRight, Planet homePlanet){
         this.enemyClass = enemyClass;
         this.homePlanet = homePlanet;

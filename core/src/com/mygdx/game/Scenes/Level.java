@@ -2,10 +2,8 @@ package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
@@ -14,13 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Level implements Screen {
-
-    //The spritebatch
-    private final SpriteBatch batch;
-
-    //The main gamescreen
-    private final GameScreen mainRenderScreen;
+public class Level extends BaseScreen {
 
     //Background position of the scrolling background
     private int backgroundPosY;
@@ -150,7 +142,7 @@ public class Level implements Screen {
     public void checkCollisions() {
         for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
             Defense defense = iter.next();
-            Rectangle defenseRectangle = new Rectangle(defense.getPosX(), defense.getPosY(), defense.getTexture().getWidth(), defense.getTexture().getHeight());
+            Rectangle defenseRectangle = new Rectangle(Math.round(defense.getPosX()), Math.round(defense.getPosY()), defense.getSprite().getWidth(), defense.getSprite().getHeight());
             for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
                 Bullet bullet = iter2.next();
                 Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), bullet.getLaser().getHeight());
@@ -202,7 +194,7 @@ public class Level implements Screen {
         //Defenses
         for (Defense defense : Planet.getDefenses()) {
             if (defense.getHealth() > 0) {
-                batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
+                batch.draw(defense.getSprite(), defense.getPosX(), defense.getPosY());
             }
         }
 

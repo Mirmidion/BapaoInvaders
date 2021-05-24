@@ -65,7 +65,6 @@ public class Planet implements Serializable {
     //All defenses
     static ArrayList<Defense> defenses = new ArrayList<>();
 
-
     public Planet(int orbit, SolarSystem solarSystem){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
@@ -159,17 +158,12 @@ public class Planet implements Serializable {
         if ((this.angle + angle > 2*Math.PI && orbitClockWise)||(this.angle + angle > 2*Math.PI && !orbitClockWise)){
             this.angle = 0;
         }
-        else if ((this.angle + angle < 0&&!orbitClockWise)){
+        else if ((this.angle + angle < 0 && !orbitClockWise)){
             this.angle = (float)(2*Math.PI);
         }
         else{
             this.angle += angle;
         }
-    }
-
-    public void setMoonOrbit(int orbit){
-        this.orbit = orbit;
-        //this.orbit();
     }
 
     public float getOrbitDirection(float speed){

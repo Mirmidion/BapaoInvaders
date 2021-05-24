@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameScreen;
 
 import java.sql.Connection;
@@ -15,17 +16,14 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class HighScores implements Screen {
-
-    private final GameScreen mainRenderScreen;
-
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
+public class HighScores extends BaseScreen {
 
     private ArrayList<String> names;
     private ArrayList<Integer> scores;
 
     private final BitmapFont normalFont;
+
+    private static long prevPress = 0;
 
     public HighScores(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
@@ -58,7 +56,12 @@ public class HighScores implements Screen {
         batch.draw(mainRenderScreen.getGameBackground(), 0,0, 1920, 1080);
         batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+        boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
+        boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
+
+        boolean canPressButton = TimeUtils.millis() - prevPress > 500;
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
         mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
     }
@@ -140,5 +143,9 @@ public class HighScores implements Screen {
         if (process != null) {
             process.destroy();
         }
+    }
+
+    public static void setPrevPress() {
+        HighScores.prevPress = TimeUtils.millis();
     }
 }

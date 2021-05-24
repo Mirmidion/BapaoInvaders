@@ -48,8 +48,7 @@ public class Player extends Ship{
         this.posX = width/2f-shipSprite.getWidth()/2f;
     }
 
-    public void update(float delta)
-    {
+    public void update(float delta) {
         if(invulnerable)
         {
             timeInvulnerable += delta;
@@ -62,8 +61,7 @@ public class Player extends Ship{
         }
     }
 
-    public void draw(Batch batch)
-    {
+    public void draw(Batch batch) {
         playerSprite.draw(batch);
         playerSprite.setPosition(posX, posY);
         if(invulnerable)
@@ -78,10 +76,12 @@ public class Player extends Ship{
         }
     }
 
+    @Override
     public float getPosY() {
         return posY;
     }
 
+    @Override
     public float getPosX() {
         return posX;
     }
@@ -94,10 +94,12 @@ public class Player extends Ship{
         this.invulnerable = invulnerable;
     }
 
+    @Override
     public int getHealth() {
         return health;
     }
 
+    @Override
     public Texture getSprite() {
         return shipSprite;
     }

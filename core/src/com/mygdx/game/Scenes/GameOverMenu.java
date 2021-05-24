@@ -20,14 +20,8 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class GameOverMenu implements Screen {
-
-    //Main screen
-    private final GameScreen mainRenderScreen;
-
+public class GameOverMenu extends BaseScreen {
     //Different batches
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
     private final Stage stage;
 
     private final ArrayList<TextButton> allButtons;
@@ -164,6 +158,7 @@ public class GameOverMenu implements Screen {
             }
             case 1: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.newSaveGame();
                     mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
                 }
                 break;
@@ -171,12 +166,15 @@ public class GameOverMenu implements Screen {
             case 2: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     saveHighScore(score, currentName);
+                    mainRenderScreen.newSaveGame();
                     mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
+                    HighScores.setPrevPress();
                 }
                 break;
             }
             case 3: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.newSaveGame();
                     dispose();
                     System.exit(0);
                 }

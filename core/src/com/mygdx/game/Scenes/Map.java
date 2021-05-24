@@ -11,16 +11,11 @@ import com.mygdx.game.Entities.Planet;
 import com.mygdx.game.Entities.SolarSystem;
 import com.mygdx.game.GameScreen;
 
-public class Map implements Screen {
+public class Map extends BaseScreen {
 
-    GameScreen mainRenderScreen;
-    SpriteBatch batch;
     private float mapScale = 1;
 
     private final Texture starTexture;
-
-    //Drawer of shapes
-    private final ShapeRenderer shapeRenderer;
 
     private boolean blink = true;
     private long blinkTime = 0;
@@ -49,7 +44,9 @@ public class Map implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
         Gdx.gl.glLineWidth(1);
 
-        currentSolarSystem = mainRenderScreen.getSolarSystem();
+        if (currentSolarSystem != mainRenderScreen.getSolarSystem()) {
+            currentSolarSystem = mainRenderScreen.getSolarSystem();
+        }
 
         // Background being drawn
         batch.begin();
@@ -69,7 +66,6 @@ public class Map implements Screen {
         updateSolarSystem();
         currentPlanetOutline();
         handleInput();
-        handleZoom();
         textRender();
     }
 
@@ -127,7 +123,7 @@ public class Map implements Screen {
                 for (Planet moon : planet.getMoonList()) {
 
                     moon.setOrbit(moonOrbit / 2);
-                    moon.setMoonOrbit(moon.getOrbit());
+                    moon.setOrbit(moon.getOrbit());
                     moonOrbit += 25;
                 }
             }
@@ -221,9 +217,6 @@ public class Map implements Screen {
             mainRenderScreen.setCurrentScene(GameScreen.scene.level);
             mainRenderScreen.setCurrentPlanet(mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().peek());
         }
-    }
-
-    public void handleZoom(){
 
         boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
         boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");

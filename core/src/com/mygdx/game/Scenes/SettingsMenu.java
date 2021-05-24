@@ -15,19 +15,10 @@ import com.mygdx.game.GameScreen;
 
 import java.util.ArrayList;
 
-public class SettingsMenu extends ScreenAdapter implements Screen {
-
-    //The main settings screen
-    private final GameScreen mainRenderScreen;
-
-    //The spritebatch
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
+public class SettingsMenu extends BaseScreen {
 
     //Settings menu Layout and Objects
     private final Table settingsTable;
-
-
 
     //The stage for drawing and getting input from buttons
     private final Stage stage = new Stage();
@@ -167,7 +158,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
 
 
         drawOutlines();
-        handleInput();
+        handleButtonPress();
         handleButtonSelect();
     }
 
@@ -209,7 +200,7 @@ public class SettingsMenu extends ScreenAdapter implements Screen {
         shapeRenderer.end();
     }
 
-    public void handleInput(){
+    public void handleButtonPress(){
 
         boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");

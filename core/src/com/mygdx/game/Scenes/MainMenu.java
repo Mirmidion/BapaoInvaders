@@ -2,13 +2,11 @@ package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -19,19 +17,12 @@ import com.mygdx.game.GameScreen;
 
 import java.util.ArrayList;
 
-public class MainMenu implements Screen {
-
-    //The spritebatch
-    SpriteBatch batch;
-    ShapeRenderer shapeRenderer;
+public class MainMenu extends BaseScreen {
 
     private boolean saveGameMenuSwitch = false;
 
     //The stage for drawing and getting input from buttons
     Stage stage = new Stage();
-
-    //The main gamescreen
-    GameScreen mainRenderScreen;
 
     //Main Menu Layout and Objects
     private final Table mainMenuTable;
@@ -151,12 +142,12 @@ public class MainMenu implements Screen {
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
 
         if (!saveGameMenuSwitch) {
-            handleMainInput(raspUpPressed, ardUpPressed);
+            handleButtonPress(raspUpPressed, ardUpPressed);
             handleButtonSelect(raspRightPressed, ardRightPressed, raspLeftPressed, ardLeftPressed);
         }
         else {
             drawSaveGames();
-            handleSaveGameInput(raspUpPressed, ardUpPressed);
+            handleSaveGamePress(raspUpPressed, ardUpPressed);
             handleSaveGameSelect(raspRightPressed, ardRightPressed, raspLeftPressed, ardLeftPressed);
         }
     }
@@ -202,7 +193,7 @@ public class MainMenu implements Screen {
         }
     }
 
-    public void handleSaveGameInput(boolean raspUpPressed, boolean ardUpPressed){
+    public void handleSaveGamePress(boolean raspUpPressed, boolean ardUpPressed){
 
         boolean canPressButton = TimeUtils.millis() - select > 500;
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
@@ -300,7 +291,7 @@ public class MainMenu implements Screen {
         }
     }
     
-    public void handleMainInput(boolean raspUpPressed, boolean ardUpPressed){
+    public void handleButtonPress(boolean raspUpPressed, boolean ardUpPressed){
         if (!shapeRenderer.isDrawing()) {
             shapeRenderer.begin();
         }

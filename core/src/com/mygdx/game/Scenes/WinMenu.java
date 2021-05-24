@@ -17,11 +17,8 @@ import com.mygdx.game.GameScreen;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class WinMenu implements Screen {
+public class WinMenu extends BaseScreen {
 
-    private final GameScreen mainRenderScreen;
-    private final SpriteBatch batch;
-    private final ShapeRenderer shapeRenderer;
     private final Stage stage = new Stage();
 
     private final ArrayList<TextButton> allButtons;
@@ -98,7 +95,7 @@ public class WinMenu implements Screen {
         stage.draw();
 
         drawOutlines();
-        handleInput();
+        handleButtonPress();
         handleButtonSelect();
     }
 
@@ -179,7 +176,7 @@ public class WinMenu implements Screen {
         shapeRenderer.end();
     }
 
-    public void handleInput(){
+    public void handleButtonPress(){
 
         boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
@@ -203,6 +200,7 @@ public class WinMenu implements Screen {
 
                     }
                     mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
+                    HighScores.setPrevPress();
                     break;
                 }
                 case 3: {
