@@ -52,8 +52,9 @@ public class HighScores extends BaseScreen {
             batch.begin();
         }
 
-        drawLeaderBoard();
+
         batch.draw(mainRenderScreen.getGameBackground(), 0,0, 1920, 1080);
+        drawLeaderBoard();
         batch.end();
 
         boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
