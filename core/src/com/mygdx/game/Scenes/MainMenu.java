@@ -70,18 +70,19 @@ public class MainMenu extends BaseScreen {
 
         Gdx.input.setInputProcessor(stage);
         mainMenuTable = new Table();
-        mainMenuTable.setPosition(250, 600);
+        mainMenuTable.setPosition(250, 500);
         mainMenuTable.left();
 
         buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
         TextButton start = new TextButton("Start", buttonSkin);
         TextButton settings = new TextButton("Settings", buttonSkin);
-
+        TextButton highScores = new TextButton("Highscores", buttonSkin);
         TextButton exit = new TextButton("Exit", buttonSkin);
 
         start.setTransform(true);
         settings.setTransform(true);
+        highScores.setTransform(true);
         exit.setTransform(true);
 
         mainMenuTable.row();
@@ -89,10 +90,13 @@ public class MainMenu extends BaseScreen {
         mainMenuTable.row();
         mainMenuTable.add(settings).padTop(50);
         mainMenuTable.row();
+        mainMenuTable.add(highScores).padTop(50);
+        mainMenuTable.row();
         mainMenuTable.add(exit).padTop(50);
 
         allMainButtons.add(start);
         allMainButtons.add(settings);
+        allMainButtons.add(highScores);
         allMainButtons.add(exit);
 
         stage.addActor(mainMenuTable);
@@ -175,11 +179,16 @@ public class MainMenu extends BaseScreen {
     }
 
     public void renderBapaos(float delta) {
-        for (Sprite sprite : bapaoSprites) {
+
+        if (!batch.isDrawing()){
             batch.begin();
-            sprite.draw(batch);
-            batch.end();
         }
+
+        for (Sprite sprite : bapaoSprites) {
+            sprite.draw(batch);
+
+        }
+        batch.end();
 
         for (int i = 0; i < bapaoSprites.length; i++) {
             bapaoSprites[i].setPosition(bapaoX[i], bapaoY[i]);
@@ -278,7 +287,7 @@ public class MainMenu extends BaseScreen {
         boolean canSelectButton = TimeUtils.millis() - prevSelect > 500;
         
         if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton) {
-            if (buttonSelect < 3) {
+            if (buttonSelect < 4) {
                 buttonSelect++;
             }
             prevSelect = TimeUtils.millis();
@@ -316,6 +325,13 @@ public class MainMenu extends BaseScreen {
                 break;
             }
             case 3: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
+                    HighScores.setPrevPress();
+                }
+                break;
+            }
+            case 4: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     dispose();
                     System.exit(0);

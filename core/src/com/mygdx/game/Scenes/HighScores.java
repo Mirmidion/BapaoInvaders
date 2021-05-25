@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -25,12 +27,25 @@ public class HighScores extends BaseScreen {
 
     private static long prevPress = 0;
 
+    //Other
+    private final float[] bapaoY = new float[]{500, 14, 129, 1049, 280, 809, 102, 758, 640, 20, 70, 780, 420, 920, 320};
+    private final float[] bapaoX = new float[]{294, 0, 498, 928, 1359, 200, 800, 500, 1060, 12, 1500, 1400, 1600, 1800, 1900};
+    private final int[] bapaoSpeed = new int[]{300, 250, 200, 150, 100, 250, 450, 100, 230, 400, 500, 210, 500, 320, 340};
+
+    //Sprites
+    private final Sprite[] bapaoSprites;
+
     public HighScores(GameScreen gameScreen){
         this.mainRenderScreen = gameScreen;
 
         getHighscores();
 
         this.normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
+
+        bapaoSprites = new Sprite[15];
+        for (int i = 0; i < bapaoSprites.length; i++) {
+            bapaoSprites[i] = new Sprite(new Texture("Bapao1.png"));
+        }
 
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
@@ -54,6 +69,7 @@ public class HighScores extends BaseScreen {
 
 
         batch.draw(mainRenderScreen.getGameBackground(), 0,0, 1920, 1080);
+        renderBapaos(delta);
         drawLeaderBoard();
         batch.end();
 
@@ -64,6 +80,7 @@ public class HighScores extends BaseScreen {
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
         mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
+        MainMenu.setSwitchDelay(TimeUtils.millis());
         }
     }
 
@@ -91,6 +108,27 @@ public class HighScores extends BaseScreen {
     public void dispose() {
         batch.dispose();
         shapeRenderer.dispose();
+    }
+
+    public void renderBapaos(float delta) {
+
+
+        for (Sprite sprite : bapaoSprites) {
+            sprite.draw(batch);
+
+        }
+
+
+        for (int i = 0; i < bapaoSprites.length; i++) {
+            bapaoSprites[i].setPosition(bapaoX[i], bapaoY[i]);
+            bapaoSprites[i].setRotation(bapaoY[i]);
+            if (bapaoY[i] < -50) {
+                bapaoY[i] = 1210;
+                bapaoX[i] = (float) (Math.random()) * (1920);
+
+            }
+            bapaoY[i] -= (bapaoSpeed[i] * delta);
+        }
     }
 
     public void drawLeaderBoard(){
