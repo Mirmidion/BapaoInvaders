@@ -3,41 +3,37 @@ package com.mygdx.game.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
-public class Defense {
-    private int health;
-    private Texture texture1 = new Texture(Gdx.files.internal("Bapao1.png"));
-    private Texture texture = new Texture(Gdx.files.internal("Bapao.png"));
-    private int posY;
-    private int posX;
+public class Defense extends Ship{
+
+    //Different textures
+    private final Texture shipSpriteBroken = new Texture(Gdx.files.internal("Bapao1.png"));
+
 
     public Defense(int posX, int posY){
         this.health = 100;
         this.posX = posX;
         this.posY = posY;
+        shipSprite = new Texture(Gdx.files.internal("Bapao.png"));
     }
 
+    @Override
     public int getHealth() {
         return health;
     }
 
-    public int getPosY() {
+    @Override
+    public float getPosY() {
         return posY;
     }
 
-    public int getPosX() {
+    @Override
+    public float getPosX() {
         return posX;
     }
 
-    public Texture getTexture() {
-        return (health > 50)? texture : texture1;
-    }
-
-    public void setPosY(int posY) {
-        this.posY = posY;
-    }
-
-    public void setPosX(int posX) {
-        this.posX = posX;
+    @Override
+    public Texture getSprite() {
+        return (health > 50)? shipSprite : shipSpriteBroken;
     }
 
     public void setHealth(int health) {
