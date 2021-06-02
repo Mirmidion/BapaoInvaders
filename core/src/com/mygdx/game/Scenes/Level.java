@@ -42,8 +42,6 @@ public class Level implements Screen {
 
     private int currentWaveOfPlanet = 1;
 
-    private SolarSystem solarSystem;
-
 
     private RaspController rasp;
     private Arduino arduino;
@@ -66,13 +64,11 @@ public class Level implements Screen {
 
     @Override
     public void render(float delta) {
-        solarSystem = mainRenderScreen.getSolarSystem();
         mainRenderScreen.getMusic().dispose();
         mainRenderScreen.getMusic2().dispose();
         mainRenderScreen.getMusic3().play();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 
 
         if (batch.isDrawing()){
@@ -81,7 +77,6 @@ public class Level implements Screen {
 
 
         batch.enableBlending();
-
 
         batch.begin();
 
@@ -99,43 +94,30 @@ public class Level implements Screen {
 
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
-
-            //player.draw(batch);
-            //player.update(delta);
-
-            batch.draw(player.getSprite(), player.getPosX(), player.getPosY());
-
+            player.draw(batch);
+            player.update(delta);
         } else {
-            mainRenderScreen.getSolarSystem().setPlanetListOfDifficulty(new LinkedList<Planet>());
-            solarSystem.setGlobalDifficulty(0);
+            Planet.setPlanetListOfDifficulty(new LinkedList<Planet>());
+            Planet.setGlobalDifficulty(0);
             mainRenderScreen.setCurrentPlanet(null);
             mainRenderScreen.setSolarSystem(new SolarSystem(mainRenderScreen.getWidth(), mainRenderScreen.getHeight()));
-            mainRenderScreen.setCurrentScene(GameScreen.scene.gameOver);
+            mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
             player = new Player(mainRenderScreen.getWidth());
             Bullet.setAllBullets(new ArrayList<Bullet>());
             Planet.regenerateDefenses();
         }
-
-        for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()){
-            enemy.moveEnemy();
-        }
-
         if (mainRenderScreen.getCurrentPlanet() != null) {
             batch.draw(new Texture("healthBar.png"), 0, 0, player.getHealth() * 19.2f, 30);
 
             for (Iterator<Enemy> enemyIterator = mainRenderScreen.getCurrentPlanet().getEnemyWaves().iterator(); enemyIterator.hasNext(); ) {
                 Enemy enemy = enemyIterator.next();
-                if (enemy.getSprite() == null){
-                    enemy.refreshTextures();
-                }
                 if (enemy.getHealth() != 0) {
-                    batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
+                    enemy.moveEnemy();
+                    batch.draw(enemy.getEnemySprite(), enemy.getPosX(), enemy.getPosY());
                     for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                         Bullet bullet = bulletIterator.next();
-
-                        Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getSprite().getHeight());
-                        Rectangle playerRectangle = new Rectangle((int)player.getPosX(), (int)player.getPosY(), 140, player.getSprite().getHeight());
-
+                        Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getEnemySprite().getHeight());
+                        Rectangle playerRectangle = new Rectangle(player.getPosX(), player.getPosY(), 140, (int)player.getPlayerSprite().getHeight());
                         Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
                         if (player.getHealth() != 0 && bullet.isExists() && overlaps(playerRectangle, bulletRectangle) && !bullet.getFriendly() && !player.isInvulnerable()) {
                             bullet.setExists(false);
@@ -153,12 +135,13 @@ public class Level implements Screen {
                             bulletIterator.remove();
                         }
                         else if (enemy.getHealth() <= 0){
-                            mainRenderScreen.setScore(50*enemy.getEnemyClass());
+                            GameScreen.setScore(50*enemy.getEnemyClass());
                             break;
                         }
                     }
                 } else {
                     enemyIterator.remove();
+
                 }
             }
 
@@ -167,19 +150,12 @@ public class Level implements Screen {
                 currentWaveOfPlanet++;
                 mainRenderScreen.getCurrentPlanet().generateEnemies(currentWaveOfPlanet);
             }
-            else if (mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().size() == 1 && Gdx.input.isKeyPressed(Input.Keys.R)){
-                mainRenderScreen.setCurrentScene(GameScreen.scene.win);
-            }
-            else if ((mainRenderScreen.getCurrentPlanet().getWaves().size() == currentWaveOfPlanet+1 || Gdx.input.isKeyPressed(Input.Keys.R)) || mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().size() == 0){
-                mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().poll();
+            else if (mainRenderScreen.getCurrentPlanet().getWaves().size() == currentWaveOfPlanet+1 || Gdx.input.isKeyPressed(Input.Keys.R)){
+                Planet.getPlanetListOfDifficulty().poll();
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
                 player.resetPosition(1920);
                 Planet.regenerateDefenses();
                 Bullet.setAllBullets(new ArrayList<Bullet>());
-                //System.out.println(mainRenderScreen.getSolarSystem().getPlanetListOfDifficulty().size());
-                //System.out.println("jup");
-                solarSystem.setCurrentlevel(1);
-                mainRenderScreen.saveSaveGame(MainMenu.getSelectedSaveGame());
             }
 
 
@@ -188,7 +164,6 @@ public class Level implements Screen {
                 mainRenderScreen.setCurrentScene(GameScreen.scene.map);
                 Bullet.setAllBullets(new ArrayList<Bullet>());
                 player.resetPosition(mainRenderScreen.getWidth());
-                mainRenderScreen.saveSaveGame(MainMenu.getSelectedSaveGame());
             }
 
             // Draw every bullet and move them up/down
@@ -206,7 +181,7 @@ public class Level implements Screen {
             }
 
             for (Planet planet : mainRenderScreen.getSolarSystem().getPlanets()) {
-                if (planet.getDifficulty() == solarSystem.getGlobalDifficulty()) {
+                if (planet.getDifficulty() == Planet.getGlobalDifficulty()) {
                     mainRenderScreen.setCurrentPlanet(planet);
                 }
             }
@@ -259,8 +234,7 @@ public class Level implements Screen {
             // Draw the current score
             batch.begin();
             mainRenderScreen.getTitleFont().getData().setScale(1f);
-            mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
-            mainRenderScreen.getTitleFont().getData().setScale(2f);
+            mainRenderScreen.getTitleFont().draw(batch, "Score: " + GameScreen.getScore(), 80, 1000);
             batch.end();
         }
     }
