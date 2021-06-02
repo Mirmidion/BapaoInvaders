@@ -10,7 +10,7 @@ public class RaspController {
 
     public String deviceInformation;
 
-    private RaspConnection rasp;
+    private final RaspConnection rasp;
 
     public RaspController(String raspberry_ip){
         deviceInformation = "raspberry pi controller at: "+raspberry_ip;
@@ -54,7 +54,7 @@ class RaspConnection extends Thread{
                 //Retrieving the contents of the specified page
                 Scanner sc = new Scanner(url.openStream());
                 //Instantiating the StringBuffer class to hold the result
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 while (sc.hasNext()) {
                     sb.append(sc.next());
                 }
@@ -62,12 +62,10 @@ class RaspConnection extends Thread{
                 result = sb.toString();
 
                 Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 connected = false;
-            } catch (IOException e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
 
@@ -78,6 +76,5 @@ class RaspConnection extends Thread{
 
     public void disconnect(){
         connected = false;
-
     }
 }

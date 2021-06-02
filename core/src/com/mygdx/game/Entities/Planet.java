@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Planet implements Serializable {
 
     //Difficulty of the waves
-    private final int difficulty;
+    private int difficulty = 0;
 
     //Waves consist of arraylist<int> that contain amount and types of enemies
     //The ArrayList<ArrayList<Integer>> = {{amount of enemies, enemy type}, {amount of enemies, enemy type}, ...}
@@ -65,7 +65,6 @@ public class Planet implements Serializable {
     //All defenses
     static ArrayList<Defense> defenses = new ArrayList<>();
 
-
     public Planet(int orbit, SolarSystem solarSystem){
         int random = MathUtils.random(85);
         int randomDirection = MathUtils.random(0,100);
@@ -76,21 +75,21 @@ public class Planet implements Serializable {
             whichPlanetTexture = (randomColor == 1)? 1: (randomColor == 2)? 3:(randomColor == 3)? 2:(randomColor == 4)? 2: 2;
             this.planetClass = 3;
             System.out.println("Added a Planet");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 30;
         }
         else if (isBetween(random, 51, 60)){
             this.currentPlanetTexture = gasGiantTexture;
             this.planetClass = 4;
             System.out.println("Added a Gas Giant");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 61, 70)){
             this.currentPlanetTexture = iceGiantTexture;
             this.planetClass = 5;
             System.out.println("Added a Ice Giant");
-            this.GenerateMoons(this.planetClass, solarSystem);
+            this.generateMoons(this.planetClass, solarSystem);
             this.radius = 50;
         }
         else if (isBetween(random, 71, 85)) {
@@ -132,7 +131,7 @@ public class Planet implements Serializable {
         solarSystem.getPlanetListOfDifficulty().offer(this);
     }
 
-    public void GenerateMoons(int planetType, SolarSystem solarSystem){
+    public void generateMoons(int planetType, SolarSystem solarSystem){
         int amountOfMoons = MathUtils.random(-3,3);
         amountOfMoons = Math.max(amountOfMoons, 0);
         for (int i = amountOfMoons; i > 0; i--){
@@ -150,26 +149,21 @@ public class Planet implements Serializable {
     }
 
     public void orbit(){
-        this.setOrbit(getOrbitDirection(this.rotationSpeed));
+        this.setCurrentOrbit(getOrbitDirection(this.rotationSpeed));
         this.posX = (float)Math.cos(angle)*orbit;
         this.posY = (float)Math.sin(angle)*orbit;
     }
 
-    public void setOrbit(float angle){
+    public void setCurrentOrbit(float angle){
         if ((this.angle + angle > 2*Math.PI && orbitClockWise)||(this.angle + angle > 2*Math.PI && !orbitClockWise)){
             this.angle = 0;
         }
-        else if ((this.angle + angle < 0&&!orbitClockWise)){
+        else if ((this.angle + angle < 0 && !orbitClockWise)){
             this.angle = (float)(2*Math.PI);
         }
         else{
             this.angle += angle;
         }
-    }
-
-    public void setMoonOrbit(int orbit){
-        this.orbit = orbit;
-        this.orbit();
     }
 
     public float getOrbitDirection(float speed){
@@ -190,7 +184,7 @@ public class Planet implements Serializable {
         for (int wavesOrder = 0; wavesOrder < amountOfWaves; wavesOrder++){
             ArrayList<Integer> wave = new ArrayList<>();
             int amountOfTypesOfEnemies = Math.min(4,Math.max(2,Math.round(MathUtils.random(1,2*(difficulty/3f*Math.max(MathUtils.random(-5,2),1))))));
-            for (int enemyType = 1; enemyType <= amountOfTypesOfEnemies; enemyType++){
+            for (int enemyType = 1; enemyType <= (Math.min(amountOfTypesOfEnemies, 2)); enemyType++){
                 int randomAmount = MathUtils.random(4,12);
                 wave.add(randomAmount);
                 wave.add(enemyType);
@@ -225,7 +219,7 @@ public class Planet implements Serializable {
                 int padding = (1920 - amountOfEnemiesOnLine * 140 - (amountOfEnemiesOnLine - 1) * 80) / 2;
 
                 int posXEnemy = (amountOfEnemiesOnLine * 140 + (amountOfEnemiesOnLine - 1) * 80) / amountOfEnemiesOnLine;
-                enemyWaves.add(new Enemy(waves.get(wave - 1).get(amount+1), count * posXEnemy + padding, lineCount * 220 + 900, count * posXEnemy + padding - 50, count * posXEnemy + padding + 50,this));
+                enemyWaves.add(new Enemy(waves.get(wave - 1).get(amount+1), count * posXEnemy + padding, lineCount * 220 + 1000, count * posXEnemy + padding - 50, count * posXEnemy + padding + 50,this));
                 count++;
             }
             lineCount++;

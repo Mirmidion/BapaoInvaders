@@ -23,24 +23,23 @@ public class Bullet{
     //Damage it deals
     private int damage;
 
-    //Is it in screen space?
-    private boolean exists = true;
 
     //All bullets in the current level
     static ArrayList<Bullet> allBullets = new ArrayList<>();
 
-    public Bullet (int x, int y, boolean friendly, Player player){
+
+    public Bullet (float x, float y, Player player){
         this.posX = x + player.getPosX();
         this.posY = y + player.getPosY();
-        this.friendly = friendly;
+        this.friendly = true;
         this.damage = 50;
         this.bulletSpeed = 1;
     }
 
-    public Bullet (int x, int y, boolean friendly, Enemy enemy){
+    public Bullet (float x, float y, Enemy enemy){
         this.posX = x + enemy.getPosX();
         this.posY = y + enemy.getPosY();
-        this.friendly = friendly;
+        this.friendly = false;
         if (enemy.getEnemyClass()==1) {
                 this.damage = 25;
                 this.bulletSpeed = 1;
@@ -56,17 +55,11 @@ public class Bullet{
         else if (enemy.getEnemyClass()==4) {
                 this.damage = 50;
                 this.bulletSpeed = 0.5f;
-
         }
     }
 
-    public void setPosY(float posY, int height) {
-        if (this.posY+posY > height || this.posY+posY < 0){
-            this.exists = false;
-        }
-        else{
-            this.posY += posY* this.bulletSpeed * ((this.friendly)?1:-1) ;
-        }
+    public void setPosY(float posY) {
+        this.posY += posY* this.bulletSpeed * ((this.friendly)?1:-1) ;
     }
 
     public float getPosX() {
@@ -85,23 +78,15 @@ public class Bullet{
         return friendly;
     }
 
-    public static void setAllBullets(ArrayList<Bullet> allBullets) {
-        Bullet.allBullets = allBullets;
-    }
-
-    public boolean isExists() {
-        return exists;
-    }
-
-    public void setExists(boolean exists) {
-        this.exists = exists;
-    }
-
     public static ArrayList<Bullet> getAllBullets() {
         return allBullets;
     }
 
     public int getDamage() {
         return damage;
+    }
+
+    public static void removeAllBullets(){
+        allBullets = new ArrayList<>();
     }
 }

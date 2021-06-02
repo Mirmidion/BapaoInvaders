@@ -18,20 +18,12 @@ public abstract class Ship implements Serializable {
     //Sprite, not serializable
     transient Texture shipSprite;
 
-    public float getPosY() {
-        return posY;
-    }
+    public abstract float getPosY();
 
-    public float getPosX() {
-        return posX;
-    }
+    public abstract float getPosX();
 
-    public int getHealth() {
-        return this.health;
-    }
+    public abstract int getHealth();
 
-    public Texture getSprite() {
-        return shipSprite;
-    }
+    public abstract Texture getSprite();
 
 }

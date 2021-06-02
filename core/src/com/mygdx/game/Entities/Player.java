@@ -10,7 +10,6 @@ public class Player extends Ship{
 
     private final Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
     private final Texture shield = new Texture(Gdx.files.internal("shield.png"));
-   // private Texture playerSprite = new Texture(Gdx.files.internal("Playership.png"));
     private long time = 0;
     private boolean invulnerable = false;
 
@@ -39,7 +38,7 @@ public class Player extends Ship{
     public void shoot(){
         System.out.println(time);
         if (TimeUtils.millis() - time > 500){
-            Bullet.allBullets.add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-32, true, this));
+            Bullet.getAllBullets().add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-32, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
@@ -49,8 +48,7 @@ public class Player extends Ship{
         this.posX = width/2f-shipSprite.getWidth()/2f;
     }
 
-    public void update(float delta)
-    {
+    public void update(float delta) {
         if(invulnerable)
         {
             timeInvulnerable += delta;
@@ -63,8 +61,7 @@ public class Player extends Ship{
         }
     }
 
-    public void draw(Batch batch)
-    {
+    public void draw(Batch batch) {
         playerSprite.draw(batch);
         playerSprite.setPosition(posX, posY);
         if(invulnerable)
@@ -79,10 +76,12 @@ public class Player extends Ship{
         }
     }
 
+    @Override
     public float getPosY() {
         return posY;
     }
 
+    @Override
     public float getPosX() {
         return posX;
     }
@@ -95,8 +94,14 @@ public class Player extends Ship{
         this.invulnerable = invulnerable;
     }
 
+    @Override
     public int getHealth() {
         return health;
+    }
+
+    @Override
+    public Texture getSprite() {
+        return shipSprite;
     }
 
     public void setHealth(int health) {
