@@ -41,7 +41,8 @@ public class LoadingScreen extends BaseScreen {
         batch.end();
 
 
-        if (manager.update() && TimeUtils.millis() - previousTime > 5000){
+        int LOAD_TIME = 500;
+        if (manager.update() && TimeUtils.millis() - previousTime > LOAD_TIME){
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
 
@@ -51,8 +52,8 @@ public class LoadingScreen extends BaseScreen {
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GOLD);
-        if (progress > ((TimeUtils.millis() - previousTime)/ 5000f)) {
-            shapeRenderer.rect(300, 300, 1320 * ((TimeUtils.millis() - previousTime) / 5000f), 50);
+        if (progress > ((TimeUtils.millis() - previousTime)/ (float) LOAD_TIME)) {
+            shapeRenderer.rect(300, 300, 1320 * ((TimeUtils.millis() - previousTime) / (float) LOAD_TIME), 50);
         }
         else{
             shapeRenderer.rect(300, 300, 1320 * progress, 50);

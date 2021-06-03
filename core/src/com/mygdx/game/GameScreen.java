@@ -31,7 +31,7 @@ public class GameScreen implements Screen {
 	//----- These are all the variables used in more than 1 scene ----//
 
 	//Scene control
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu}
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu, bossFight}
 	private scene currentScene =  scene.loadingScreen;
 
 	private static boolean fpsCounterCheck = false;
@@ -79,6 +79,7 @@ public class GameScreen implements Screen {
 	private final GameOverMenu gameOverScene;
 	private final WinMenu winScene;
 	private final HighScores highScoreScene;
+	private final BossFight bossScene;
 
 	//FPS counter
 	private int framesPerSecond;
@@ -124,12 +125,14 @@ public class GameScreen implements Screen {
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
 		highScoreScene = new HighScores(this);
+		bossScene = new BossFight(this);
 	}
 
 
 
 	@Override
 	public void render (float delta) {
+		//setFullscreen();
 		if (!music.isPlaying()){
 			music.play();
 		}
@@ -158,10 +161,19 @@ public class GameScreen implements Screen {
 			settingsMenuScene.render(delta);
 		}
 
-		// If in a level, draw everything of that level
+//		else if (currentScene == scene.bossFight) {
+//			bossScene.render(delta);
+//		}
+
+
 		else if (currentScene == scene.level) {
-			levelScene.render(delta);
+			bossScene.render(delta);
 		}
+
+//		// If in a level, draw everything of that level
+//		else if (currentScene == scene.level) {  //todo aparte functie maken
+//			levelScene.render(delta);
+//		}
 
 
 		else if (currentScene == scene.loadingScreen){
@@ -381,5 +393,18 @@ public class GameScreen implements Screen {
 	public void setSolarSystem(SolarSystem solarSystem) {
 		this.currentSaveGame.setSolarSystem(solarSystem);
 	}
+
+//	public void setFullscreen()
+//	{
+//		if(Gdx.input.isKeyPressed(Input.Keys.K))
+//		{
+//			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+//		}
+//
+//		if(Gdx.input.isKeyPressed(Input.Keys.L))
+//		{
+//			Gdx.graphics.setWindowedMode(1920,1080);
+//		}
+//	}
 }
 

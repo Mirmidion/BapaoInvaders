@@ -130,9 +130,9 @@ public class Level extends BaseScreen {
 
         // Change the position of the player depending on the keys pressed
         if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || raspLeftPressed || ardLeftPressed)) {
-            player.setPosX(-2, mainRenderScreen.getWidth());
+            player.setPosX(-5, mainRenderScreen.getWidth());
         } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || raspRightPressed || ardRightPressed)) {
-            player.setPosX(2, mainRenderScreen.getWidth());
+            player.setPosX(5, mainRenderScreen.getWidth());
         }
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || raspUpPressed || ardUpPressed)) {
             player.shoot();

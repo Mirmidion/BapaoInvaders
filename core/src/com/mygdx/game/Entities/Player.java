@@ -61,19 +61,33 @@ public class Player extends Ship{
         }
     }
 
+    //'teken' het schip in de wereld en teken een shield als die geraakt wordt
     public void draw(Batch batch) {
         playerSprite.draw(batch);
         playerSprite.setPosition(posX, posY);
-        if(invulnerable)
-        {
-            playerSprite.setAlpha(0.7f);
-            batch.draw(shield, posX-40f, posY-20f, shield.getWidth()*0.4f, shield.getHeight()*0.4f);
+        if (invulnerable) {
+            batch.draw(shield, posX - 40f, posY - 20f, shield.getWidth() * 0.4f, shield.getHeight() * 0.4f);
+
+            //dit stukje zorgt ervoor dat de laatste seconde van de invulnerability state, het schip knippert
+            if (timeInvulnerable - 2 >= 0) {
+                boolean even = true;
+                for (float i = 2; i < 3; i += 0.10) {
+                    if (timeInvulnerable - i >= 0) {
+                        if (even) {
+                            playerSprite.setAlpha(0.5f);
+                        } else {
+                            playerSprite.setAlpha(1f);
+                        }
+                        even = !even;
+                    }
+                }
+            }
         }
 
-        if(!invulnerable)
-        {
+        if (!invulnerable) {
             playerSprite.setAlpha(1f);
         }
+
     }
 
     @Override
