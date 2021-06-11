@@ -13,13 +13,13 @@ import java.util.Iterator;
 
 public class BossFight extends BaseScreen {
     private Boss ufoBoss;
-    private Player player;
+    private PlayerBoss player;
     private int backgroundPosY;
     private final Texture healthBar = new Texture("healthBar.png");
 
     public BossFight(GameScreen gameScreen) {
         this.mainRenderScreen = gameScreen;
-        player = new Player(mainRenderScreen.getWidth());
+        player = new PlayerBoss();
         ufoBoss = new Boss(player);
         Planet.regenerateDefenses();
         batch = mainRenderScreen.getSpriteBatch();
@@ -35,12 +35,13 @@ public class BossFight extends BaseScreen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.enableBlending();
         ufoBoss.update(delta);
 
         if (!batch.isDrawing()) {
             batch.begin();
         }
-        batch.enableBlending();
+
 
         drawScrollingBackground();
 
@@ -52,14 +53,13 @@ public class BossFight extends BaseScreen {
 
         ufoBoss.render(batch);
 
-        mainRenderScreen.getTitleFont().getData().setScale(1f);
-        mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
-        mainRenderScreen.getTitleFont().getData().setScale(2f);
+//        mainRenderScreen.getTitleFont().getData().setScale(1f);
+//        mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
+//        mainRenderScreen.getTitleFont().getData().setScale(2f);
 
 
         checkCollisions();
-        updateEntities();
-        handleInput();
+        //updateEntities();
         batch.end();
     }
 
@@ -77,61 +77,20 @@ public class BossFight extends BaseScreen {
         batch.draw(mainRenderScreen.getGameBackground(), 0, backgroundPosY, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
     }
 
-    public void handleInput(){
-        boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
-        boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");
-        boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
-
-        boolean ardLeftPressed = mainRenderScreen.getArduino().is_pressed("left");
-        boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
-        boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
-
-        // Change the position of the player depending on the keys pressed
-        if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || raspLeftPressed || ardLeftPressed)) {
-            player.setPosX(-5, mainRenderScreen.getWidth());
-        } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || raspRightPressed || ardRightPressed)) {
-            player.setPosX(5, mainRenderScreen.getWidth());
-        }
-        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || raspUpPressed || ardUpPressed)) {
-            player.shoot();
-        }
-    }
-
-    public void updateEntities() {
-        //Defenses
-        for (Defense defense : Planet.getDefenses()) {
-            if (defense.getHealth() > 0) {
-                batch.draw(defense.getSprite(), defense.getPosX(), defense.getPosY());
-            }
-        }
-
-        //Bullets
-        for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
-            Bullet bullet = iter.next();
-            batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-            bullet.setPosY(3f);
-            if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
-                iter.remove();
-            }
-        }
-    }
+//    public void updateEntities() {
+//
+//        //Bullets
+//        for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
+//            Bullet bullet = iter.next();
+//            batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+//            bullet.setPosY(3f);
+//            if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
+//                iter.remove();
+//            }
+//        }
+//    }
 
     public void checkCollisions() {
-        for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
-            Defense defense = iter.next();
-            Rectangle defenseRectangle = new Rectangle(Math.round(defense.getPosX()), Math.round(defense.getPosY()), defense.getSprite().getWidth(), defense.getSprite().getHeight());
-            for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
-                Bullet bullet = iter2.next();
-                Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), bullet.getLaser().getHeight());
-                if (defense.getHealth() != 0 && overlaps(defenseRectangle, bulletRectangle)) {
-                    iter2.remove();
-                }
-            }
-
-            if (defense.getHealth() <= 0) {
-                iter.remove();
-            }
-        }
     }
 
     @Override

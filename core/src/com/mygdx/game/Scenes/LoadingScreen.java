@@ -43,6 +43,8 @@ public class LoadingScreen extends BaseScreen {
 
         int LOAD_TIME = 500;
         if (manager.update() && TimeUtils.millis() - previousTime > LOAD_TIME){
+
+
             mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
 

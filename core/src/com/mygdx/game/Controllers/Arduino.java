@@ -15,9 +15,9 @@ public class Arduino {
     public Arduino(){
         SerialPort[] ports = SerialPort.getCommPorts();
 
-        System.out.println("Selecteer een poort: ");
+        //System.out.println("Selecteer een poort: ");
         for (SerialPort port : ports){
-            System.out.println(port.getSystemPortName());
+            //System.out.println(port.getSystemPortName());
         }
 
         Scanner s = new Scanner(System.in);
@@ -49,9 +49,9 @@ class ArduinoConnection extends Thread{
         this.port = port;
 
         if(port.openPort()){
-            System.out.println("de poort is geopend");
+            //System.out.println("de poort is geopend");
         } else {
-            System.out.println("poort niet geopend");
+            //System.out.println("poort niet geopend");
             return;
         }
 
@@ -66,7 +66,7 @@ class ArduinoConnection extends Thread{
                 Scanner data = new Scanner(port.getInputStream());
                 while(data.hasNextLine()) {
                     result = data.nextLine();
-                    System.out.println(result);
+                    //System.out.println(result);
 
                 }
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class Player extends Ship{
+public class Player extends Ship {
 
     private final Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("Playership.png")));
     private final Texture shield = new Texture(Gdx.files.internal("shield.png"));
@@ -16,46 +16,42 @@ public class Player extends Ship{
     private float timeInvulnerable = 0;
 
 
-    public Player (int width){
+    public Player(int width) {
         shipSprite = new Texture(Gdx.files.internal("Playership.png"));
-        posX = width/2f-shipSprite.getWidth()/2f;
+        posX = width / 2f - shipSprite.getWidth() / 2f;
         health = 100;
         posY = 100;
     }
 
-    public void setPosX(int x, int width){
-        if (posX + x > width - shipSprite.getWidth()){
+    public void setPosX(int x, int width) {
+        if (posX + x > width - shipSprite.getWidth()) {
             posX = width - shipSprite.getWidth();
-        }
-        else if (posX + x < 0){
+        } else if (posX + x < 0) {
             posX = 0;
-        }
-        else {
+        } else {
             posX += x;
         }
     }
 
-    public void shoot(){
+    public void shoot() {
         System.out.println(time);
-        if (TimeUtils.millis() - time > 500){
-            Bullet.getAllBullets().add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-32, this));
+        if (TimeUtils.millis() - time > 500) {
+            Bullet.getAllBullets().add(new Bullet(shipSprite.getWidth() - ((gun == 1) ? 40 : 104), shipSprite.getHeight() - 32, this));
             time = TimeUtils.millis();
             gun *= -1;
         }
     }
 
-    public void resetPosition(int width){
-        this.posX = width/2f-shipSprite.getWidth()/2f;
+    public void resetPosition(int width) {
+        this.posX = width / 2f - shipSprite.getWidth() / 2f;
     }
 
     public void update(float delta) {
-        if(invulnerable)
-        {
+        if (invulnerable) {
             timeInvulnerable += delta;
         }
         float invulnerableTime = 3;
-        if(timeInvulnerable - invulnerableTime >= 0)
-        {
+        if (timeInvulnerable - invulnerableTime >= 0) {
             invulnerable = false;
             timeInvulnerable = 0;
         }

@@ -161,19 +161,14 @@ public class GameScreen implements Screen {
 			settingsMenuScene.render(delta);
 		}
 
-//		else if (currentScene == scene.bossFight) {
-//			bossScene.render(delta);
-//		}
-
-
-		else if (currentScene == scene.level) {
+		else if (currentScene == scene.bossFight) {
 			bossScene.render(delta);
 		}
 
-//		// If in a level, draw everything of that level
-//		else if (currentScene == scene.level) {  //todo aparte functie maken
-//			levelScene.render(delta);
-//		}
+		// If in a level, draw everything of that level
+		else if (currentScene == scene.level) {
+			levelScene.render(delta);
+		}
 
 
 		else if (currentScene == scene.loadingScreen){

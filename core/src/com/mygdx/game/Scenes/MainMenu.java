@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,6 +37,14 @@ public class MainMenu extends BaseScreen {
 
     //Sprites
     private final Sprite[] bapaoSprites;
+
+    //New sign
+    private final Sprite redSign = new Sprite(new Texture(Gdx.files.internal("red_circle.png")));
+    private final Sprite redSignText = new Sprite(new Texture(Gdx.files.internal("red_circle_text.png")));
+    private Vector2 redSignSize;
+    private Vector2 redSignTextSize;
+    private int redSignRotation;
+    private double redSignDelta;
 
     //Object visuals
     private static Skin buttonSkin;
@@ -76,10 +85,12 @@ public class MainMenu extends BaseScreen {
         buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
         TextButton start = new TextButton("Start", buttonSkin);
+        TextButton bossmode = new TextButton("BossMode", buttonSkin);
         TextButton settings = new TextButton("Settings", buttonSkin);
         TextButton highScores = new TextButton("Highscores", buttonSkin);
         TextButton exit = new TextButton("Exit", buttonSkin);
 
+        bossmode.setTransform(true);
         start.setTransform(true);
         settings.setTransform(true);
         highScores.setTransform(true);
@@ -88,16 +99,29 @@ public class MainMenu extends BaseScreen {
         mainMenuTable.row();
         mainMenuTable.add(start).padTop(225);
         mainMenuTable.row();
-        mainMenuTable.add(settings).padTop(50);
+        mainMenuTable.add(bossmode).padTop(10);
         mainMenuTable.row();
-        mainMenuTable.add(highScores).padTop(50);
+        mainMenuTable.add(settings).padTop(10);
         mainMenuTable.row();
-        mainMenuTable.add(exit).padTop(50);
+        mainMenuTable.add(highScores).padTop(10);
+        mainMenuTable.row();
+        mainMenuTable.add(exit).padTop(10);
 
         allMainButtons.add(start);
+        allMainButtons.add(bossmode);
         allMainButtons.add(settings);
         allMainButtons.add(highScores);
         allMainButtons.add(exit);
+
+        redSign.setSize(100, 100);
+        redSign.setPosition(mainMenuTable.getX() + 280, mainMenuTable.getY() - 20);
+        redSignSize = new Vector2(redSign.getWidth(), redSign.getHeight());
+        redSignRotation = 0;
+        redSignDelta = 0;
+        redSignText.setSize(80, 80);
+        redSignText.setPosition(mainMenuTable.getX() + 290, mainMenuTable.getY()-5);
+        redSignTextSize = new Vector2(redSignText.getWidth(), redSignText.getHeight());
+
 
         stage.addActor(mainMenuTable);
 
@@ -119,7 +143,7 @@ public class MainMenu extends BaseScreen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
         batch.begin();
         batch.draw(mainRenderScreen.getGameBackground(), 0, 0, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
@@ -145,11 +169,12 @@ public class MainMenu extends BaseScreen {
         boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
 
+        renderRedSign(delta);
+
         if (!saveGameMenuSwitch) {
             handleButtonPress(raspUpPressed, ardUpPressed);
             handleButtonSelect(raspRightPressed, ardRightPressed, raspLeftPressed, ardLeftPressed);
-        }
-        else {
+        } else {
             drawSaveGames();
             handleSaveGamePress(raspUpPressed, ardUpPressed);
             handleSaveGameSelect(raspRightPressed, ardRightPressed, raspLeftPressed, ardLeftPressed);
@@ -178,9 +203,35 @@ public class MainMenu extends BaseScreen {
         shapeRenderer.dispose();
     }
 
+    public void renderRedSign(float delta)
+    {
+        batch.begin();
+        redSign.draw(batch);
+        redSignText.draw(batch);
+
+        redSignDelta += delta;
+
+        redSignSize.x += 3*(float)Math.sin(redSignDelta*5);
+        redSignSize.y += 3*(float)Math.sin(redSignDelta*5);
+
+        redSignTextSize.x += 3*(float)Math.sin(redSignDelta*5);
+        redSignTextSize.y += 3*(float)Math.sin(redSignDelta*5);
+
+        redSign.setOrigin(redSignSize.x / 2, redSignSize.y / 2);
+        redSign.setSize(redSignSize.x, redSignSize.y);
+        redSign.setRotation(redSignRotation++);
+
+
+        redSignText.setRotation(15);
+        redSignText.setOrigin(redSignSize.x/2, redSignSize.y/2);
+        redSignText.setSize(redSignTextSize.x, redSignTextSize.y);
+        batch.end();
+
+    }
+
     public void renderBapaos(float delta) {
 
-        if (!batch.isDrawing()){
+        if (!batch.isDrawing()) {
             batch.begin();
         }
 
@@ -202,7 +253,7 @@ public class MainMenu extends BaseScreen {
         }
     }
 
-    public void handleSaveGamePress(boolean raspUpPressed, boolean ardUpPressed){
+    public void handleSaveGamePress(boolean raspUpPressed, boolean ardUpPressed) {
 
         boolean canPressButton = TimeUtils.millis() - select > 500;
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
@@ -216,7 +267,7 @@ public class MainMenu extends BaseScreen {
         }
     }
 
-    public void handleSaveGameSelect(boolean raspRightPressed, boolean ardRightPressed, boolean raspLeftPressed, boolean ardLeftPressed){
+    public void handleSaveGameSelect(boolean raspRightPressed, boolean ardRightPressed, boolean raspLeftPressed, boolean ardLeftPressed) {
 
 
         boolean canSelectButton = TimeUtils.millis() - previousSelected > 300;
@@ -229,7 +280,7 @@ public class MainMenu extends BaseScreen {
         }
     }
 
-    public void drawSaveGames(){
+    public void drawSaveGames() {
         for (int i = 0; i < 3; i++) {
             batch.begin();
             batch.draw(saveGameTexture, 200 + 560 * i, 300, 400, 600);
@@ -264,30 +315,29 @@ public class MainMenu extends BaseScreen {
             batch.end();
         }
     }
-    
-    public void drawOutlines(){
-        if (!shapeRenderer.isDrawing()){
+
+    public void drawOutlines() {
+        if (!shapeRenderer.isDrawing()) {
             shapeRenderer.begin();
         }
         if (!saveGameMenuSwitch) {
             TextButton selectedButton = allMainButtons.get(buttonSelect - 1);
             shapeRenderer.rect(selectedButton.getX() + mainMenuTable.getX(), selectedButton.getY() + mainMenuTable.getY(), selectedButton.getWidth(), selectedButton.getHeight());
-        }
-        else{
+        } else {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.set(ShapeRenderer.ShapeType.Line);
             shapeRenderer.rect(200 + 560 * (selectedSaveGame - 1), 300, 400, 600);
         }
         shapeRenderer.end();
     }
-    
-    public void handleButtonSelect(boolean raspRightPressed, boolean ardRightPressed, boolean raspLeftPressed, boolean ardLeftPressed){
 
-        
-        boolean canSelectButton = TimeUtils.millis() - prevSelect > 500;
-        
+    public void handleButtonSelect(boolean raspRightPressed, boolean ardRightPressed, boolean raspLeftPressed, boolean ardLeftPressed) {
+
+
+        boolean canSelectButton = TimeUtils.millis() - prevSelect > 300;
+
         if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton) {
-            if (buttonSelect < 4) {
+            if (buttonSelect < 5) {
                 buttonSelect++;
             }
             prevSelect = TimeUtils.millis();
@@ -299,14 +349,14 @@ public class MainMenu extends BaseScreen {
             prevSelect = TimeUtils.millis();
         }
     }
-    
-    public void handleButtonPress(boolean raspUpPressed, boolean ardUpPressed){
+
+    public void handleButtonPress(boolean raspUpPressed, boolean ardUpPressed) {
         if (!shapeRenderer.isDrawing()) {
             shapeRenderer.begin();
         }
 
-        boolean canPressButton = TimeUtils.millis() - switchDelay > 500;
-        
+        boolean canPressButton = TimeUtils.millis() - switchDelay > 300;
+
         switch (buttonSelect) {
             case 1: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
@@ -318,20 +368,26 @@ public class MainMenu extends BaseScreen {
             }
             case 2: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.bossFight);
+                }
+                break;
+            }
+            case 3: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
                     SettingsMenu.setPrevChange();
                     switchDelay = TimeUtils.millis();
                 }
                 break;
             }
-            case 3: {
+            case 4: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
                     HighScores.setPrevPress();
                 }
                 break;
             }
-            case 4: {
+            case 5: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     dispose();
                     System.exit(0);
