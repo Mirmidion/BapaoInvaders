@@ -86,8 +86,8 @@ public enum States{
         @Override
         public void update(Enemy enemy, Player player) {
             System.out.println("attack");
-            Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getSprite().getWidth(), player.getSprite().getHeight());
-            Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.getSprite().getWidth()+30, 1080);
+            Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getTexture().getWidth(), player.getTexture().getHeight());
+            Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.getTexture().getWidth()+30, 1080);
             if (MathUtils.random(-100,100) > 98 && enemy.overlaps(playerRect, enemyAttackRect)){
 
                 enemy.shoot();
@@ -199,8 +199,8 @@ public enum States{
         @Override
         public void update(Enemy enemy, Player player) {
             System.out.println("protect");
-            Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getSprite().getWidth(), player.getSprite().getHeight());
-            Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.getSprite().getWidth()+30, 1080);
+            Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getTexture().getWidth(), player.getTexture().getHeight());
+            Rectangle enemyAttackRect = new Rectangle(enemy.getPosX()-30, 0, enemy.getTexture().getWidth()+30, 1080);
             if (MathUtils.random(-100,100) > 98 && enemy.overlaps(playerRect, enemyAttackRect)){
 
                 enemy.shoot();

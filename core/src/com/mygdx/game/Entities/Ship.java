@@ -1,6 +1,7 @@
 package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import java.io.Serializable;
 
@@ -24,6 +25,7 @@ public abstract class Ship implements Serializable {
 
     public abstract int getHealth();
 
-    public abstract Texture getSprite();
+    public abstract Texture getTexture();
+
 
 }

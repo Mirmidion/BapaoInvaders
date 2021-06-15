@@ -111,7 +111,7 @@ public class Enemy extends Ship{
     }
 
     public void update(Player player){
-        if (getSprite() == null) {
+        if (getTexture() == null) {
             refreshTextures();
         }
 
@@ -148,8 +148,8 @@ public class Enemy extends Ship{
     public void calculateNewPosition(){
         this.targetX = MathUtils.random(this.targetArea.x, this.targetArea.x+this.targetArea.width);
         this.targetY = MathUtils.random(this.targetArea.y,  this.targetArea.y+this.targetArea.height);
-        Rectangle currentPosition = new Rectangle(this.getPosX()-40, this.getPosY()-40, this.getSprite().getWidth()+80, this.getSprite().getHeight()+80);
-        Rectangle targetPosition = new Rectangle(this.getTargetX()-40, this.getTargetY()-40, this.getSprite().getWidth()+80, this.getSprite().getHeight()+80);
+        Rectangle currentPosition = new Rectangle(this.getPosX()-40, this.getPosY()-40, this.getTexture().getWidth()+80, this.getTexture().getHeight()+80);
+        Rectangle targetPosition = new Rectangle(this.getTargetX()-40, this.getTargetY()-40, this.getTexture().getWidth()+80, this.getTexture().getHeight()+80);
         if (overlaps(currentPosition, targetPosition)){
             calculateNewPosition();
         }
@@ -195,7 +195,7 @@ public class Enemy extends Ship{
     public boolean playerInView(Player player){
         //Enemy view distance for player = (140, 400)
         Rectangle viewDistance = new Rectangle(this.posX,this.posY-400,140,400);
-        Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getSprite().getWidth(),player.getSprite().getHeight());
+        Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getTexture().getWidth(),player.getTexture().getHeight());
 
         return overlaps(viewDistance, playerRect);
     }
@@ -338,7 +338,7 @@ public class Enemy extends Ship{
         return this.health;
     }
 
-    public Texture getSprite() {
+    public Texture getTexture() {
         return this.shipSprite;
     }
 

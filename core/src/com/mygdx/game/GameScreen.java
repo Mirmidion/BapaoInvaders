@@ -43,6 +43,9 @@ public class GameScreen implements Screen {
 	//Music
 	private final Music music;
 
+	//Advanced movement
+	private boolean advancedMovement;
+
 	//Camera
 	private final OrthographicCamera camera;
 	private final Viewport viewport;
@@ -288,6 +291,16 @@ public class GameScreen implements Screen {
 		}
 	}
 
+	public void setAdvancedMovement(boolean advancedMovement)
+	{
+		this.advancedMovement = advancedMovement;
+	}
+
+	public boolean getAdvancedMovement()
+	{
+		return advancedMovement;
+	}
+
 	public void setMusicVol(float value){
 
 		if (music.getVolume() + value <= 0){
@@ -388,18 +401,5 @@ public class GameScreen implements Screen {
 	public void setSolarSystem(SolarSystem solarSystem) {
 		this.currentSaveGame.setSolarSystem(solarSystem);
 	}
-
-//	public void setFullscreen()
-//	{
-//		if(Gdx.input.isKeyPressed(Input.Keys.K))
-//		{
-//			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-//		}
-//
-//		if(Gdx.input.isKeyPressed(Input.Keys.L))
-//		{
-//			Gdx.graphics.setWindowedMode(1920,1080);
-//		}
-//	}
 }
 

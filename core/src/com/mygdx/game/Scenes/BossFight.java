@@ -2,24 +2,22 @@ package com.mygdx.game.Scenes;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
 
-import java.awt.*;
-import java.util.Iterator;
-
 public class BossFight extends BaseScreen {
-    private Boss ufoBoss;
-    private PlayerBoss player;
+    private final Boss ufoBoss;
+    private final PlayerBoss player;
     private int backgroundPosY;
     private final Texture healthBar = new Texture("healthBar.png");
 
     public BossFight(GameScreen gameScreen) {
-        this.mainRenderScreen = gameScreen;
+        mainRenderScreen = gameScreen;
         player = new PlayerBoss();
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
         ufoBoss = new Boss(player);
         Planet.regenerateDefenses();
         batch = mainRenderScreen.getSpriteBatch();
@@ -37,11 +35,11 @@ public class BossFight extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.enableBlending();
         ufoBoss.update(delta);
+        player.setAdvancedMovement(mainRenderScreen.getAdvancedMovement());
 
         if (!batch.isDrawing()) {
             batch.begin();
         }
-
 
         drawScrollingBackground();
 
@@ -53,18 +51,8 @@ public class BossFight extends BaseScreen {
 
         ufoBoss.render(batch);
 
-//        mainRenderScreen.getTitleFont().getData().setScale(1f);
-//        mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
-//        mainRenderScreen.getTitleFont().getData().setScale(2f);
-
-
-        checkCollisions();
-        //updateEntities();
         batch.end();
-    }
 
-    public boolean overlaps(Rectangle r, Rectangle r2) {
-        return (r2.x < r.x + r.width && r2.x + r2.width > r.x && r2.y < r.y + r.height && r2.y + r2.height > r.y);
     }
 
     public void drawScrollingBackground(){
@@ -75,22 +63,6 @@ public class BossFight extends BaseScreen {
 
         batch.draw(mainRenderScreen.getGameBackground(), 0, backgroundPosY + mainRenderScreen.getHeight(), mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
         batch.draw(mainRenderScreen.getGameBackground(), 0, backgroundPosY, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
-    }
-
-//    public void updateEntities() {
-//
-//        //Bullets
-//        for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
-//            Bullet bullet = iter.next();
-//            batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-//            bullet.setPosY(3f);
-//            if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
-//                iter.remove();
-//            }
-//        }
-//    }
-
-    public void checkCollisions() {
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Defense extends Ship{
     }
 
     @Override
-    public Texture getSprite() {
+    public Texture getTexture() {
         return (health > 50)? shipSprite : shipSpriteBroken;
     }
 

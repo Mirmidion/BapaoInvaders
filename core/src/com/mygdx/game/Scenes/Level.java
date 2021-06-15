@@ -142,7 +142,7 @@ public class Level extends BaseScreen {
     public void checkCollisions() {
         for (Iterator<Defense> iter = Planet.getDefenses().iterator(); iter.hasNext(); ) {
             Defense defense = iter.next();
-            Rectangle defenseRectangle = new Rectangle(Math.round(defense.getPosX()), Math.round(defense.getPosY()), defense.getSprite().getWidth(), defense.getSprite().getHeight());
+            Rectangle defenseRectangle = new Rectangle(Math.round(defense.getPosX()), Math.round(defense.getPosY()), defense.getTexture().getWidth(), defense.getTexture().getHeight());
             for (Iterator<Bullet> iter2 = Bullet.getAllBullets().iterator(); iter2.hasNext(); ) {
                 Bullet bullet = iter2.next();
                 Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), (bullet.getLaser().getWidth()), bullet.getLaser().getHeight());
@@ -163,8 +163,8 @@ public class Level extends BaseScreen {
                 for (Iterator<Bullet> bulletIterator = Bullet.getAllBullets().iterator(); bulletIterator.hasNext(); ) {
                     Bullet bullet = bulletIterator.next();
 
-                    Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getSprite().getHeight());
-                    Rectangle playerRectangle = new Rectangle((int) player.getPosX(), (int) player.getPosY(), 140, player.getSprite().getHeight());
+                    Rectangle enemyRectangle = new Rectangle((int) enemy.getPosX(), (int) enemy.getPosY(), 140, enemy.getTexture().getHeight());
+                    Rectangle playerRectangle = new Rectangle((int) player.getPosX(), (int) player.getPosY(), 140, player.getTexture().getHeight());
                     Rectangle bulletRectangle = new Rectangle((int) bullet.getPosX(), (int) bullet.getPosY(), bullet.getLaser().getWidth(), bullet.getLaser().getHeight());
 
                     boolean bulletIsFriendly = bullet.getFriendly();
@@ -194,7 +194,7 @@ public class Level extends BaseScreen {
         //Defenses
         for (Defense defense : Planet.getDefenses()) {
             if (defense.getHealth() > 0) {
-                batch.draw(defense.getSprite(), defense.getPosX(), defense.getPosY());
+                batch.draw(defense.getTexture(), defense.getPosX(), defense.getPosY());
             }
         }
 
@@ -210,15 +210,15 @@ public class Level extends BaseScreen {
 
         //Enemies
         for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()) {
-            if (enemy.getSprite() == null) {
+            if (enemy.getTexture() == null) {
                 enemy.refreshTextures();
             }
             if (enemy.getHealth() != 0) {
-                float healthBarPosX = enemy.getPosX() + (enemy.getSprite().getWidth() - 80f) / 2f;
+                float healthBarPosX = enemy.getPosX() + (enemy.getTexture().getWidth() - 80f) / 2f;
                 float healthBarPosY = enemy.getPosY() - 10;
                 float healthBarWidth = 80f * enemy.getHealth() / enemy.getMaxHealth();
 
-                batch.draw(enemy.getSprite(), enemy.getPosX(), enemy.getPosY());
+                batch.draw(enemy.getTexture(), enemy.getPosX(), enemy.getPosY());
                 batch.draw(healthBar, healthBarPosX, healthBarPosY, healthBarWidth, 10);
             }
         }

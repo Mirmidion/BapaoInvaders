@@ -110,7 +110,7 @@ public class Player extends Ship {
     }
 
     @Override
-    public Texture getSprite() {
+    public Texture getTexture() {
         return shipSprite;
     }
 

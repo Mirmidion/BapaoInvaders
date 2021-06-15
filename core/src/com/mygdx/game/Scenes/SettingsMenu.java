@@ -3,7 +3,6 @@ package com.mygdx.game.Scenes;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,10 +34,15 @@ public class SettingsMenu extends BaseScreen {
     private long prevSelect = 0;
     private static long prevChange = 0;
 
+    final private TextButton advancedPlayerMovementButton;
+    private String advancedPlayerMovementText = "Off";
+    private boolean advancedPlayerMovement = false;
+
     public SettingsMenu(GameScreen gameScreen) {
         mainRenderScreen = gameScreen;
         batch = mainRenderScreen.getSpriteBatch();
         shapeRenderer = mainRenderScreen.getShapeRenderer();
+
 
         allButtons = new ArrayList<>();
 
@@ -49,8 +53,7 @@ public class SettingsMenu extends BaseScreen {
         Skin buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
         try {
             volumeDisplayScreen = new Skin(Gdx.files.internal("vhs-ui.json"));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -64,6 +67,8 @@ public class SettingsMenu extends BaseScreen {
         TextButton fpsCounter = new TextButton("FPS-counter", volumeDisplayScreen);
         TextButton fpsCounterOn = new TextButton("On", volumeDisplayScreen);
         TextButton fpsCounterOff = new TextButton("Off", volumeDisplayScreen);
+        TextButton advancedPlayerMovementLabel = new TextButton("Advanced player movement (bossmode)", volumeDisplayScreen);
+        advancedPlayerMovementButton = new TextButton(advancedPlayerMovementText, volumeDisplayScreen);
 
 
         TextButton exit = new TextButton("Exit", buttonSkin);
@@ -101,7 +106,6 @@ public class SettingsMenu extends BaseScreen {
             public void clicked(InputEvent event, float x, float y) {
                 fpsCounterCheck = true;
             }
-
         });
 
         exit.addListener(new ClickListener() {
@@ -109,7 +113,6 @@ public class SettingsMenu extends BaseScreen {
             public void clicked(InputEvent event, float x, float y) {
                 mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
             }
-
         });
 
 
@@ -126,6 +129,10 @@ public class SettingsMenu extends BaseScreen {
         settingsTable.add(fpsCounterOff).padTop(50);
 
         settingsTable.row();
+        settingsTable.add(advancedPlayerMovementLabel).padTop(50);
+        settingsTable.add(advancedPlayerMovementButton).padTop(50);
+
+        settingsTable.row();
         settingsTable.add(exit).padTop(50);
 
         stage.addActor(settingsTable);
@@ -135,6 +142,7 @@ public class SettingsMenu extends BaseScreen {
         allButtons.add(volumeUp);
         allButtons.add(fpsCounterOn);
         allButtons.add(fpsCounterOff);
+        allButtons.add(advancedPlayerMovementButton);
         allButtons.add(exit);
     }
 
@@ -192,15 +200,15 @@ public class SettingsMenu extends BaseScreen {
         SettingsMenu.prevChange = TimeUtils.millis();
     }
 
-    public void drawOutlines(){
+    public void drawOutlines() {
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(allButtons.get(buttonSelect-1).getX() + settingsTable.getX(), allButtons.get(buttonSelect-1).getY() + settingsTable.getY(), allButtons.get(buttonSelect-1).getWidth(), allButtons.get(buttonSelect-1).getHeight());
+        shapeRenderer.rect(allButtons.get(buttonSelect - 1).getX() + settingsTable.getX(), allButtons.get(buttonSelect - 1).getY() + settingsTable.getY(), allButtons.get(buttonSelect - 1).getWidth(), allButtons.get(buttonSelect - 1).getHeight());
         shapeRenderer.end();
     }
 
-    public void handleButtonPress(){
+    public void handleButtonPress() {
 
         boolean raspUpPressed = mainRenderScreen.getRasp().is_pressed("up");
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
@@ -239,6 +247,21 @@ public class SettingsMenu extends BaseScreen {
             }
             case 5: {
                 if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                    advancedPlayerMovement = !advancedPlayerMovement;
+                    if (advancedPlayerMovement) {
+                        advancedPlayerMovementText = "On";
+                        mainRenderScreen.setAdvancedMovement(true);
+                    } else {
+                        advancedPlayerMovementText = "Off";
+                        mainRenderScreen.setAdvancedMovement(false);
+                    }
+                    advancedPlayerMovementButton.setText(advancedPlayerMovementText);
+                    prevChange = TimeUtils.millis();
+                }
+                break;
+            }
+            case 6: {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
                     MainMenu.setSwitchDelay(TimeUtils.millis());
                     mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
                     prevChange = TimeUtils.millis();
@@ -248,22 +271,22 @@ public class SettingsMenu extends BaseScreen {
         }
     }
 
-    public void handleButtonSelect(){
+    public void handleButtonSelect() {
         boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
         boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");
 
         boolean ardLeftPressed = mainRenderScreen.getArduino().is_pressed("left");
         boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
-        boolean canSelectButton = TimeUtils.millis() - prevSelect > 500;
+        boolean canSelectButton = TimeUtils.millis() - prevSelect > 200;
 
-        if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton){
-            if (buttonSelect < 5){
+        if ((Gdx.input.isKeyPressed(Input.Keys.DOWN) || raspRightPressed || ardRightPressed) && canSelectButton) {
+            if (buttonSelect < 6) {
                 buttonSelect++;
             }
             prevSelect = TimeUtils.millis();
         }
-        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || raspLeftPressed || ardLeftPressed) && canSelectButton){
-            if (buttonSelect > 1){
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || raspLeftPressed || ardLeftPressed) && canSelectButton) {
+            if (buttonSelect > 1) {
                 buttonSelect--;
             }
             prevSelect = TimeUtils.millis();
