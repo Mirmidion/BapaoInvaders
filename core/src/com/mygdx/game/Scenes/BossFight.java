@@ -16,8 +16,6 @@ public class BossFight extends BaseScreen {
     public BossFight(GameScreen gameScreen) {
         mainRenderScreen = gameScreen;
         player = new PlayerBoss();
-        shapeRenderer = mainRenderScreen.getShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
         ufoBoss = new Boss(player);
         Planet.regenerateDefenses();
         batch = mainRenderScreen.getSpriteBatch();
@@ -41,6 +39,8 @@ public class BossFight extends BaseScreen {
             batch.begin();
         }
 
+
+
         drawScrollingBackground();
 
         if (player.getHealth() != 0) {
@@ -49,7 +49,7 @@ public class BossFight extends BaseScreen {
             batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
         }
 
-        ufoBoss.render(batch);
+        ufoBoss.draw(batch);
 
         batch.end();
 

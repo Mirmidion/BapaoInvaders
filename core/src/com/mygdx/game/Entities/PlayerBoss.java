@@ -93,7 +93,7 @@ public class PlayerBoss extends Ship {
         final float SHIP_SPEED = 10f;
         final float EXTRA_SPEED = 3f;
         float shipRotation = playerSprite.getRotation();
-        System.out.println(playerSprite.getRotation());
+        //System.out.println(playerSprite.getRotation());
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             if (advancedMovement) {
