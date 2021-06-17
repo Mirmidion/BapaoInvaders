@@ -2,9 +2,14 @@ package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
 
@@ -13,6 +18,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Level extends BaseScreen {
+
+    private final BitmapFont titleFont;
+    private final BitmapFont normalFont;
+    private final Texture saveGameTexture;
+
+    private int upgradeScreen = 1;
+    private int buttonSelect = 1;
+    private static long switchDelay = 0;
+    private long prevSelect = 0;
+    private long select;
+    private long canSelect;
+
+    private int upgradeScore = 49;
+    private int speed = 2;
 
     //Background position of the scrolling background
     private int backgroundPosY;
@@ -30,6 +49,13 @@ public class Level extends BaseScreen {
         player = new Player(mainRenderScreen.getWidth());
         Planet.regenerateDefenses();
         batch = mainRenderScreen.getSpriteBatch();
+
+        normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
+        titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
+        saveGameTexture = new Texture("button.png");
+
+        shapeRenderer = mainRenderScreen.getShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
     }
 
 
@@ -53,12 +79,16 @@ public class Level extends BaseScreen {
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
             player.draw(batch);
-            player.update(delta);
-            batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
+            if(!mainRenderScreen.isPaused()) {
+                player.update(delta);
+            }
+                batch.draw(healthBar, 0, 0, player.getHealth() * 19.2f, 30);
         }
 
         for (Enemy enemy : mainRenderScreen.getCurrentPlanet().getEnemyWaves()) {
-            enemy.update(player);
+            if(!mainRenderScreen.isPaused()) {
+                enemy.update(player);
+            }
         }
 
         levelEndCheck();
@@ -76,8 +106,54 @@ public class Level extends BaseScreen {
         mainRenderScreen.getTitleFont().getData().setScale(1f);
         mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
         mainRenderScreen.getTitleFont().getData().setScale(2f);
+
+        if(mainRenderScreen.isPaused()){
+            for (int i = 0; i < 3; i++) {
+
+                batch.draw(saveGameTexture, 200 + 560 * i, 300, 400, 600);
+                normalFont.getData().setScale(1f);
+                normalFont.draw(batch, "Upgrade " + (i + 1), 225 + 560 * i, 880);
+                try {
+                    if (i == 0) {
+                        titleFont.getData().setScale(1f);
+
+                        titleFont.draw(batch, "Increase \n fire rate ", 270, 650);
+                    } else if (i == 1) {
+                        titleFont.getData().setScale(1f);
+
+                        titleFont.draw(batch, "Increase \n speed ", 270 + 560 * i, 650);
+                    } else if (i == 2) {
+                        titleFont.getData().setScale(1f);
+
+                        titleFont.draw(batch, "Extra \n health ", 270 + 560 * i, 650);
+                    } else {
+                        titleFont.getData().setScale(1f);
+                        titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    titleFont.getData().setScale(1f);
+                    titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
+                }
+            }
+            drawOutlines();
+        }
+
         batch.end();
 
+    }
+
+    public void drawOutlines(){
+        if (!shapeRenderer.isDrawing()){
+            shapeRenderer.begin();
+        }
+        if (mainRenderScreen.isPaused()) {
+            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.rect(200 + 560 * (upgradeScreen - 1), 300, 400, 600);
+        }
+        shapeRenderer.end();
     }
 
     @Override
@@ -119,6 +195,10 @@ public class Level extends BaseScreen {
         batch.draw(mainRenderScreen.getGameBackground(), 0, backgroundPosY, mainRenderScreen.getWidth(), mainRenderScreen.getHeight());
     }
 
+    public void increaseSpeed(){
+        speed++;
+    }
+
     public void handleInput(){
         boolean raspLeftPressed = mainRenderScreen.getRasp().is_pressed("left");
         boolean raspRightPressed = mainRenderScreen.getRasp().is_pressed("right");
@@ -127,15 +207,75 @@ public class Level extends BaseScreen {
         boolean ardLeftPressed = mainRenderScreen.getArduino().is_pressed("left");
         boolean ardRightPressed = mainRenderScreen.getArduino().is_pressed("right");
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
+        boolean canSelectButton = TimeUtils.millis() - prevSelect > 500;
 
         // Change the position of the player depending on the keys pressed
+
+
         if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || raspLeftPressed || ardLeftPressed)) {
-            player.setPosX(-2, mainRenderScreen.getWidth());
+            if(!mainRenderScreen.isPaused()) {
+                player.setPosX(-speed, mainRenderScreen.getWidth());
+            } else{
+                if (upgradeScreen > 1 && canSelectButton) {
+                    upgradeScreen--;
+                    prevSelect = TimeUtils.millis();
+                }
+
+            }
         } else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || raspRightPressed || ardRightPressed)) {
-            player.setPosX(2, mainRenderScreen.getWidth());
+            if(!mainRenderScreen.isPaused()) {
+                player.setPosX(speed, mainRenderScreen.getWidth());
+            } else{
+                if (upgradeScreen < 3 && canSelectButton) {
+                    upgradeScreen++;
+                    prevSelect = TimeUtils.millis();
+                }
+
+            }
         }
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || raspUpPressed || ardUpPressed)) {
-            player.shoot();
+            if(!mainRenderScreen.isPaused()) {
+                player.shoot();
+            }
+        } if((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed)) {
+            if(mainRenderScreen.isPaused()) {
+                    if (!shapeRenderer.isDrawing()) {
+                        shapeRenderer.begin();
+                    }
+
+                    boolean canPressButton = TimeUtils.millis() - switchDelay > 500 && TimeUtils.millis() - canSelect > 1000;
+
+                    switch (upgradeScreen) {
+                        case 1: {
+                            if (canPressButton) {
+                                switchDelay = TimeUtils.millis();
+                                mainRenderScreen.setPaused(false);
+                                upgradeScore += 50;
+                                player.increaseFirerate();
+                            }
+                            break;
+                        }
+                        case 2: {
+                            if (canPressButton) {
+                                switchDelay = TimeUtils.millis();
+                                mainRenderScreen.setPaused(false);
+                                upgradeScore += 50;
+                                increaseSpeed();
+                            }
+                            break;
+                        }
+                        case 3: {
+                            if (canPressButton) {
+                                switchDelay = TimeUtils.millis();
+                                mainRenderScreen.setPaused(false);
+                                upgradeScore += 50;
+                                player.regenHealth();
+                            }
+                            break;
+                        }
+                    }
+                    shapeRenderer.end();
+            }
         }
     }
 
@@ -181,6 +321,11 @@ public class Level extends BaseScreen {
                         bulletIterator.remove();
                     } else if (enemy.getHealth() <= 0) {
                         mainRenderScreen.setScore(50 * enemy.getEnemyClass());
+                        if(mainRenderScreen.getScore() >= upgradeScore){
+                            mainRenderScreen.setPaused(true);
+                            canSelect = TimeUtils.millis();
+
+                        }
                         break;
                     }
                 }
@@ -199,12 +344,14 @@ public class Level extends BaseScreen {
         }
 
         //Bullets
-        for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
-            Bullet bullet = iter.next();
-            batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
-            bullet.setPosY(3f);
-            if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
-                iter.remove();
+        if(!mainRenderScreen.isPaused()) {
+            for (Iterator<Bullet> iter = Bullet.getAllBullets().iterator(); iter.hasNext(); ) {
+                Bullet bullet = iter.next();
+                batch.draw(bullet.getLaser(), bullet.getPosX(), bullet.getPosY());
+                bullet.setPosY(3f);
+                if (bullet.getPosX() > 1920 || bullet.getPosY() > 1080) {
+                    iter.remove();
+                }
             }
         }
 

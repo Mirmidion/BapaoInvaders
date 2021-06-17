@@ -30,9 +30,13 @@ public class GameScreen implements Screen {
 
 	//----- These are all the variables used in more than 1 scene ----//
 
+	private boolean paused = false;
+
+
 	//Scene control
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu}
-	private scene currentScene =  scene.loadingScreen;
+	public enum scene {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu}
+
+	private scene currentScene = scene.loadingScreen;
 
 	private static boolean fpsCounterCheck = false;
 
@@ -87,7 +91,7 @@ public class GameScreen implements Screen {
 	private final RaspController rasp;
 	private final Arduino arduino;
 
-	public GameScreen (){
+	public GameScreen() {
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 
@@ -127,10 +131,9 @@ public class GameScreen implements Screen {
 	}
 
 
-
 	@Override
-	public void render (float delta) {
-		if (!music.isPlaying()){
+	public void render(float delta) {
+		if (!music.isPlaying()) {
 			music.play();
 		}
 		camera.update();
@@ -148,39 +151,27 @@ public class GameScreen implements Screen {
 		else if (currentScene == scene.map) {
 			try {
 				mapScene.render(delta);
-			}
-			catch (NullPointerException e){
+			} catch (NullPointerException e) {
 				currentScene = scene.win;
 			}
-		}
-
-		else if (currentScene == scene.settingsMenu){
+		} else if (currentScene == scene.settingsMenu) {
 			settingsMenuScene.render(delta);
 		}
 
 		// If in a level, draw everything of that level
 		else if (currentScene == scene.level) {
 			levelScene.render(delta);
-		}
-
-
-		else if (currentScene == scene.loadingScreen){
+		} else if (currentScene == scene.loadingScreen) {
 			loadingScreenScene.render(delta);
-		}
-
-		else if (currentScene == scene.gameOver) {
+		} else if (currentScene == scene.gameOver) {
 			gameOverScene.render(delta);
-		}
-
-		else if (currentScene == scene.win) {
+		} else if (currentScene == scene.win) {
 			winScene.render(delta);
-		}
-
-		else if (currentScene == scene.highScores){
+		} else if (currentScene == scene.highScores) {
 			highScoreScene.render(delta);
 		}
 
-		if (TimeUtils.millis() - lastChecked >= 1000){
+		if (TimeUtils.millis() - lastChecked >= 1000) {
 			framesPerSecond = Gdx.graphics.getFramesPerSecond();
 			lastChecked = TimeUtils.millis();
 		}
@@ -223,13 +214,13 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch.dispose();
 		shapeRenderer.dispose();
 		music.dispose();
 	}
 
-	public void saveSaveGame(int saveGame){
+	public void saveSaveGame(int saveGame) {
 		try {
 			if (saveGame == 1) {
 				serializeManager.save(currentSaveGame.getSolarSystem().getPlanets(), "SaveGame1_", "Planets");
@@ -247,49 +238,42 @@ public class GameScreen implements Screen {
 				serializeManager.save(currentSaveGame.getScore(), "SaveGame3_", "Score");
 				serializeManager.save(currentSaveGame.getSolarSystem().isPlayed(), "SaveGame3_", "Played");
 			}
-		}
-		catch(Exception ignored){
+		} catch (Exception ignored) {
 
 		}
 	}
 
 	public void setCurrentSaveGame(int selected) {
-		if (selected == 1){
+		if (selected == 1) {
 			currentSaveGame = saveGame1;
-		}
-		else if (selected == 2){
+		} else if (selected == 2) {
 			currentSaveGame = saveGame2;
-		}
-		else if (selected == 3){
+		} else if (selected == 3) {
 			currentSaveGame = saveGame3;
 		}
 		currentSaveGame.getSolarSystem().setPlayed(true);
 		saveSaveGame(selected);
 	}
 
-	public void newSaveGame(){
-		this.currentSaveGame.setSolarSystem(new SolarSystem(1920,1080));
+	public void newSaveGame() {
+		this.currentSaveGame.setSolarSystem(new SolarSystem(1920, 1080));
 		this.currentSaveGame.setScore(0);
-		if (currentSaveGame == saveGame1){
+		if (currentSaveGame == saveGame1) {
 			saveSaveGame(1);
-		}
-		else if (currentSaveGame == saveGame2){
+		} else if (currentSaveGame == saveGame2) {
 			saveSaveGame(2);
-		}
-		else if (currentSaveGame == saveGame3){
+		} else if (currentSaveGame == saveGame3) {
 			saveSaveGame(3);
 		}
 	}
 
-	public void setMusicVol(float value){
+	public void setMusicVol(float value) {
 
-		if (music.getVolume() + value <= 0){
+		if (music.getVolume() + value <= 0) {
 			music.setVolume(0);
-		}
-		else if (music.getVolume() + value >= 1){
+		} else if (music.getVolume() + value >= 1) {
 			music.setVolume(1);
-		}
-		else{
+		} else {
 			music.setVolume(music.getVolume() + value);
 		}
 	}
@@ -350,6 +334,10 @@ public class GameScreen implements Screen {
 		return titleFont;
 	}
 
+	public boolean isPaused() {
+		return paused;
+	}
+
 	public void setCurrentScene(scene currentScene) {
 		this.currentScene = currentScene;
 	}
@@ -370,16 +358,20 @@ public class GameScreen implements Screen {
 		return currentSaveGame.getSolarSystem();
 	}
 
-	public int getScore(){
+	public int getScore() {
 		return currentSaveGame.getScore();
 	}
 
-	public void setScore(int score){
+	public void setScore(int score) {
 		this.currentSaveGame.setScore(score);
 	}
 
 	public void setSolarSystem(SolarSystem solarSystem) {
 		this.currentSaveGame.setSolarSystem(solarSystem);
 	}
-}
 
+
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+}

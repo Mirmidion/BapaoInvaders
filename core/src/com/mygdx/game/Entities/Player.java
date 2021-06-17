@@ -14,6 +14,16 @@ public class Player extends Ship{
     private boolean invulnerable = false;
 
     private float timeInvulnerable = 0;
+    private int firerate = 500;
+
+    public void increaseFirerate(){
+        firerate -= 50;
+    }
+
+    public void regenHealth(){
+        health = 100;
+    }
+
 
 
     public Player (int width){
@@ -37,7 +47,7 @@ public class Player extends Ship{
 
     public void shoot(){
         System.out.println(time);
-        if (TimeUtils.millis() - time > 500){
+        if (TimeUtils.millis() - time > firerate){
             Bullet.getAllBullets().add(new Bullet(shipSprite.getWidth()-((gun == 1)?40:104),shipSprite.getHeight()-32, this));
             time = TimeUtils.millis();
             gun *= -1;

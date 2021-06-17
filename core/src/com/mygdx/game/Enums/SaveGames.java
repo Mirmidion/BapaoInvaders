@@ -80,6 +80,7 @@ public enum SaveGames{
 
     public void setScore(int score) {
         this.score += score;
+
     }
 
     public void setSolarSystem(SolarSystem solarSystem) {
