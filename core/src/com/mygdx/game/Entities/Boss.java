@@ -13,14 +13,14 @@ import java.util.Random;
 public class Boss extends Sprite {
 
     //misc setup
-    private enum bossState {ENTRANCE, TP, MISSILES, LASER, TRACKING_LASER, EVADE}
-
     private final int SCREEN_WIDTH = Gdx.graphics.getWidth();
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
-    private bossState state;
     private final PlayerBoss player;
 
     //boss setup
+    private enum bossState {ENTRANCE, TP, MISSILES, LASER, TRACKING_LASER, EVADE}
+
+    private bossState state;
     private Sprite ufoBoss;
     private Vector2 positionUfo;
 
@@ -35,19 +35,23 @@ public class Boss extends Sprite {
 
     //laser state
     private int laserPhase;
-    private int numberOfConsecutiveLaserAttacks;
-    private Sprite ufoLaser;
+    private int numberOfLaserAttacks;
+    private BigLaser ufoLaser;
     private boolean drawLaser;
     boolean canDoLaserAttack;
 
     //missile state
     private int missilesPhase;
-    float missileTimer = 0;
+    private float missileTimer;
     boolean drawMissile;
-    int missileCount;
-    ArrayList<Missile> missiles;
-    private int numberOfMissileAttacks;
-    boolean canDoMissileAttack;
+    private int missileCount;
+    private ArrayList<Missile> missiles;
+    private boolean canDoMissileAttack;
+
+    //tracking laser
+    private int trackingLaserPhase;
+    private float trackingLaserTimer;
+    private int laserCount;
 
     public Boss(PlayerBoss player) {
         this.player = player;
@@ -55,10 +59,8 @@ public class Boss extends Sprite {
     }
 
     private void init() {
-        ufoBoss = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
-        ufoLaser = new Sprite(new Texture(Gdx.files.internal("ufo_laser.png")));
-
         //boss setup
+        ufoBoss = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
         ufoBoss.setSize(ufoBoss.getWidth() / 1.33f, ufoBoss.getHeight() / 1.33f);
         positionUfo = new Vector2(SCREEN_WIDTH / 2f - ufoBoss.getWidth() / 2, SCREEN_HEIGHT);
         ufoBoss.setPosition(positionUfo.x, positionUfo.y);
@@ -74,26 +76,29 @@ public class Boss extends Sprite {
 
         //laser state
         laserPhase = 0;
-        numberOfConsecutiveLaserAttacks = 0;
+        numberOfLaserAttacks = 0;
         drawLaser = false;
         ufoTopRight = true;
         canDoLaserAttack = true;
+        ufoLaser = new BigLaser(this);
 
         //missile state
         missilesPhase = 0;
         drawMissile = false;
         missileCount = 0;
+        missileTimer = 0;
         missiles = new ArrayList<>();
-        numberOfMissileAttacks = 0;
         canDoMissileAttack = false;
+
+        //tracking laser
+        trackingLaserPhase = 0;
+        trackingLaserTimer = 0;
     }
 
     public void draw(SpriteBatch batch) {
         ufoBoss.draw(batch);
         if (drawLaser) {
             ufoLaser.draw(batch);
-        } else {
-            ufoLaser.setAlpha(0);
         }
 
         for (Missile missile : missiles) {
@@ -116,17 +121,20 @@ public class Boss extends Sprite {
                 laser();
                 break;
             case TRACKING_LASER:
-                trackingLaser();
+                trackingLaser(delta);
                 break;
             case EVADE:
                 evade(delta);
                 break;
         }
 
+        if (drawLaser) {
+            ufoLaser.update(delta);
+        }
+
         if (missiles.size() >= 1) {
             updateMissiles(delta);
         }
-
     }
 
     private void decideState() {
@@ -134,23 +142,36 @@ public class Boss extends Sprite {
         if (Math.abs((positionUfo.x + ufoBoss.getWidth() / 2) - (player.getPosX() + player.getTexture().getWidth() / 2f)) < 100 ||
                 Math.abs((positionUfo.y + ufoBoss.getHeight() / 2) - (player.getPosY() + player.getTexture().getHeight() / 2f)) < 100) {
             state = bossState.TP;
-        } //als de hoek tussen de player en de boss < 0 dus negatief (dat is > pi op de unit circle of > 180 graden), laser state
-        else if ((Math.atan2(player.getPosY() - positionUfo.y, player.getPosX() - positionUfo.x) < 0) && numberOfConsecutiveLaserAttacks < 3) {
-            numberOfConsecutiveLaserAttacks++;
-            if(numberOfConsecutiveLaserAttacks == 3){
+        }
+
+        //als de hoek tussen de player en de boss < 0 dus negatief (dat is > pi op de unit circle of > 180 graden), laser state
+        else if ((Math.atan2(player.getPosY() - positionUfo.y, player.getPosX() - positionUfo.x) < 0) && numberOfLaserAttacks < 3) {
+            numberOfLaserAttacks++;
+            if (numberOfLaserAttacks == 3) {
                 canDoMissileAttack = true;
             }
             laserPhase = 0;
             state = bossState.LASER;
-        } else if ((Math.abs((positionUfo.x + ufoBoss.getWidth() / 2) - (player.getPosX() + player.getTexture().getWidth() / 2f)) > 300 ||
-                Math.abs((positionUfo.y + ufoBoss.getHeight() / 2) - (player.getPosY() + player.getTexture().getHeight() / 2f)) > 300) &&
+        }
+
+        //als de afstand tussen de speler en de boss op x of y > 500 pixels en de laserattack is vaker dan 3 keer geweest, missile state
+        else if ((Math.abs((positionUfo.x + ufoBoss.getWidth() / 2) - (player.getPosX())) > 500 ||
+                Math.abs((positionUfo.y + ufoBoss.getHeight() / 2) - (player.getPosY())) > 500) &&
                 canDoMissileAttack) {
             canDoMissileAttack = false;
-            numberOfConsecutiveLaserAttacks = 0;
+            numberOfLaserAttacks = 0;
             missilesPhase = 0;
             state = bossState.MISSILES;
+        }
 
-        } else {
+        //negatieve hoek tussen player en boss, afstand tussen player > 500 pixels op x of y, tracking laser state
+        else if((Math.atan2(player.getPosY() - positionUfo.y, player.getPosX() - positionUfo.x) > 0)){
+            trackingLaserPhase = 0;
+            state = bossState.TRACKING_LASER;
+        }
+
+        //dit is de default state als er geen van de bovenste states werken
+        else {
             //ufo breedte en hoogte bij x en y zorgt ervoor dat nieuwe positie niet buiten het scherm valt. 100 verkort de afstand van de dash
             dashTarget.set(new Vector2(random.nextInt(SCREEN_WIDTH - 100) - ufoBoss.getWidth() / 2,
                     random.nextInt(SCREEN_HEIGHT - 100) - ufoBoss.getHeight() / 3));
@@ -194,8 +215,10 @@ public class Boss extends Sprite {
                 visible = true;
                 if (isNewLocationRandom) {
                     decideState();
-                } else {
+                } else if (state == bossState.LASER) {
                     laserPhase = 1;
+                } else if (state == bossState.TRACKING_LASER) {
+                    trackingLaserPhase = 1;
                 }
             }
         }
@@ -272,19 +295,13 @@ public class Boss extends Sprite {
                 break;
             case 1:
                 moveUfoLaser();
-                shootLaser();
+                drawLaser = true;
                 break;
             case 2:
                 drawLaser = false;
                 decideState();
                 break;
         }
-    }
-
-    private void shootLaser() {
-        drawLaser = true;
-        ufoLaser.setAlpha(1);
-        ufoLaser.setPosition((positionUfo.x + ufoBoss.getWidth() / 2) - ufoLaser.getWidth() / 2, positionUfo.y - ufoLaser.getHeight());
     }
 
     private void moveUfoLaser() {
@@ -371,11 +388,51 @@ public class Boss extends Sprite {
         }
     }
 
-
-    private void trackingLaser() {
-
-
+    private void trackingLaser(float delta) {
+        switch (trackingLaserPhase) {
+            case 0:
+                teleport(false);
+                break;
+            case 1:
+                moveUfoTrackingLaser(delta);
+                break;
+            case 2:
+                laserCount = 0;
+                decideState();
+                break;
+        }
     }
 
+    public void moveUfoTrackingLaser(float delta) {
+        final float TIME_BETWEEN_LASER = 1.0f;
+        final float MAX_LASER_COUNT = 7;
+        final float UFO_SPEED = 18;
 
+        trackingLaserTimer += delta;
+        if (laserCount < MAX_LASER_COUNT && trackingLaserTimer >= TIME_BETWEEN_LASER) {
+            if (trackingLaserTimer >= 1.5 * TIME_BETWEEN_LASER) {
+                drawLaser = false;
+                trackingLaserTimer = 0;
+                laserCount++;
+            } else {
+                drawLaser = true;
+            }
+        } else {
+            double angle = Math.atan2(player.getPosY() - (ufoBoss.getY() - ufoBoss.getHeight() / 2), player.getPosX() - (ufoBoss.getX() + ufoBoss.getWidth() / 2));
+
+            ufoBoss.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y);
+        }
+
+        if(laserCount >= MAX_LASER_COUNT){
+            trackingLaserPhase = 2;
+        }
+    }
+
+    public Sprite getUfoBoss() {
+        return ufoBoss;
+    }
+
+    public Vector2 getPositionUfo() {
+        return positionUfo;
+    }
 }

@@ -401,4 +401,8 @@ public class PlayerBoss extends Ship {
     {
         this.advancedMovement = advancedMovement;
     }
+
+    public Sprite getSprite(){
+        return playerSprite;
+    }
 }
