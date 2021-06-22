@@ -30,7 +30,7 @@ public class Level extends BaseScreen {
     private long select;
     private long canSelect;
 
-    private int upgradeScore = 49;
+    private int upgradeScore = 499;
     private int speed = 2;
 
     //Background position of the scrolling background
@@ -107,9 +107,14 @@ public class Level extends BaseScreen {
         mainRenderScreen.getTitleFont().draw(batch, "Score: " + mainRenderScreen.getScore(), 80, 1000);
         mainRenderScreen.getTitleFont().getData().setScale(2f);
 
-        if(mainRenderScreen.isPaused()){
-            for (int i = 0; i < 3; i++) {
+        batch.end();
 
+
+
+        if(mainRenderScreen.isPaused()){
+
+            for (int i = 0; i < 3; i++) {
+                batch.begin();
                 batch.draw(saveGameTexture, 200 + 560 * i, 300, 400, 600);
                 normalFont.getData().setScale(1f);
                 normalFont.draw(batch, "Upgrade " + (i + 1), 225 + 560 * i, 880);
@@ -136,11 +141,12 @@ public class Level extends BaseScreen {
                     titleFont.getData().setScale(1f);
                     titleFont.draw(batch, "EMPTY", 300 + 560 * i, 620);
                 }
+                batch.end();
             }
             drawOutlines();
         }
 
-        batch.end();
+
 
     }
 
@@ -250,7 +256,7 @@ public class Level extends BaseScreen {
                             if (canPressButton) {
                                 switchDelay = TimeUtils.millis();
                                 mainRenderScreen.setPaused(false);
-                                upgradeScore += 50;
+                                upgradeScore += 500;
                                 player.increaseFirerate();
                             }
                             break;
@@ -259,7 +265,7 @@ public class Level extends BaseScreen {
                             if (canPressButton) {
                                 switchDelay = TimeUtils.millis();
                                 mainRenderScreen.setPaused(false);
-                                upgradeScore += 50;
+                                upgradeScore += 500;
                                 increaseSpeed();
                             }
                             break;
@@ -268,7 +274,7 @@ public class Level extends BaseScreen {
                             if (canPressButton) {
                                 switchDelay = TimeUtils.millis();
                                 mainRenderScreen.setPaused(false);
-                                upgradeScore += 50;
+                                upgradeScore += 500;
                                 player.regenHealth();
                             }
                             break;
