@@ -14,6 +14,8 @@ public class Player extends Ship{
     private boolean invulnerable = false;
 
     private float timeInvulnerable = 0;
+
+    //Firerate and regeneration upgrades
     private int firerate = 500;
 
     public void increaseFirerate(){

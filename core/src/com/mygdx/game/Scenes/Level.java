@@ -50,6 +50,7 @@ public class Level extends BaseScreen {
         Planet.regenerateDefenses();
         batch = mainRenderScreen.getSpriteBatch();
 
+        //adds textures for upgrade buttons
         normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
         titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
         saveGameTexture = new Texture("button.png");
@@ -79,6 +80,8 @@ public class Level extends BaseScreen {
         // Draw the player sprite with the correct position
         if (player.getHealth() != 0) {
             player.draw(batch);
+
+            //Pauses game
             if(!mainRenderScreen.isPaused()) {
                 player.update(delta);
             }
@@ -110,7 +113,7 @@ public class Level extends BaseScreen {
         batch.end();
 
 
-
+//Draws upgrade buttons
         if(mainRenderScreen.isPaused()){
 
             for (int i = 0; i < 3; i++) {
@@ -150,6 +153,7 @@ public class Level extends BaseScreen {
 
     }
 
+    //Draws outlines of upgrade buttons
     public void drawOutlines(){
         if (!shapeRenderer.isDrawing()){
             shapeRenderer.begin();
