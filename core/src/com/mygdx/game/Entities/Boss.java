@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -21,8 +22,12 @@ public class Boss extends Sprite {
     private enum bossState {ENTRANCE, TP, MISSILES, LASER, TRACKING_LASER, EVADE}
 
     private bossState state;
-    private Sprite ufoBoss;
+    private Sprite ufoSprite;
     private Vector2 positionUfo;
+    private float health;
+    private final Texture healthBar = new Texture("healthBar.png");
+    private final Sprite healthBarBorder = new Sprite(new Texture("healthbar_border.png"));
+    private Sprite bossIcon;
 
     //teleport state
     private boolean visible;
@@ -36,7 +41,7 @@ public class Boss extends Sprite {
     //laser state
     private int laserPhase;
     private int numberOfLaserAttacks;
-    private BigLaser ufoLaser;
+    BigLaser ufoLaser;
     private boolean drawLaser;
     boolean canDoLaserAttack;
 
@@ -60,11 +65,19 @@ public class Boss extends Sprite {
 
     private void init() {
         //boss setup
-        ufoBoss = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
-        ufoBoss.setSize(ufoBoss.getWidth() / 1.33f, ufoBoss.getHeight() / 1.33f);
-        positionUfo = new Vector2(SCREEN_WIDTH / 2f - ufoBoss.getWidth() / 2, SCREEN_HEIGHT);
-        ufoBoss.setPosition(positionUfo.x, positionUfo.y);
+        ufoSprite = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
+        ufoSprite.setSize(ufoSprite.getWidth()/1.33f, ufoSprite.getHeight()/1.33f);
+        positionUfo = new Vector2(SCREEN_WIDTH/2f - ufoSprite.getWidth()/2, SCREEN_HEIGHT);
+        ufoSprite.setPosition(positionUfo.x, positionUfo.y);
         state = bossState.ENTRANCE;
+        health = 100;
+        healthBarBorder.setSize(healthBarBorder.getWidth()*1.5f, healthBarBorder.getHeight()*1.5f);
+        healthBarBorder.setPosition(SCREEN_WIDTH/2 - healthBarBorder.getWidth()/2, SCREEN_HEIGHT - 100);
+        bossIcon = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
+        bossIcon.setSize(bossIcon.getWidth()/8f, bossIcon.getHeight()/8f);
+        bossIcon.setPosition(healthBarBorder.getX() + healthBarBorder.getWidth() - 92,
+                healthBarBorder.getY() + 18);
+
 
         //teleport state
         random = new Random();
@@ -96,7 +109,7 @@ public class Boss extends Sprite {
     }
 
     public void draw(SpriteBatch batch) {
-        ufoBoss.draw(batch);
+        ufoSprite.draw(batch);
         if (drawLaser) {
             ufoLaser.draw(batch);
         }
@@ -104,6 +117,8 @@ public class Boss extends Sprite {
         for (Missile missile : missiles) {
             missile.draw(batch);
         }
+
+        drawHealthbar(batch);
     }
 
     public void update(float delta) {
@@ -128,8 +143,10 @@ public class Boss extends Sprite {
                 break;
         }
 
+
         if (drawLaser) {
             ufoLaser.update(delta);
+            checkForLaserCollision();
         }
 
         if (missiles.size() >= 1) {
@@ -139,8 +156,8 @@ public class Boss extends Sprite {
 
     private void decideState() {
         //als de afstand tussen de player en de boss < 100 pixels dan teleport state
-        if (Math.abs((positionUfo.x + ufoBoss.getWidth() / 2) - (player.getPosX() + player.getTexture().getWidth() / 2f)) < 100 ||
-                Math.abs((positionUfo.y + ufoBoss.getHeight() / 2) - (player.getPosY() + player.getTexture().getHeight() / 2f)) < 100) {
+        if (Math.abs((positionUfo.x + ufoSprite.getWidth() / 2) - (player.getPosX() + player.getTexture().getWidth() / 2f)) < 100 ||
+                Math.abs((positionUfo.y + ufoSprite.getHeight() / 2) - (player.getPosY() + player.getTexture().getHeight() / 2f)) < 100) {
             state = bossState.TP;
         }
 
@@ -155,8 +172,8 @@ public class Boss extends Sprite {
         }
 
         //als de afstand tussen de speler en de boss op x of y > 500 pixels en de laserattack is vaker dan 3 keer geweest, missile state
-        else if ((Math.abs((positionUfo.x + ufoBoss.getWidth() / 2) - (player.getPosX())) > 500 ||
-                Math.abs((positionUfo.y + ufoBoss.getHeight() / 2) - (player.getPosY())) > 500) &&
+        else if ((Math.abs((positionUfo.x + ufoSprite.getWidth() / 2) - (player.getPosX())) > 500 ||
+                Math.abs((positionUfo.y + ufoSprite.getHeight() / 2) - (player.getPosY())) > 500) &&
                 canDoMissileAttack) {
             canDoMissileAttack = false;
             numberOfLaserAttacks = 0;
@@ -173,10 +190,20 @@ public class Boss extends Sprite {
         //dit is de default state als er geen van de bovenste states werken
         else {
             //ufo breedte en hoogte bij x en y zorgt ervoor dat nieuwe positie niet buiten het scherm valt. 100 verkort de afstand van de dash
-            dashTarget.set(new Vector2(random.nextInt(SCREEN_WIDTH - 100) - ufoBoss.getWidth() / 2,
-                    random.nextInt(SCREEN_HEIGHT - 100) - ufoBoss.getHeight() / 3));
+            dashTarget.set(new Vector2(random.nextInt(SCREEN_WIDTH - 100) - ufoSprite.getWidth() / 2,
+                    random.nextInt(SCREEN_HEIGHT - 100) - ufoSprite.getHeight() / 3));
             state = bossState.EVADE;
         }
+    }
+
+    public void drawHealthbar(SpriteBatch batch){
+        if (health != 0) {
+            batch.draw(healthBar, healthBarBorder.getX() + 22.5f, healthBarBorder.getY() + 16f,
+                    health * 10.32f - 50, healthBarBorder.getHeight()/1.50f);
+        }
+        healthBarBorder.draw(batch);
+
+        bossIcon.draw(batch);
     }
 
     /*-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,9 +214,10 @@ public class Boss extends Sprite {
         int ENTRANCE_SPEED = 75;
 
         //boss start boven en komt langzaam naar beneden
-        if (ufoBoss.getY() > ENTRANCE_ENDPOSITION) {
-            ufoBoss.setY(ufoBoss.getY() - ENTRANCE_SPEED * delta);
-        } else if (ufoBoss.getY() <= ENTRANCE_ENDPOSITION) {
+        if (ufoSprite.getY() > ENTRANCE_ENDPOSITION) {
+            positionUfo.y -= ENTRANCE_SPEED * delta ;
+            ufoSprite.setY(positionUfo.y);
+        } else if (ufoSprite.getY() <= ENTRANCE_ENDPOSITION) {
             decideState();
         }
     }
@@ -199,19 +227,19 @@ public class Boss extends Sprite {
 
         //als de boss zichbaar is, alpha naar 0, is de boss onzichtbaar, alpha naar 1
         if (visible) {
-            ufoBoss.setAlpha(ufoBoss.getColor().a - CHANGE_ALPHA);
-            if (ufoBoss.getColor().a <= 0.1)//kleiner dan 0.1 omdat hij anders reset naar 1.0
+            ufoSprite.setAlpha(ufoSprite.getColor().a - CHANGE_ALPHA);
+            if (ufoSprite.getColor().a <= 0.1)//kleiner dan 0.1 omdat hij anders reset naar 1.0
             {
-                ufoBoss.setAlpha(0);
+                ufoSprite.setAlpha(0);
                 positionUfo = teleportNewLocation(isNewLocationRandom);
-                ufoBoss.setPosition(positionUfo.x, positionUfo.y);
+                ufoSprite.setPosition(positionUfo.x, positionUfo.y);
                 visible = false;
             }
         } else {
-            ufoBoss.setAlpha(ufoBoss.getColor().a + CHANGE_ALPHA);
-            if (ufoBoss.getColor().a >= 0.9)//groter dan 0.9 omdat hij anders reset naar 0.0
+            ufoSprite.setAlpha(ufoSprite.getColor().a + CHANGE_ALPHA);
+            if (ufoSprite.getColor().a >= 0.9)//groter dan 0.9 omdat hij anders reset naar 0.0
             {
-                ufoBoss.setAlpha(1);
+                ufoSprite.setAlpha(1);
                 visible = true;
                 if (isNewLocationRandom) {
                     decideState();
@@ -227,8 +255,8 @@ public class Boss extends Sprite {
     private Vector2 teleportNewLocation(boolean isNewLocationRandom) {
         Vector2 location;
         if (isNewLocationRandom) {
-            location = new Vector2(random.nextInt(SCREEN_WIDTH - 100) - ufoBoss.getWidth() / 2,
-                    random.nextInt(SCREEN_HEIGHT - 100) - ufoBoss.getHeight() / 3);
+            location = new Vector2(random.nextInt(SCREEN_WIDTH - 100) - ufoSprite.getWidth() / 2,
+                    random.nextInt(SCREEN_HEIGHT - 100) - ufoSprite.getHeight() / 3);
         } else {//40 is toegevoegt zodat de ufo meer in de hoek terecht komt
 
             int number;
@@ -236,9 +264,9 @@ public class Boss extends Sprite {
             ufoTopRight = number == 1;
 
             if (ufoTopRight) {
-                location = new Vector2(SCREEN_WIDTH - ufoBoss.getWidth() / 2, SCREEN_HEIGHT - ufoBoss.getHeight());
+                location = new Vector2(SCREEN_WIDTH - ufoSprite.getWidth() / 2, SCREEN_HEIGHT - ufoSprite.getHeight());
             } else {
-                location = new Vector2(0 - ufoBoss.getWidth() / 2, SCREEN_HEIGHT - ufoBoss.getHeight());
+                location = new Vector2(0 - ufoSprite.getWidth() / 2, SCREEN_HEIGHT - ufoSprite.getHeight());
             }
         }
         return location;
@@ -252,18 +280,18 @@ public class Boss extends Sprite {
             //dash
 
             //zoekt de hoek tussen boss en dashtarget
-            double angle = Math.atan2(dashTarget.y - ufoBoss.getY(), dashTarget.x - ufoBoss.getX());
+            double angle = Math.atan2(dashTarget.y - ufoSprite.getY(), dashTarget.x - ufoSprite.getX());
             //System.out.println("angle radians= " + angle);
 
             //beweeg naar de dashtarget toe
-            ufoBoss.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y += UFO_SPEED * Math.sin(angle));
+            ufoSprite.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y += UFO_SPEED * Math.sin(angle));
             //System.out.println("cos of angle = " + Math.cos(angle));
             //System.out.println("afstand = "+Math.abs(dashTarget.x - ufoBoss.getX()) + "speed * cos " + Math.abs(UFO_SPEED * Math.cos(angle)));
 
             //als de afstand tussen de boss en de target < ufo_speed * math.cos of math.sin, reset treshold en ga naar volgende state
             //als dit niet wordt gedaan dan is het mogelijk dat de sprite glitched
-            if (Math.abs(dashTarget.x - ufoBoss.getX()) < Math.abs(UFO_SPEED * Math.cos(angle)) ||
-                    Math.abs(dashTarget.y - ufoBoss.getY()) < Math.abs(UFO_SPEED * Math.sin(angle))) {
+            if (Math.abs(dashTarget.x - ufoSprite.getX()) < Math.abs(UFO_SPEED * Math.cos(angle)) ||
+                    Math.abs(dashTarget.y - ufoSprite.getY()) < Math.abs(UFO_SPEED * Math.sin(angle))) {
                 evadeThresholdCounter = 0;
                 decideState();
             }
@@ -282,7 +310,7 @@ public class Boss extends Sprite {
             //de speed zijn voor x en y verschillend want... het is een ufo
             positionUfo.x += HOOVER_AMPLITUDE * (float) Math.cos(TimeUtils.millis() * HOOVER_SPEEDX);
             positionUfo.y += HOOVER_AMPLITUDE * (float) Math.sin(TimeUtils.millis() * HOOVER_SPEEDY);
-            ufoBoss.setPosition(positionUfo.x, positionUfo.y);
+            ufoSprite.setPosition(positionUfo.x, positionUfo.y);
             // System.out.println(evadeThreshold);
 
         }
@@ -304,23 +332,32 @@ public class Boss extends Sprite {
         }
     }
 
+    private void checkForLaserCollision(){
+        if(player.getPlayerHitbox().overlaps(ufoLaser.getLaserHitbox())){
+            if(!player.isInvulnerable()) {
+                player.setInvulnerable(true);
+                player.setHealth(-ufoLaser.getLaserDamage());
+            }
+        }
+    }
+
     private void moveUfoLaser() {
         final int UFO_SPEED = 13;
         final double HOOVER_AMPLITUDE = 5;
         final double HOOVER_SPEEDY = 0.005;
 
         if (ufoTopRight) {
-            ufoBoss.setPosition(
+            ufoSprite.setPosition(
                     positionUfo.x += UFO_SPEED * Math.cos(Math.PI),
                     positionUfo.y += HOOVER_AMPLITUDE * (float) Math.sin(TimeUtils.millis() * HOOVER_SPEEDY));
             if (positionUfo.x < 0) {
                 laserPhase = 2;
             }
         } else {
-            ufoBoss.setPosition(
+            ufoSprite.setPosition(
                     positionUfo.x += UFO_SPEED * Math.cos(0),
                     positionUfo.y += HOOVER_AMPLITUDE * (float) Math.sin(TimeUtils.millis() * HOOVER_SPEEDY));
-            if (positionUfo.x > SCREEN_WIDTH - ufoBoss.getWidth()) {
+            if (positionUfo.x > SCREEN_WIDTH - ufoSprite.getWidth()) {
                 laserPhase = 2;
             }
         }
@@ -350,11 +387,10 @@ public class Boss extends Sprite {
 
         missileTimer += delta;
         if (missileCount < MAX_MISSILES_COUNT && missileTimer >= TIME_BETWEEN_MISSILES) {
-            //40f is de hoogte waarop de kanonen van de ufo zitten. Omdat bij de 2e missile er een rotatie van 270 wordt gedaan,
-            //is het startpunt omgekeerd en dus moet de breedte (33) van de missile er ook af (33 + 40 = 77)
+            //40f is de hoogte waarop de kanonen van de ufo zitten.
             //de 72.5f is de hoogte van de missile. Nu is het beginpunt van de missile bij het kanon van de ufo
-            missiles.add(new Missile(positionUfo.x, positionUfo.y + ufoBoss.getHeight() / 2 - 40f, 90f, player));
-            missiles.add(new Missile(positionUfo.x + ufoBoss.getWidth() - 72.5f, positionUfo.y + ufoBoss.getHeight() / 2 - 77f, 270f, player));
+            missiles.add(new Missile(positionUfo.x, positionUfo.y + ufoSprite.getHeight() / 2 - 40f, 90f, player));
+            missiles.add(new Missile(positionUfo.x + ufoSprite.getWidth() - 72.5f, positionUfo.y + ufoSprite.getHeight() / 2 - 40f, 270f, player));
             missileCount += 2;
             missileTimer = 0;
         } else if (missileCount >= MAX_MISSILES_COUNT) {
@@ -367,23 +403,34 @@ public class Boss extends Sprite {
         ArrayList<Missile> missilesToRemove = new ArrayList<>();
         for (Missile missile : missiles) {
             missile.update(delta);
+            if(missile.getDrawHitboxes()) {
+                missile.drawHitbox();
+            }
             //System.out.println("missile updatin");
             if (missile.remove) {
                 missilesToRemove.add(missile);
+            }
+
+            if(player.getPlayerHitbox().overlaps(missile.getMissileHitbox())){
+                missilesToRemove.add(missile);
+                if(!player.isInvulnerable()){
+                    player.setInvulnerable(true);
+                    player.setHealth(-Missile.getMissileDamage());
+                }
             }
         }
         missiles.removeAll(missilesToRemove);
     }
 
     private void moveToMiddle(int UFO_SPEED) {
-        Vector2 middle = new Vector2(SCREEN_WIDTH / 2f - ufoBoss.getWidth() / 2, SCREEN_HEIGHT / 2f - ufoBoss.getHeight() / 3);
+        Vector2 middle = new Vector2(SCREEN_WIDTH / 2f - ufoSprite.getWidth() / 2, SCREEN_HEIGHT / 2f - ufoSprite.getHeight() / 3);
 
         double angle = Math.atan2(middle.y - positionUfo.y, middle.x - positionUfo.x);
 
-        ufoBoss.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y += UFO_SPEED * Math.sin(angle));
+        ufoSprite.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y += UFO_SPEED * Math.sin(angle));
 
-        if (Math.abs(middle.x - ufoBoss.getX()) < Math.abs(UFO_SPEED * Math.cos(angle)) ||
-                Math.abs(middle.y - ufoBoss.getY()) < Math.abs(UFO_SPEED * Math.sin(angle))) {
+        if (Math.abs(middle.x - ufoSprite.getX()) < Math.abs(UFO_SPEED * Math.cos(angle)) ||
+                Math.abs(middle.y - ufoSprite.getY()) < Math.abs(UFO_SPEED * Math.sin(angle))) {
             missilesPhase = 1;
         }
     }
@@ -418,9 +465,9 @@ public class Boss extends Sprite {
                 drawLaser = true;
             }
         } else {
-            double angle = Math.atan2(player.getPosY() - (ufoBoss.getY() - ufoBoss.getHeight() / 2), player.getPosX() - (ufoBoss.getX() + ufoBoss.getWidth() / 2));
+            double angle = Math.atan2(player.getPosY() - (ufoSprite.getY() - ufoSprite.getHeight() / 2), player.getPosX() - (ufoSprite.getX() + ufoSprite.getWidth() / 2));
 
-            ufoBoss.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y);
+            ufoSprite.setPosition(positionUfo.x += UFO_SPEED * Math.cos(angle), positionUfo.y);
         }
 
         if(laserCount >= MAX_LASER_COUNT){
@@ -428,11 +475,23 @@ public class Boss extends Sprite {
         }
     }
 
-    public Sprite getUfoBoss() {
-        return ufoBoss;
+
+
+    public Sprite getUfoSprite() {
+        return ufoSprite;
     }
 
     public Vector2 getPositionUfo() {
         return positionUfo;
     }
+
+    public Rectangle getBossHitbox(){
+        return new Rectangle(positionUfo.x + 52f, positionUfo.y,
+                ufoSprite.getWidth()/1.20f, ufoSprite.getHeight()/1.10f);
+    }
+
+    public void setHealth(float health) {
+        this.health = Math.max(Math.min(this.health + health, 100), 0);
+    }
+
 }

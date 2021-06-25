@@ -1,0 +1,116 @@
+Lasers.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+BigBlueLaser
+  rotate: false
+  xy: 1, 1
+  size: 8, 30
+  orig: 8, 30
+  offset: 0, 0
+  index: -1
+BigGreenLaser
+  rotate: false
+  xy: 11, 1
+  size: 8, 30
+  orig: 8, 30
+  offset: 0, 0
+  index: -1
+BigPinkLaser
+  rotate: false
+  xy: 21, 1
+  size: 8, 30
+  orig: 8, 30
+  offset: 0, 0
+  index: -1
+BigYellowLaser
+  rotate: false
+  xy: 31, 1
+  size: 8, 30
+  orig: 8, 30
+  offset: 0, 0
+  index: -1
+MediumBlueLaser
+  rotate: false
+  xy: 41, 12
+  size: 8, 19
+  orig: 8, 19
+  offset: 0, 0
+  index: -1
+MediumGreenLaser
+  rotate: false
+  xy: 51, 12
+  size: 8, 19
+  orig: 8, 19
+  offset: 0, 0
+  index: -1
+MediumPinkLaser
+  rotate: false
+  xy: 61, 12
+  size: 8, 19
+  orig: 8, 19
+  offset: 0, 0
+  index: -1
+MediumYellowLaser
+  rotate: false
+  xy: 71, 12
+  size: 8, 19
+  orig: 8, 19
+  offset: 0, 0
+  index: -1
+SmallBlueLaser
+  rotate: false
+  xy: 81, 18
+  size: 8, 13
+  orig: 8, 13
+  offset: 0, 0
+  index: -1
+SmallGreenLaser
+  rotate: false
+  xy: 91, 18
+  size: 8, 13
+  orig: 8, 13
+  offset: 0, 0
+  index: -1
+SmallPinkLaser
+  rotate: false
+  xy: 101, 18
+  size: 8, 13
+  orig: 8, 13
+  offset: 0, 0
+  index: -1
+SmallYellowLaser
+  rotate: false
+  xy: 111, 18
+  size: 8, 13
+  orig: 8, 13
+  offset: 0, 0
+  index: -1
+TinyBlueLaser
+  rotate: false
+  xy: 41, 2
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+TinyGreenLaser
+  rotate: false
+  xy: 51, 2
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+TinyPinkLaser
+  rotate: false
+  xy: 61, 2
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+TinyYellowLaser
+  rotate: false
+  xy: 71, 2
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1

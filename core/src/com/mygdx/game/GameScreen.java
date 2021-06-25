@@ -31,7 +31,8 @@ public class GameScreen implements Screen {
 	//----- These are all the variables used in more than 1 scene ----//
 
 	//Scene control
-	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu, bossFight}
+	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu,
+		bossFight, selectDifficulty, winScreen, bossGameOver}
 	private scene currentScene =  scene.loadingScreen;
 
 	private static boolean fpsCounterCheck = false;
@@ -82,7 +83,10 @@ public class GameScreen implements Screen {
 	private final GameOverMenu gameOverScene;
 	private final WinMenu winScene;
 	private final HighScores highScoreScene;
-	private final BossFight bossScene;
+	private BossFight bossScene;
+	private final BossGameOver bossGameOver;
+
+	private boolean inBossScene = false;
 
 	//FPS counter
 	private int framesPerSecond;
@@ -128,7 +132,9 @@ public class GameScreen implements Screen {
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
 		highScoreScene = new HighScores(this);
-		bossScene = new BossFight(this);
+		//bossScene = new BossFight(this);
+		bossGameOver = new BossGameOver(this);
+
 	}
 
 
@@ -165,7 +171,15 @@ public class GameScreen implements Screen {
 		}
 
 		else if (currentScene == scene.bossFight) {
+			if(!inBossScene) {
+				inBossScene = true;
+				bossScene = new BossFight(this);
+			}
 			bossScene.render(delta);
+		}
+
+		else if(currentScene == scene.bossGameOver){
+			bossGameOver.render(delta);
 		}
 
 		// If in a level, draw everything of that level
@@ -400,6 +414,10 @@ public class GameScreen implements Screen {
 
 	public void setSolarSystem(SolarSystem solarSystem) {
 		this.currentSaveGame.setSolarSystem(solarSystem);
+	}
+
+	public void setInBossScene(boolean inBossScene){
+		this.inBossScene = inBossScene;
 	}
 }
 
