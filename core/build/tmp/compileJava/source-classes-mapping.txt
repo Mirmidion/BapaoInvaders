@@ -55,9 +55,8 @@ com/mygdx/game/Scenes/Map.java
  com.mygdx.game.Scenes.Map
 com/mygdx/game/BapoaInvaders.java
  com.mygdx.game.BapoaInvaders
-com/mygdx/game/GameScreen.java
- com.mygdx.game.GameScreen
- com.mygdx.game.GameScreen$scene
+com/mygdx/game/Scenes/Level.java
+ com.mygdx.game.Scenes.Level
 com/mygdx/game/Scenes/GameOverMenu.java
  com.mygdx.game.Scenes.GameOverMenu
 com/mygdx/game/Scenes/HighScores.java
@@ -70,9 +69,10 @@ com/mygdx/game/Scenes/BossGameOver.java
  com.mygdx.game.Scenes.BossGameOver
 com/mygdx/game/Scenes/BaseScreen.java
  com.mygdx.game.Scenes.BaseScreen
-com/mygdx/game/Scenes/BossFight.java
- com.mygdx.game.Scenes.BossFight
-com/mygdx/game/Scenes/Level.java
- com.mygdx.game.Scenes.Level
 com/mygdx/game/Scenes/MainMenu.java
  com.mygdx.game.Scenes.MainMenu
+com/mygdx/game/Scenes/BossFight.java
+ com.mygdx.game.Scenes.BossFight
+com/mygdx/game/GameScreen.java
+ com.mygdx.game.GameScreen
+ com.mygdx.game.GameScreen$scene

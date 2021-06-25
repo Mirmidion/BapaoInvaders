@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Entities.*;
 import com.mygdx.game.GameScreen;
+import org.w3c.dom.Text;
 
 public class BossFight extends BaseScreen {
     private final Boss ufoBoss;
@@ -17,6 +18,13 @@ public class BossFight extends BaseScreen {
     private final Texture gameOverTexture = new Texture("gameOver.png");
     private final Sprite gameOverSprite = new Sprite(gameOverTexture);
     private float gameOverSpriteY;
+    private final Texture pressEscTexture = new Texture("press_esc.png");
+    private final Sprite pressEscSprite = new Sprite(pressEscTexture);
+    private float textTimer = 0;
+    private boolean textAlpha = false;
+    private boolean paused = false;
+    private final Texture pauseTexture = new Texture("pause.png");
+    private final Sprite pauseSprite = new Sprite(pauseTexture);
 
     public BossFight(GameScreen gameScreen) {
         batch = new SpriteBatch();
@@ -24,7 +32,7 @@ public class BossFight extends BaseScreen {
         player = new PlayerBoss();
         ufoBoss = new Boss(player);
         player.setBoss(ufoBoss);
-        gameOverSprite.setPosition(Gdx.graphics.getWidth()/2f - gameOverSprite.getWidth()/2, Gdx.graphics.getHeight());
+        gameOverSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
         gameOverSpriteY = Gdx.graphics.getHeight();
     }
 
@@ -44,28 +52,80 @@ public class BossFight extends BaseScreen {
 
         ufoBoss.draw(batch);
 
+
         if (player.getHealth() == 0) {
             gameOverSprite.draw(batch);
+            if (gameOverSpriteY == Gdx.graphics.getHeight() / 2f) {
+                pressEscSprite.draw(batch);
+            }
+        }
+
+        if (paused) {
+            pauseSprite.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 1.5f);
+            pauseSprite.draw(batch);
+            pressEscSprite.draw(batch);
         }
 
         batch.end();
 
-        //player dead
-        if (player.getHealth() == 0) {
-            if (gameOverSpriteY > Gdx.graphics.getHeight() / 2f) {
-                gameOverSpriteY -= delta * 400f;
-                System.out.println(gameOverSpriteY);
-                gameOverSprite.setY(gameOverSpriteY);
-            } else {
-                if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-                    this.dispose();
-                    mainRenderScreen.setInBossScene(false);
-                    mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
-                }
-            }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            paused = !paused;
+        }
 
+        if (player.getHealth() == 0) {
+            gameOver(delta);
+        } else if (paused) {
+            textTimer += delta;
+            blinkEsc();
+            returnMainMenu();
         } else {
             update(delta);
+        }
+    }
+
+    private void gameOver(float delta) {
+        textTimer += delta;
+
+        if (gameOverSpriteY > Gdx.graphics.getHeight() / 2f) {
+            gameOverSpriteY -= delta * 400f;
+            System.out.println(gameOverSpriteY);
+            if (gameOverSpriteY - Gdx.graphics.getHeight() / 2f <= 10) {
+                gameOverSpriteY = Gdx.graphics.getHeight() / 2f;
+            }
+            gameOverSprite.setY(gameOverSpriteY);
+        } else {
+            blinkEsc();
+            returnMainMenu();
+        }
+    }
+
+    private void blinkEsc() {
+        float TEXT_BLINK = 1f;
+
+        if (player.getHealth() == 0) {
+            pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
+                    gameOverSpriteY - gameOverSprite.getHeight() / 2f - 20f);
+        } else if (paused){
+            pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
+                     Gdx.graphics.getHeight() / 2f - 20f);
+        }
+
+        if (textTimer >= TEXT_BLINK) {
+            textTimer = 0;
+            textAlpha = !textAlpha;
+            if (textAlpha) {
+                pressEscSprite.setAlpha(1f);
+            } else {
+                pressEscSprite.setAlpha(0);
+            }
+        }
+    }
+
+    private void returnMainMenu() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            this.dispose();
+            mainRenderScreen.setInBossScene(false);
+            mainRenderScreen.setCurrentScene(GameScreen.scene.mainMenu);
         }
     }
 
@@ -107,7 +167,6 @@ public class BossFight extends BaseScreen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
