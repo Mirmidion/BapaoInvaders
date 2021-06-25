@@ -14,12 +14,9 @@ import com.mygdx.game.GameScreen;
 import java.util.ArrayList;
 
 public class BossSelect extends BaseScreen {
-    private int backgroundPosY;
     private final BitmapFont titleFont;
-    private final BitmapFont normalFont;
-    private static Skin buttonSkin;
 
-    Stage stage = new Stage();
+    private final Stage stage = new Stage();
 
     //Main Menu Layout and Objects
     private final Table buttonTable;
@@ -28,15 +25,12 @@ public class BossSelect extends BaseScreen {
 
     private int buttonSelect = 1;
     private float switchTimer = 0;
-    private long prevSelect = 0;
-    private long select;
 
     public BossSelect(GameScreen gameScreen) {
         batch = new SpriteBatch();
         mainRenderScreen = gameScreen;
-        normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
         titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
-        buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
+        Skin buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
         buttonTable = new Table();
         buttonTable.setPosition(250, 500);
@@ -45,28 +39,17 @@ public class BossSelect extends BaseScreen {
         allButtons = new ArrayList<>();
 
         TextButton selectDifficulty = new TextButton("Select Difficulty", buttonSkin);
-//        TextButton bossmode = new TextButton("BossMode", buttonSkin);
-//        TextButton settings = new TextButton("Settings", buttonSkin);
         TextButton exit = new TextButton("Back", buttonSkin);
 
         selectDifficulty.setTransform(true);
-//        bossmode.setTransform(true);
-//        settings.setTransform(true);
         exit.setTransform(true);
 
         buttonTable.row();
         buttonTable.add(selectDifficulty).padTop(225);
         buttonTable.row();
-//        mainMenuTable.add(bossmode).padTop(10);
-//        mainMenuTable.row();
-//        mainMenuTable.add(settings).padTop(10);
-//        mainMenuTable.row();
         buttonTable.add(exit).padTop(10);
 
         allButtons.add(selectDifficulty);
-//        allBossSelectButtons.add(bossmode);
-//        allBossSelectButtons.add(settings);
-//        allBossSelectButtons.add(highScores);
         allButtons.add(exit);
 
         stage.addActor(buttonTable);
@@ -125,28 +108,6 @@ public class BossSelect extends BaseScreen {
                 }
                 break;
             }
-//            case 3: {
-//                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
-//                    mainRenderScreen.setCurrentScene(GameScreen.scene.settingsMenu);
-//                    SettingsMenu.setPrevChange();
-//                    switchDelay = TimeUtils.millis();
-//                }
-//                break;
-//            }
-//            case 4: {
-//                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
-//                    mainRenderScreen.setCurrentScene(GameScreen.scene.highScores);
-//                    HighScores.setPrevPress();
-//                }
-//                break;
-//            }
-//            case 5: {
-//                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
-//                    dispose();
-//                    System.exit(0);
-//                }
-//                break;
-//            }
         }
         shapeRenderer.end();
     }

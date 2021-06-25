@@ -112,12 +112,12 @@ public class PlayerBoss extends Ship {
 
     public void shoot() {
         if(facing == playerFacing.UP || facing == playerFacing.DOWN) {
-            lasers.add(new Laser(playerPos.x + 10, playerPos.y + 80, this, facing));
-            lasers.add(new Laser(playerPos.x + playerSprite.getWidth() - 10, playerPos.y + 80, this, facing));
+            lasers.add(new Laser(playerPos.x + 10, playerPos.y + 80, facing));
+            lasers.add(new Laser(playerPos.x + playerSprite.getWidth() - 10, playerPos.y + 80, facing));
         }
         else if (facing == playerFacing.LEFT || facing == playerFacing.RIGHT){
-            lasers.add(new Laser(playerPos.x + 80, playerPos.y + 10, this, facing));
-            lasers.add(new Laser(playerPos.x + 80, playerPos.y + playerSprite.getWidth() - 10, this, facing));
+            lasers.add(new Laser(playerPos.x + 80, playerPos.y + 10, facing));
+            lasers.add(new Laser(playerPos.x + 80, playerPos.y + playerSprite.getWidth() - 10, facing));
         }
     }
 

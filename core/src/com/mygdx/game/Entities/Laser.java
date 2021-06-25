@@ -9,22 +9,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Laser extends Sprite {
-    private TextureAtlas textureAtlas;
+    private final TextureAtlas textureAtlas;
     private Sprite laserSprite;
-    private PlayerBoss player;
     private Vector2 laserPosition = new Vector2();
     private boolean remove = false;
     private static final int SPEED = 700;
     private static final float LASER_DAMAGE = 0.5f;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private final ShapeRenderer shapeRenderer = new ShapeRenderer();
     private static boolean drawHitboxes = false;
 
     private enum laserDirection {UP, DOWN, LEFT, RIGHT}
 
     private laserDirection direction;
 
-    public Laser(float x, float y, PlayerBoss player, PlayerBoss.playerFacing facing) {
-        this.player = player;
+    public Laser(float x, float y, PlayerBoss.playerFacing facing) {
         laserPosition.x = x;
         laserPosition.y = y;
         textureAtlas = new TextureAtlas("Lasers.pack");

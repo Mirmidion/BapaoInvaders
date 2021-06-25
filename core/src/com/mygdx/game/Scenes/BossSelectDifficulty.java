@@ -14,12 +14,9 @@ import com.mygdx.game.GameScreen;
 import java.util.ArrayList;
 
 public class BossSelectDifficulty extends BaseScreen {
-    private int backgroundPosY;
     private final BitmapFont titleFont;
-    private final BitmapFont normalFont;
-    private static Skin buttonSkin;
 
-    Stage stage = new Stage();
+    private final Stage stage = new Stage();
 
     //Main Menu Layout and Objects
     private final Table buttonTable;
@@ -28,15 +25,12 @@ public class BossSelectDifficulty extends BaseScreen {
 
     private int buttonSelect = 1;
     private float switchTimer = 0;
-    private long prevSelect = 0;
-    private long select;
 
     public BossSelectDifficulty(GameScreen gameScreen) {
         batch = new SpriteBatch();
         mainRenderScreen = gameScreen;
-        normalFont = new BitmapFont(Gdx.files.internal("normalFont.fnt"));
         titleFont = new BitmapFont(Gdx.files.internal("titleFontV2.fnt"));
-        buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
+        Skin buttonSkin = new Skin(Gdx.files.internal("Skin1.json"));
 
         buttonTable = new Table();
         buttonTable.setPosition(250, 500);
