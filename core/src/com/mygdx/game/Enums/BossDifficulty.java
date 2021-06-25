@@ -6,72 +6,76 @@ public enum BossDifficulty {
     HARD(3);
 
     BossDifficulty(int number) {
-        if (number == 1) {
-            //evade
-            evade_dash_threshold = 3f;
-            evade_ufo_speed = 10;
+        switch (number){
+            case 1:
+                //evade
+                evade_dash_threshold = 3f;
+                evade_ufo_speed = 10;
 
-            //laser
-            laser_ufo_speed = 9;
-            laser_damage = 10;
+                //laser
+                laser_ufo_speed = 9;
+                laser_damage = 10;
 
-            //missiles
-            missiles_ufo_speed = 10;
-            missiles_time_between = 5f;
-            missiles_max_count = 4;
+                //missiles
+                missiles_ufo_speed = 10;
+                missiles_time_between = 5f;
+                missiles_max_count = 4;
 
-            missile_speed = 3;
-            missile_damage = 10;
-            missile_lifetime = 3f;
+                missile_speed = 3;
+                missile_damage = 10;
+                missile_lifetime = 3f;
 
-            //tracking laser
-            trackinglaser_ufo_speed = 9;
-            trackinglaser_time_between = 3f;
-            trackinglaser_max_count = 3;
-        } else if (number == 2) {
-            //evade
-            evade_dash_threshold = 2f;
-            evade_ufo_speed = 15;
+                //tracking laser
+                trackinglaser_ufo_speed = 9;
+                trackinglaser_time_between = 3f;
+                trackinglaser_max_count = 3;
+                break;
+            case 2:
+                //evade
+                evade_dash_threshold = 2f;
+                evade_ufo_speed = 15;
 
-            //laser
-            laser_ufo_speed = 11;
-            laser_damage = 15;
+                //laser
+                laser_ufo_speed = 11;
+                laser_damage = 15;
 
-            //missiles
-            missiles_ufo_speed = 15;
-            missiles_time_between = 3f;
-            missiles_max_count = 6;
+                //missiles
+                missiles_ufo_speed = 15;
+                missiles_time_between = 3f;
+                missiles_max_count = 6;
 
-            missile_speed = 5;
-            missile_damage = 15;
-            missile_lifetime = 4f;
+                missile_speed = 5;
+                missile_damage = 15;
+                missile_lifetime = 4f;
 
-            //tracking laser
-            trackinglaser_ufo_speed = 11;
-            trackinglaser_time_between = 2f;
-            trackinglaser_max_count = 5;
-        } else if (number == 3) {
-            //evade
-            evade_dash_threshold = 1f;
-            evade_ufo_speed = 20;
+                //tracking laser
+                trackinglaser_ufo_speed = 11;
+                trackinglaser_time_between = 2f;
+                trackinglaser_max_count = 5;
+                break;
+            case 3:
+                //evade
+                evade_dash_threshold = 1f;
+                evade_ufo_speed = 20;
 
-            //laser
-            laser_ufo_speed = 13;
-            laser_damage = 20;
+                //laser
+                laser_ufo_speed = 13;
+                laser_damage = 20;
 
-            //missiles
-            missiles_ufo_speed = 20;
-            missiles_time_between = 1f;
-            missiles_max_count = 8;
+                //missiles
+                missiles_ufo_speed = 20;
+                missiles_time_between = 1f;
+                missiles_max_count = 8;
 
-            missile_speed = 7;
-            missile_damage = 20;
-            missile_lifetime = 5f;
+                missile_speed = 7;
+                missile_damage = 20;
+                missile_lifetime = 5f;
 
-            //tracking laser
-            trackinglaser_ufo_speed = 18;
-            trackinglaser_time_between = 1f;
-            trackinglaser_max_count = 7;
+                //tracking laser
+                trackinglaser_ufo_speed = 18;
+                trackinglaser_time_between = 1f;
+                trackinglaser_max_count = 7;
+                break;
         }
     }
 
