@@ -38,7 +38,6 @@ public class PlayerBoss extends Ship {
     private boolean drawHitboxes = false;
     private Sprite playerIcon;
 
-
     public PlayerBoss() {
         init();
     }
@@ -49,7 +48,7 @@ public class PlayerBoss extends Ship {
         shield = new Texture(Gdx.files.internal("shield.png"));
         playerPos = new Vector2(SCREEN_WIDTH / 2f - playerSprite.getWidth() / 2, SCREEN_HEIGHT / 10f);
         playerSprite.setPosition(playerPos.x, playerPos.y);
-        health = 10;
+        health = 100;
         invulnerable = false;
         rotate = false;
         playerRotation = playerSprite.getRotation();

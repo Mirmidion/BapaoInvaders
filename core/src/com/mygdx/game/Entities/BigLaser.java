@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Enums.BossDifficulty;
 
 public class BigLaser extends Sprite{
     private final Sprite bigLaserSprite;
@@ -13,13 +14,14 @@ public class BigLaser extends Sprite{
     private final Boss boss;
     private ShapeRenderer shapeRenderer = new ShapeRenderer();
     private static boolean drawHitboxes = false;
-    private final int LASER_DAMAGE = 20;
+    private final int LASER_DAMAGE;
 
 
-    public BigLaser(Boss boss){
+    public BigLaser(Boss boss, BossDifficulty difficulty){
         bigLaserSprite = new Sprite(new Texture("ufo_laser.png"));
         bigLaserSprite.setPosition(500, 500);
         this.boss = boss;
+        LASER_DAMAGE = difficulty.getLaser_damage();
     }
 
     public void update(float delta){

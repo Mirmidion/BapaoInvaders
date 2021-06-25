@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.Enums.BossDifficulty;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -28,6 +29,7 @@ public class Boss extends Sprite {
     private final Texture healthBar = new Texture("healthBar.png");
     private final Sprite healthBarBorder = new Sprite(new Texture("healthbar_border.png"));
     private Sprite bossIcon;
+    private BossDifficulty bossDifficulty;
 
     //teleport state
     private boolean visible;
@@ -58,8 +60,9 @@ public class Boss extends Sprite {
     private float trackingLaserTimer;
     private int laserCount;
 
-    public Boss(PlayerBoss player) {
+    public Boss(PlayerBoss player, BossDifficulty difficulty) {
         this.player = player;
+        this.bossDifficulty = difficulty;
         init();
     }
 
@@ -93,7 +96,7 @@ public class Boss extends Sprite {
         drawLaser = false;
         ufoTopRight = true;
         canDoLaserAttack = true;
-        ufoLaser = new BigLaser(this);
+        ufoLaser = new BigLaser(this, bossDifficulty);
 
         //missile state
         missilesPhase = 0;
@@ -122,6 +125,7 @@ public class Boss extends Sprite {
     }
 
     public void update(float delta) {
+        System.out.println(bossDifficulty);
         switch (state) {
             case ENTRANCE:
                 bossEntrance(delta);
@@ -273,8 +277,8 @@ public class Boss extends Sprite {
     }
 
     private void evade(float delta) {
-        final int DASH_THRESHOLD = 300;
-        final int UFO_SPEED = 20;
+        final float DASH_THRESHOLD = bossDifficulty.getEvade_dash_threshold();
+        final int UFO_SPEED = bossDifficulty.getEvade_ufo_speed();
 
         if (evadeThresholdCounter > DASH_THRESHOLD) {
             //dash
@@ -301,10 +305,9 @@ public class Boss extends Sprite {
             final double HOOVER_AMPLITUDE = 1.7;
             final double HOOVER_SPEEDX = 0.0075;
             final double HOOVER_SPEEDY = 0.0053;
-            final int EVADETHRESHOLD_SPEED = 200;
 
-            //tijd dat het duurt voor de eerstvolgende dash
-            evadeThresholdCounter += EVADETHRESHOLD_SPEED * delta;
+            //snelheid waarmee naar de treshold gewerkt wordt
+            evadeThresholdCounter += delta;
 
             //de volgende twee regels zorgen voor (pseudo)random beweging (hoovering)
             //de speed zijn voor x en y verschillend want... het is een ufo
@@ -342,7 +345,7 @@ public class Boss extends Sprite {
     }
 
     private void moveUfoLaser() {
-        final int UFO_SPEED = 13;
+        final int UFO_SPEED = bossDifficulty.getLaser_ufo_speed();
         final double HOOVER_AMPLITUDE = 5;
         final double HOOVER_SPEEDY = 0.005;
 
@@ -365,7 +368,7 @@ public class Boss extends Sprite {
     }
 
     private void missiles(float delta) {
-        final int UFO_SPEED = 20;
+        final int UFO_SPEED = bossDifficulty.getMissiles_ufo_speed();
 
         switch (missilesPhase) {
             case 0:
@@ -382,15 +385,17 @@ public class Boss extends Sprite {
     }
 
     private void shootMissiles(float delta) {
-        final float TIME_BETWEEN_MISSILES = 1f;
-        final float MAX_MISSILES_COUNT = 10;
+        final float TIME_BETWEEN_MISSILES = bossDifficulty.getMissiles_time_between();
+        final float MAX_MISSILES_COUNT = bossDifficulty.getMissiles_max_count();
 
         missileTimer += delta;
         if (missileCount < MAX_MISSILES_COUNT && missileTimer >= TIME_BETWEEN_MISSILES) {
             //40f is de hoogte waarop de kanonen van de ufo zitten.
             //de 72.5f is de hoogte van de missile. Nu is het beginpunt van de missile bij het kanon van de ufo
-            missiles.add(new Missile(positionUfo.x, positionUfo.y + ufoSprite.getHeight() / 2 - 40f, 90f, player));
-            missiles.add(new Missile(positionUfo.x + ufoSprite.getWidth() - 72.5f, positionUfo.y + ufoSprite.getHeight() / 2 - 40f, 270f, player));
+            missiles.add(new Missile(positionUfo.x, positionUfo.y + ufoSprite.getHeight() / 2 - 40f,
+                    90f, player, bossDifficulty));
+            missiles.add(new Missile(positionUfo.x + ufoSprite.getWidth() - 72.5f, positionUfo.y + ufoSprite.getHeight() / 2 - 40f,
+                    270f, player, bossDifficulty));
             missileCount += 2;
             missileTimer = 0;
         } else if (missileCount >= MAX_MISSILES_COUNT) {
@@ -415,7 +420,7 @@ public class Boss extends Sprite {
                 missilesToRemove.add(missile);
                 if(!player.isInvulnerable()){
                     player.setInvulnerable(true);
-                    player.setHealth(-Missile.getMissileDamage());
+                    player.setHealth(-missile.getMissileDamage());
                 }
             }
         }
@@ -451,9 +456,9 @@ public class Boss extends Sprite {
     }
 
     public void moveUfoTrackingLaser(float delta) {
-        final float TIME_BETWEEN_LASER = 1.0f;
-        final float MAX_LASER_COUNT = 7;
-        final float UFO_SPEED = 18;
+        final int UFO_SPEED = bossDifficulty.getTrackinglaser_ufo_speed();
+        final float TIME_BETWEEN_LASER = bossDifficulty.getTrackinglaser_time_between();
+        final float MAX_LASER_COUNT = bossDifficulty.getTrackinglaser_max_count();
 
         trackingLaserTimer += delta;
         if (laserCount < MAX_LASER_COUNT && trackingLaserTimer >= TIME_BETWEEN_LASER) {
@@ -474,7 +479,6 @@ public class Boss extends Sprite {
             trackingLaserPhase = 2;
         }
     }
-
 
 
     public Sprite getUfoSprite() {

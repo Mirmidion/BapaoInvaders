@@ -59,6 +59,7 @@ public class MainMenu extends BaseScreen {
     private static long switchDelay = 0;
     private long prevSelect = 0;
     private long select;
+    private float switchTimer = 0;
 
     private final Texture saveGameTexture;
 
@@ -170,6 +171,8 @@ public class MainMenu extends BaseScreen {
         boolean ardUpPressed = mainRenderScreen.getArduino().is_pressed("up");
 
         renderRedSign(delta);
+
+        switchTimer += delta;
 
         if (!saveGameMenuSwitch) {
             handleButtonPress(raspUpPressed, ardUpPressed);
@@ -351,15 +354,17 @@ public class MainMenu extends BaseScreen {
     }
 
     public void handleButtonPress(boolean raspUpPressed, boolean ardUpPressed) {
+        final float SWITCH_TIME = 0.5f;
         if (!shapeRenderer.isDrawing()) {
             shapeRenderer.begin();
         }
 
         boolean canPressButton = TimeUtils.millis() - switchDelay > 300;
+        boolean canPressButton2 = switchTimer >= SWITCH_TIME;
 
         switch (buttonSelect) {
             case 1: {
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
+                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton2) {
                     saveGameMenuSwitch = true;
                     switchDelay = TimeUtils.millis();
                     select = TimeUtils.millis();
@@ -367,8 +372,9 @@ public class MainMenu extends BaseScreen {
                 break;
             }
             case 2: {
-                if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton) {
-                    mainRenderScreen.setCurrentScene(GameScreen.scene.bossFight);
+                if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || raspUpPressed || ardUpPressed) && canPressButton2) {
+                    mainRenderScreen.setCurrentScene(GameScreen.scene.bossSelect);
+                    switchTimer = 0;
                 }
                 break;
             }

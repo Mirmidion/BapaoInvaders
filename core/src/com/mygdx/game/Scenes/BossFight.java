@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Entities.*;
+import com.mygdx.game.Enums.BossDifficulty;
 import com.mygdx.game.GameScreen;
-import org.w3c.dom.Text;
 
 public class BossFight extends BaseScreen {
     private final Boss ufoBoss;
@@ -26,11 +26,11 @@ public class BossFight extends BaseScreen {
     private final Texture pauseTexture = new Texture("pause.png");
     private final Sprite pauseSprite = new Sprite(pauseTexture);
 
-    public BossFight(GameScreen gameScreen) {
+    public BossFight(GameScreen gameScreen, BossDifficulty difficulty) {
         batch = new SpriteBatch();
         mainRenderScreen = gameScreen;
         player = new PlayerBoss();
-        ufoBoss = new Boss(player);
+        ufoBoss = new Boss(player, difficulty);
         player.setBoss(ufoBoss);
         gameOverSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
         gameOverSpriteY = Gdx.graphics.getHeight();

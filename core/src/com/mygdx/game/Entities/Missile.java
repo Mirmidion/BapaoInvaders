@@ -7,26 +7,30 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Enums.BossDifficulty;
 
 public class Missile extends Sprite {
-    final Sprite missileSprite;
-    Vector2 missilePosition = new Vector2();
-    public static final int MISSILE_SPEED = 7;
-    public static final float MISSILE_LIFETIME = 5f;
-    float missileTimer = 0;
+    private final Sprite missileSprite;
+    private Vector2 missilePosition = new Vector2();
+    private final int MISSILE_SPEED;
+    private final int MISSILE_DAMAGE;
+    private final float MISSILE_LIFETIME;
+    private float missileTimer = 0;
     public boolean remove = false;
-    PlayerBoss player;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
-    private static final int MISSILE_DAMAGE = 20;
+    private final PlayerBoss player;
+    private final ShapeRenderer shapeRenderer = new ShapeRenderer();
     private static boolean drawHitboxes = false;
 
-    public Missile(float x, float y, float rotation, PlayerBoss player) {
+    public Missile(float x, float y, float rotation, PlayerBoss player, BossDifficulty difficulty) {
         missilePosition.x = x;
         missilePosition.y = y;
         missileSprite = new Sprite(new Texture("missile.png"));
         missileSprite.setSize(missileSprite.getWidth() / 2, missileSprite.getHeight() / 2);
         missileSprite.setRotation(rotation);
         this.player = player;
+        MISSILE_SPEED = difficulty.getMissile_speed();
+        MISSILE_DAMAGE = difficulty.getMissile_damage();
+        MISSILE_LIFETIME = difficulty.getMissile_lifetime();
     }
 
     public void update(float delta) {
@@ -102,7 +106,7 @@ public class Missile extends Sprite {
 
     }
 
-    public static int getMissileDamage() {
+    public int getMissileDamage() {
         return MISSILE_DAMAGE;
     }
 

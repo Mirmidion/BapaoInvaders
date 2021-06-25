@@ -16,6 +16,7 @@ import com.mygdx.game.Controllers.Arduino;
 import com.mygdx.game.Controllers.raspController.RaspController;
 import com.mygdx.game.Entities.*;
 
+import com.mygdx.game.Enums.BossDifficulty;
 import com.mygdx.game.Enums.SaveGames;
 import com.mygdx.game.Scenes.Level;
 import com.mygdx.game.Scenes.MainMenu;
@@ -32,8 +33,11 @@ public class GameScreen implements Screen {
 
 	//Scene control
 	public enum scene  {mainMenu, map, level, gameOver, win, loadingScreen, highScores, settingsMenu,
-		bossFight, selectDifficulty, winScreen, bossGameOver}
+		bossFight, selectDifficulty, winScreen, bossSelect}
 	private scene currentScene =  scene.loadingScreen;
+
+	public enum difficulty {EASY, MEDIUM, HARD}
+	private difficulty bossDifficulty;
 
 	private static boolean fpsCounterCheck = false;
 
@@ -84,7 +88,8 @@ public class GameScreen implements Screen {
 	private final WinMenu winScene;
 	private final HighScores highScoreScene;
 	private BossFight bossScene;
-	private final BossGameOver bossGameOver;
+	private final BossSelect bossSelect;
+	private final BossSelectDifficulty bossSelectDifficulty;
 
 	private boolean inBossScene = false;
 
@@ -132,16 +137,12 @@ public class GameScreen implements Screen {
 		winScene = new WinMenu(this);
 		gameOverScene = new GameOverMenu(this);
 		highScoreScene = new HighScores(this);
-		//bossScene = new BossFight(this);
-		bossGameOver = new BossGameOver(this);
-
+		bossSelect = new BossSelect(this);
+		bossSelectDifficulty = new BossSelectDifficulty(this);
 	}
-
-
 
 	@Override
 	public void render (float delta) {
-		//setFullscreen();
 		if (!music.isPlaying()){
 			music.play();
 		}
@@ -173,13 +174,25 @@ public class GameScreen implements Screen {
 		else if (currentScene == scene.bossFight) {
 			if(!inBossScene) {
 				inBossScene = true;
-				bossScene = new BossFight(this);
+				if(bossDifficulty == difficulty.EASY) {
+					bossScene = new BossFight(this, BossDifficulty.EASY);
+				}
+				else if(bossDifficulty == difficulty.MEDIUM){
+					bossScene = new BossFight(this, BossDifficulty.MEDIUM);
+				}
+				else if(bossDifficulty == difficulty.HARD){
+					bossScene = new BossFight(this, BossDifficulty.HARD);
+				}
 			}
 			bossScene.render(delta);
 		}
 
-		else if(currentScene == scene.bossGameOver){
-			bossGameOver.render(delta);
+		else if (currentScene == scene.bossSelect){
+			bossSelect.render(delta);
+		}
+
+		else if (currentScene == scene.selectDifficulty){
+			bossSelectDifficulty.render(delta);
 		}
 
 		// If in a level, draw everything of that level
@@ -418,6 +431,10 @@ public class GameScreen implements Screen {
 
 	public void setInBossScene(boolean inBossScene){
 		this.inBossScene = inBossScene;
+	}
+
+	public void setBossDifficulty(difficulty bossDifficulty) {
+		this.bossDifficulty = bossDifficulty;
 	}
 }
 
