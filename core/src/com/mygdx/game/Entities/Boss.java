@@ -29,7 +29,7 @@ public class Boss extends Sprite {
     private final Texture healthBar = new Texture("healthBar.png");
     private final Sprite healthBarBorder = new Sprite(new Texture("healthbar_border.png"));
     private Sprite bossIcon;
-    private BossDifficulty bossDifficulty;
+    private final BossDifficulty bossDifficulty;
 
     //teleport state
     private boolean visible;
@@ -73,14 +73,13 @@ public class Boss extends Sprite {
         positionUfo = new Vector2(SCREEN_WIDTH/2f - ufoSprite.getWidth()/2, SCREEN_HEIGHT);
         ufoSprite.setPosition(positionUfo.x, positionUfo.y);
         state = bossState.ENTRANCE;
-        health = 100;
+        health = 10;
         healthBarBorder.setSize(healthBarBorder.getWidth()*1.5f, healthBarBorder.getHeight()*1.5f);
-        healthBarBorder.setPosition(SCREEN_WIDTH/2 - healthBarBorder.getWidth()/2, SCREEN_HEIGHT - 100);
+        healthBarBorder.setPosition(SCREEN_WIDTH/2f - healthBarBorder.getWidth()/2, SCREEN_HEIGHT - 100);
         bossIcon = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
         bossIcon.setSize(bossIcon.getWidth()/8f, bossIcon.getHeight()/8f);
         bossIcon.setPosition(healthBarBorder.getX() + healthBarBorder.getWidth() - 92,
                 healthBarBorder.getY() + 18);
-
 
         //teleport state
         random = new Random();
@@ -125,7 +124,6 @@ public class Boss extends Sprite {
     }
 
     public void update(float delta) {
-        System.out.println(bossDifficulty);
         switch (state) {
             case ENTRANCE:
                 bossEntrance(delta);
@@ -147,9 +145,8 @@ public class Boss extends Sprite {
                 break;
         }
 
-
         if (drawLaser) {
-            ufoLaser.update(delta);
+            ufoLaser.update();
             checkForLaserCollision();
         }
 
@@ -480,7 +477,6 @@ public class Boss extends Sprite {
         }
     }
 
-
     public Sprite getUfoSprite() {
         return ufoSprite;
     }
@@ -498,4 +494,7 @@ public class Boss extends Sprite {
         this.health = Math.max(Math.min(this.health + health, 100), 0);
     }
 
+    public float getHealth() {
+        return health;
+    }
 }

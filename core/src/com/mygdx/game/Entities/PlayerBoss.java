@@ -27,16 +27,17 @@ public class PlayerBoss extends Ship {
     private boolean rotate;
     private boolean advancedMovement;
     private ArrayList<Laser> lasers;
-    private final float TIME_BETWEEN_LASERS = 0.3f;
     private float laserTimer;
     public enum playerFacing {UP, DOWN, LEFT, RIGHT}
     private playerFacing facing;
     private Boss boss;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private final ShapeRenderer shapeRenderer = new ShapeRenderer();
     private final Texture healthBar = new Texture("healthBar.png");
     private final Sprite healthBarBorder = new Sprite(new Texture("healthbar_border.png"));
     private boolean drawHitboxes = false;
     private Sprite playerIcon;
+    private final int SPEED = 10;
+    private final int EXTRA_SPEED = 3;
 
     public PlayerBoss() {
         init();
@@ -187,36 +188,34 @@ public class PlayerBoss extends Ship {
     }
 
     public void handleInput(float shipRotation) {
-        final float SHIP_SPEED = 10f;
-        final float EXTRA_SPEED = 3f;
 
         //movement
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             if (advancedMovement) {
-                moveUp(shipRotation, SHIP_SPEED, EXTRA_SPEED);
+                moveUp(shipRotation);
             } else {
-                moveUpSimple(SHIP_SPEED, EXTRA_SPEED);
+                moveUpSimple();
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             if (advancedMovement) {
-                moveLeft(shipRotation, SHIP_SPEED);
+                moveLeft(shipRotation);
             } else {
-                moveLeftSimple(SHIP_SPEED, EXTRA_SPEED);
+                moveLeftSimple();
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             if (advancedMovement) {
-                moveDown(shipRotation, SHIP_SPEED);
+                moveDown(shipRotation);
             } else {
-                moveDownSimple(SHIP_SPEED, EXTRA_SPEED);
+                moveDownSimple();
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             if (advancedMovement) {
-                moveRight(shipRotation, SHIP_SPEED);
+                moveRight(shipRotation);
             } else {
-                moveRightSimple(SHIP_SPEED, EXTRA_SPEED);
+                moveRightSimple();
             }
         }
 
@@ -231,202 +230,201 @@ public class PlayerBoss extends Ship {
         }
 
         //shoot
+        float TIME_BETWEEN_LASERS = 0.3f;
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && laserTimer >= TIME_BETWEEN_LASERS) {
             laserTimer = 0;
             shoot();
         }
-
-
     }
 
-    private void moveUpSimple(float SHIP_SPEED, float EXTRA_SPEED) {
+    private void moveUpSimple() {
         if (playerPos.y < 0) {
             playerPos.y = 0;
         } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-            playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SHIP_SPEED;
+            playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SPEED;
         } else if (Math.abs(playerSprite.getRotation()) == 0 || Math.abs(playerSprite.getRotation()) == 360) {
-            playerPos.y += (SHIP_SPEED + EXTRA_SPEED);
+            playerPos.y += (SPEED + EXTRA_SPEED);
         } else {
-            playerPos.y += SHIP_SPEED;
+            playerPos.y += SPEED;
         }
     }
 
-    private void moveDownSimple(float SHIP_SPEED, float EXTRA_SPEED) {
+    private void moveDownSimple() {
         if (playerPos.y < 0) {
-            playerPos.y = 0 - SHIP_SPEED;
+            playerPos.y = -SPEED;
         } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-            playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SHIP_SPEED;
+            playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SPEED;
         } else if (Math.abs(playerSprite.getRotation()) == 180) {
-            playerPos.y -= (SHIP_SPEED + EXTRA_SPEED);
+            playerPos.y -= (SPEED + EXTRA_SPEED);
         } else {
-            playerPos.y -= SHIP_SPEED;
+            playerPos.y -= SPEED;
         }
     }
 
-    private void moveLeftSimple(float SHIP_SPEED, float EXTRA_SPEED) {
+    private void moveLeftSimple() {
         if (playerPos.x < 0) {
-            playerPos.x = 0 - SHIP_SPEED;// - ship_speed anders valt buiten scherm
+            playerPos.x = -SPEED;// - speed anders valt buiten scherm
         } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-            playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SHIP_SPEED;
+            playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SPEED;
         } else if (playerSprite.getRotation() == -270 || playerSprite.getRotation() == 90) {
-            playerPos.x -= (SHIP_SPEED + EXTRA_SPEED);
+            playerPos.x -= (SPEED + EXTRA_SPEED);
         } else {
-            playerPos.x -= SHIP_SPEED;
+            playerPos.x -= SPEED;
         }
     }
 
-    private void moveRightSimple(float SHIP_SPEED, float EXTRA_SPEED) {
+    private void moveRightSimple() {
         if (playerPos.x < 0) {
             playerPos.x = 0;
         } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-            playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SHIP_SPEED;
+            playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SPEED;
         } else if (playerSprite.getRotation() == 270 || playerSprite.getRotation() == -90) {
-            playerPos.x += (SHIP_SPEED + EXTRA_SPEED);
+            playerPos.x += (SPEED + EXTRA_SPEED);
         } else {
-            playerPos.x += SHIP_SPEED;
+            playerPos.x += SPEED;
         }
     }
 
-    private void moveUp(float shipRotation, float SHIP_SPEED, float EXTRA_SPEED) {
+    private void moveUp(float shipRotation) {
         if (Math.abs(shipRotation) == 0 || Math.abs(shipRotation) == 360) {
             if (playerPos.y < 0) {
                 playerPos.y = 0;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SPEED;
             } else {
-                playerPos.y += (SHIP_SPEED + EXTRA_SPEED);
+                playerPos.y += (SPEED + EXTRA_SPEED);
             }
         } else if (shipRotation == 90 || shipRotation == -270) {
             if (playerPos.x < 0) {
-                playerPos.x = 0 - SHIP_SPEED;// - ship_speed anders valt buiten scherm
+                playerPos.x = -SPEED;// - ship_speed anders valt buiten scherm
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SPEED;
             } else {
-                playerPos.x -= (SHIP_SPEED + EXTRA_SPEED);
+                playerPos.x -= (SPEED + EXTRA_SPEED);
             }
         } else if (Math.abs(shipRotation) == 180) {
             if (playerPos.y < 0) {
-                playerPos.y = 0 - SHIP_SPEED;
+                playerPos.y = -SPEED;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SPEED;
             } else {
-                playerPos.y -= (SHIP_SPEED + EXTRA_SPEED);
+                playerPos.y -= (SPEED + EXTRA_SPEED);
             }
         } else if (shipRotation == -90 || shipRotation == 270) {
             if (playerPos.x < 0) {
                 playerPos.x = 0;
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SPEED;
             } else {
-                playerPos.x += (SHIP_SPEED + EXTRA_SPEED);
+                playerPos.x += (SPEED + EXTRA_SPEED);
             }
         }
     }
 
-    private void moveDown(float shipRotation, float SHIP_SPEED) {
+    private void moveDown(float shipRotation) {
         if (Math.abs(shipRotation) == 0 || Math.abs(shipRotation) == 360) {
             if (playerPos.y < 0) {
-                playerPos.y = 0 - SHIP_SPEED;
+                playerPos.y = -SPEED;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SPEED;
             } else {
-                playerPos.y -= SHIP_SPEED;
+                playerPos.y -= SPEED;
             }
         } else if (shipRotation == 90 || shipRotation == -270) {
             if (playerPos.x < 0) {
                 playerPos.x = 0;
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SPEED;
             } else {
-                playerPos.x += SHIP_SPEED;
+                playerPos.x += SPEED;
             }
         } else if (Math.abs(shipRotation) == 180) {
             if (playerPos.y < 0) {
                 playerPos.y = 0;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SPEED;
             } else {
-                playerPos.y += SHIP_SPEED;
+                playerPos.y += SPEED;
             }
         } else if (shipRotation == -90 || shipRotation == 270) {
             if (playerPos.x < 0) {
-                playerPos.x = 0 - SHIP_SPEED;// - ship_speed anders valt buiten scherm
+                playerPos.x = -SPEED;// - ship_speed anders valt buiten scherm
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SPEED;
             } else {
-                playerPos.x -= SHIP_SPEED;
+                playerPos.x -= SPEED;
             }
         }
     }
 
-    private void moveRight(float shipRotation, float SHIP_SPEED) {
+    private void moveRight(float shipRotation) {
         if (Math.abs(shipRotation) == 0 || Math.abs(shipRotation) == 360) {
             if (playerPos.x < 0) {
                 playerPos.x = 0;
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SPEED;
             } else {
-                playerPos.x += SHIP_SPEED;
+                playerPos.x += SPEED;
             }
         } else if (shipRotation == 90 || shipRotation == -270) {
             if (playerPos.y < 0) {
                 playerPos.y = 0;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SPEED;
             } else {
-                playerPos.y += SHIP_SPEED;
+                playerPos.y += SPEED;
             }
         } else if (shipRotation == -90 || shipRotation == 270) {
             if (playerPos.y < 0) {
-                playerPos.y = 0 - SHIP_SPEED;
+                playerPos.y = -SPEED;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SPEED;
             } else {
-                playerPos.y -= SHIP_SPEED;
+                playerPos.y -= SPEED;
             }
         } else if (Math.abs(shipRotation) == 180) {
             if (playerPos.x < 0) {
-                playerPos.x = 0 - SHIP_SPEED;// - ship_speed anders valt buiten scherm
+                playerPos.x = -SPEED;// - ship_speed anders valt buiten scherm
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SPEED;
             } else {
-                playerPos.x -= SHIP_SPEED;
+                playerPos.x -= SPEED;
             }
         }
     }
 
-    private void moveLeft(float shipRotation, float SHIP_SPEED) {
+    private void moveLeft(float shipRotation) {
         if (Math.abs(shipRotation) == 0 || Math.abs(shipRotation) == 360) {
             if (playerPos.x < 0) {
-                playerPos.x = 0 - SHIP_SPEED;// - ship_speed anders valt buiten scherm
+                playerPos.x = -SPEED;// - ship_speed anders valt buiten scherm
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() - SPEED;
             } else {
-                playerPos.x -= SHIP_SPEED;
+                playerPos.x -= SPEED;
             }
         } else if (shipRotation == 90 || shipRotation == -270) {
             if (playerPos.y < 0) {
-                playerPos.y = 0 - SHIP_SPEED;
+                playerPos.y = -SPEED;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() - SPEED;
             } else {
-                playerPos.y -= SHIP_SPEED;
+                playerPos.y -= SPEED;
             }
         } else if (shipRotation == -90 || shipRotation == 270) {
             if (playerPos.y < 0) {
                 playerPos.y = 0;
             } else if (playerPos.y > SCREEN_HEIGHT - playerSprite.getHeight()) {
-                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SHIP_SPEED;
+                playerPos.y = SCREEN_HEIGHT - playerSprite.getHeight() + SPEED;
             } else {
-                playerPos.y += SHIP_SPEED;
+                playerPos.y += SPEED;
             }
         } else if (Math.abs(shipRotation) == 180) {
             if (playerPos.x < 0) {
                 playerPos.x = 0;
             } else if (playerPos.x > SCREEN_WIDTH - playerSprite.getWidth()) {
-                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SHIP_SPEED;
+                playerPos.x = SCREEN_WIDTH - playerSprite.getWidth() + SPEED;
             } else {
-                playerPos.x += SHIP_SPEED;
+                playerPos.x += SPEED;
             }
         }
     }
@@ -523,10 +521,6 @@ public class PlayerBoss extends Ship {
                         playerSprite.getHeight(), playerSprite.getWidth()/2);
         }
         return null;
-    }
-
-    public boolean getDrawHitboxes() {
-        return drawHitboxes;
     }
 
     public void setDrawHitboxes(boolean drawHitboxes) {

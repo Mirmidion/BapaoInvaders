@@ -45,7 +45,7 @@ public class BossSelectDifficulty extends BaseScreen {
         allButtons = new ArrayList<>();
 
         TextButton easy = new TextButton("Easy", buttonSkin);
-        TextButton medium = new TextButton("Normal", buttonSkin);
+        TextButton medium = new TextButton("Medium", buttonSkin);
         TextButton hard = new TextButton("Hard", buttonSkin);
         TextButton back = new TextButton("Back", buttonSkin);
 

@@ -25,6 +25,9 @@ public class BossFight extends BaseScreen {
     private boolean paused = false;
     private final Texture pauseTexture = new Texture("pause.png");
     private final Sprite pauseSprite = new Sprite(pauseTexture);
+    private final Texture winTexture = new Texture("you_win.png");
+    private final Sprite winSprite = new Sprite(winTexture);
+    private float winSpriteY;
 
     public BossFight(GameScreen gameScreen, BossDifficulty difficulty) {
         batch = new SpriteBatch();
@@ -34,6 +37,8 @@ public class BossFight extends BaseScreen {
         player.setBoss(ufoBoss);
         gameOverSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
         gameOverSpriteY = Gdx.graphics.getHeight();
+        winSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
+        winSpriteY = Gdx.graphics.getHeight();
     }
 
     @Override
@@ -52,10 +57,16 @@ public class BossFight extends BaseScreen {
 
         ufoBoss.draw(batch);
 
-
         if (player.getHealth() == 0) {
             gameOverSprite.draw(batch);
             if (gameOverSpriteY == Gdx.graphics.getHeight() / 2f) {
+                pressEscSprite.draw(batch);
+            }
+        }
+
+        if (ufoBoss.getHealth() == 0) {
+            winSprite.draw(batch);
+            if (winSpriteY == Gdx.graphics.getHeight() / 2f) {
                 pressEscSprite.draw(batch);
             }
         }
@@ -78,8 +89,25 @@ public class BossFight extends BaseScreen {
             textTimer += delta;
             blinkEsc();
             returnMainMenu();
+        } else if (ufoBoss.getHealth() == 0) {
+            win(delta);
         } else {
             update(delta);
+        }
+    }
+
+    private void win(float delta) {
+        textTimer += delta;
+
+        if (winSpriteY > Gdx.graphics.getHeight() / 2f) {
+            winSpriteY -= delta * 400f;
+            if (winSpriteY - Gdx.graphics.getHeight() / 2f <= 10) {
+                winSpriteY = Gdx.graphics.getHeight() / 2f;
+            }
+            winSprite.setY(winSpriteY);
+        } else {
+            blinkEsc();
+            returnMainMenu();
         }
     }
 
@@ -88,7 +116,6 @@ public class BossFight extends BaseScreen {
 
         if (gameOverSpriteY > Gdx.graphics.getHeight() / 2f) {
             gameOverSpriteY -= delta * 400f;
-            System.out.println(gameOverSpriteY);
             if (gameOverSpriteY - Gdx.graphics.getHeight() / 2f <= 10) {
                 gameOverSpriteY = Gdx.graphics.getHeight() / 2f;
             }
@@ -105,9 +132,9 @@ public class BossFight extends BaseScreen {
         if (player.getHealth() == 0) {
             pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
                     gameOverSpriteY - gameOverSprite.getHeight() / 2f - 20f);
-        } else if (paused){
+        } else if (paused) {
             pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
-                     Gdx.graphics.getHeight() / 2f - 20f);
+                    Gdx.graphics.getHeight() / 2f - 20f);
         }
 
         if (textTimer >= TEXT_BLINK) {

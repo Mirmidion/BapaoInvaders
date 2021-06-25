@@ -12,7 +12,7 @@ public class BigLaser extends Sprite{
     private final Sprite bigLaserSprite;
     private Vector2 bigLaserPosition = new Vector2();
     private final Boss boss;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private final ShapeRenderer shapeRenderer = new ShapeRenderer();
     private static boolean drawHitboxes = false;
     private final int LASER_DAMAGE;
 
@@ -24,7 +24,7 @@ public class BigLaser extends Sprite{
         LASER_DAMAGE = difficulty.getLaser_damage();
     }
 
-    public void update(float delta){
+    public void update(){
         bigLaserPosition.x = (boss.getPositionUfo().x + boss.getUfoSprite().getWidth() / 2) - bigLaserSprite.getWidth() / 2;
         bigLaserPosition.y = boss.getPositionUfo().y - bigLaserSprite.getHeight();
         if(drawHitboxes) {
