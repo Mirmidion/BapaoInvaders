@@ -73,7 +73,7 @@ public class Boss extends Sprite {
         positionUfo = new Vector2(SCREEN_WIDTH/2f - ufoSprite.getWidth()/2, SCREEN_HEIGHT);
         ufoSprite.setPosition(positionUfo.x, positionUfo.y);
         state = bossState.ENTRANCE;
-        health = 10;
+        health = 100;
         healthBarBorder.setSize(healthBarBorder.getWidth()*1.5f, healthBarBorder.getHeight()*1.5f);
         healthBarBorder.setPosition(SCREEN_WIDTH/2f - healthBarBorder.getWidth()/2, SCREEN_HEIGHT - 100);
         bossIcon = new Sprite(new Texture(Gdx.files.internal("ufo_boss.png")));
@@ -200,7 +200,7 @@ public class Boss extends Sprite {
     public void drawHealthbar(SpriteBatch batch){
         if (health != 0) {
             batch.draw(healthBar, healthBarBorder.getX() + 22.5f, healthBarBorder.getY() + 16f,
-                    health * 10.32f - 50, healthBarBorder.getHeight()/1.50f);
+                    health * 9.3f, healthBarBorder.getHeight()/1.50f);
         }
         healthBarBorder.draw(batch);
 

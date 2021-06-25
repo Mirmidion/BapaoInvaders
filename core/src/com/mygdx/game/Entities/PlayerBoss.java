@@ -154,7 +154,7 @@ public class PlayerBoss extends Ship {
     public void drawHealthbar(SpriteBatch batch){
         if (health != 0) {
             batch.draw(healthBar, healthBarBorder.getX() + 15, healthBarBorder.getY() + 11,
-                    health * 6.88f - 50, healthBarBorder.getHeight()/1.5f);
+                    health * 6.2f, healthBarBorder.getHeight()/1.5f);
         }
         healthBarBorder.draw(batch);
 

@@ -15,7 +15,7 @@ public class BossFight extends BaseScreen {
     private final PlayerBoss player;
     private int backgroundPosY;
     private boolean drawHitboxes = false;
-    private final Texture gameOverTexture = new Texture("gameOver.png");
+    private final Texture gameOverTexture = new Texture("game_over.png");
     private final Sprite gameOverSprite = new Sprite(gameOverTexture);
     private float gameOverSpriteY;
     private final Texture pressEscTexture = new Texture("press_esc.png");
@@ -35,6 +35,7 @@ public class BossFight extends BaseScreen {
         player = new PlayerBoss();
         ufoBoss = new Boss(player, difficulty);
         player.setBoss(ufoBoss);
+        gameOverSprite.setSize(gameOverSprite.getWidth()*1.5f, gameOverSprite.getHeight()*1.5f);
         gameOverSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
         gameOverSpriteY = Gdx.graphics.getHeight();
         winSprite.setPosition(Gdx.graphics.getWidth() / 2f - gameOverSprite.getWidth() / 2, Gdx.graphics.getHeight() - 40f);
@@ -135,6 +136,9 @@ public class BossFight extends BaseScreen {
         } else if (paused) {
             pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
                     Gdx.graphics.getHeight() / 2f - 20f);
+        } else if( ufoBoss.getHealth() == 0){
+            pressEscSprite.setPosition(Gdx.graphics.getWidth() / 2f - pressEscSprite.getWidth() / 2,
+                    winSpriteY - winSprite.getHeight() / 2f - 20f);
         }
 
         if (textTimer >= TEXT_BLINK) {
