@@ -14,21 +14,16 @@ com/mygdx/game/Scenes/Map.java
  com.mygdx.game.Scenes.Map
 com/mygdx/game/Entities/SolarSystem.java
  com.mygdx.game.Entities.SolarSystem
-com/mygdx/game/Enums/States.java
- com.mygdx.game.Enums.States
- com.mygdx.game.Enums.States$1
- com.mygdx.game.Enums.States$2
- com.mygdx.game.Enums.States$3
- com.mygdx.game.Enums.States$4
- com.mygdx.game.Enums.States$5
-com/mygdx/game/Entities/Defense.java
- com.mygdx.game.Entities.Defense
+com/mygdx/game/Entities/Player.java
+ com.mygdx.game.Entities.Player
+com/mygdx/game/SaveSystem/SerializeManager.java
+ com.mygdx.game.SaveSystem.SerializeManager
 com/mygdx/game/Scenes/GameOverMenu.java
  com.mygdx.game.Scenes.GameOverMenu
 com/mygdx/game/Scenes/HighScores.java
  com.mygdx.game.Scenes.HighScores
-com/mygdx/game/Scenes/BaseScreen.java
- com.mygdx.game.Scenes.BaseScreen
+com/mygdx/game/Entities/Defense.java
+ com.mygdx.game.Entities.Defense
 com/mygdx/game/Scenes/WinMenu.java
  com.mygdx.game.Scenes.WinMenu
 com/mygdx/game/Controllers/Arduino.java
@@ -36,6 +31,8 @@ com/mygdx/game/Controllers/Arduino.java
  com.mygdx.game.Controllers.ArduinoConnection
 com/mygdx/game/Scenes/Level.java
  com.mygdx.game.Scenes.Level
+com/mygdx/game/Entities/Explosion.java
+ com.mygdx.game.Entities.Explosion
 com/mygdx/game/Entities/Ship.java
  com.mygdx.game.Entities.Ship
 com/mygdx/game/Entities/Enemy.java
@@ -50,16 +47,21 @@ com/mygdx/game/Enums/SaveGames.java
  com.mygdx.game.Enums.SaveGames
 com/mygdx/game/Entities/Bullet.java
  com.mygdx.game.Entities.Bullet
-com/mygdx/game/SaveSystem/SerializeManager.java
- com.mygdx.game.SaveSystem.SerializeManager
-com/mygdx/game/Entities/Player.java
- com.mygdx.game.Entities.Player
+com/mygdx/game/Enums/BossDifficulty.java
+ com.mygdx.game.Enums.BossDifficulty
+com/mygdx/game/Enums/States.java
+ com.mygdx.game.Enums.States
+ com.mygdx.game.Enums.States$1
+ com.mygdx.game.Enums.States$2
+ com.mygdx.game.Enums.States$3
+ com.mygdx.game.Enums.States$4
+ com.mygdx.game.Enums.States$5
 com/mygdx/game/BapoaInvaders.java
  com.mygdx.game.BapoaInvaders
 com/mygdx/game/Scenes/LoadingScreen.java
  com.mygdx.game.Scenes.LoadingScreen
-com/mygdx/game/Enums/BossDifficulty.java
- com.mygdx.game.Enums.BossDifficulty
+com/mygdx/game/Scenes/BaseScreen.java
+ com.mygdx.game.Scenes.BaseScreen
 com/mygdx/game/GameScreen.java
  com.mygdx.game.GameScreen
  com.mygdx.game.GameScreen$difficulty

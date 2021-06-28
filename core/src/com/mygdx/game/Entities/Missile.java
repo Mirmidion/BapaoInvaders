@@ -117,4 +117,8 @@ public class Missile extends Sprite {
     public static void setDrawHitboxes(boolean drawHitboxes) {
         Missile.drawHitboxes = drawHitboxes;
     }
+
+    public Vector2 getMissilePosition() {
+        return missilePosition;
+    }
 }

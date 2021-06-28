@@ -26,7 +26,9 @@ public class Laser extends Sprite {
         laserPosition.x = x;
         laserPosition.y = y;
         textureAtlas = new TextureAtlas("Lasers.pack");
+
         laserSprite = new Sprite(textureAtlas.findRegion("TinyBlueLaser"));
+
         laserSprite.setSize(laserSprite.getWidth() * 2, laserSprite.getHeight() * 2);
         if (facing == PlayerBoss.playerFacing.UP) {
             direction = laserDirection.UP;
@@ -84,7 +86,12 @@ public class Laser extends Sprite {
     }
 
     public Rectangle getLaserHitbox(){
-        return new Rectangle(laserPosition.x, laserPosition.y, laserSprite.getWidth(), laserSprite.getHeight());
+        if(direction == laserDirection.UP || direction == laserDirection.DOWN) {
+            return new Rectangle(laserPosition.x, laserPosition.y, laserSprite.getWidth(), laserSprite.getHeight());
+        }
+        else {
+            return new Rectangle(laserPosition.x, laserPosition.y, laserSprite.getHeight(), laserSprite.getWidth());
+        }
     }
 
     public static void setDrawHitboxes(boolean drawHitboxes) {
@@ -93,5 +100,9 @@ public class Laser extends Sprite {
 
     public static float getLaserDamage() {
         return LASER_DAMAGE;
+    }
+
+    public Vector2 getLaserPosition() {
+        return laserPosition;
     }
 }

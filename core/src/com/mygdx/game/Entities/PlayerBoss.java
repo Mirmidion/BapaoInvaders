@@ -38,6 +38,8 @@ public class PlayerBoss extends Ship {
     private Sprite playerIcon;
     private final int SPEED = 10;
     private final int EXTRA_SPEED = 3;
+    private ArrayList<Explosion> explosions;
+    private boolean playerExploded = false;
 
     public PlayerBoss() {
         init();
@@ -63,6 +65,7 @@ public class PlayerBoss extends Ship {
         playerIcon.setSize(playerTexture.getWidth()/4f, playerTexture.getHeight()/4f);
         playerIcon.setPosition(healthBarBorder.getX() + healthBarBorder.getWidth() - 44,
                 healthBarBorder.getY() + 10);
+        explosions = new ArrayList<>();
     }
 
     public void update(float delta) {
@@ -87,6 +90,12 @@ public class PlayerBoss extends Ship {
         //draw lasers
         for (Laser laser : lasers) {
             laser.draw(batch);
+        }
+    }
+
+    public void drawLaserExplosions(SpriteBatch batch){
+        for(Explosion explosion : explosions){
+            explosion.draw(batch);
         }
     }
 
@@ -121,6 +130,28 @@ public class PlayerBoss extends Ship {
         }
     }
 
+    public void explosion(float delta){
+        ArrayList<Explosion> explosionsToRemove = new ArrayList<>();
+        for(Explosion explosion : explosions){
+            explosion.update(delta);
+            if(explosion.remove){
+                explosionsToRemove.add(explosion);
+            }
+        }
+        explosions.removeAll(explosionsToRemove);
+    }
+
+    public void drawPlayerExplosion(SpriteBatch batch){
+        for(Explosion explosion : explosions){
+            explosion.draw(batch);
+        }
+
+        if(health <= 0 && !playerExploded) {
+            playerExploded = true;
+            explosions.add(new Explosion(playerSprite.getX(), playerSprite.getY(), 1));
+        }
+    }
+
     public void updateLaser(float delta, float shipRotation) {
         laserTimer += delta;
 
@@ -146,6 +177,7 @@ public class PlayerBoss extends Ship {
             if(laser.getLaserHitbox().overlaps(boss.getBossHitbox())){
                 boss.setHealth(-Laser.getLaserDamage());
                 lasersToRemove.add(laser);
+                explosions.add(new Explosion(laser.getLaserPosition().x, laser.getLaserPosition().y, 2));
             }
         }
         lasers.removeAll(lasersToRemove);

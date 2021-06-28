@@ -54,15 +54,22 @@ public class BossFight extends BaseScreen {
 
         drawScrollingBackground();
 
-        player.draw(batch);
+        if(player.getHealth() != 0) {
+            player.draw(batch);
+        }
 
-        ufoBoss.draw(batch);
+        if(ufoBoss.getHealth() != 0) {
+            ufoBoss.draw(batch);
+        }
+
+        player.drawLaserExplosions(batch);
 
         if (player.getHealth() == 0) {
             gameOverSprite.draw(batch);
             if (gameOverSpriteY == Gdx.graphics.getHeight() / 2f) {
                 pressEscSprite.draw(batch);
             }
+            player.drawPlayerExplosion(batch);
         }
 
         if (ufoBoss.getHealth() == 0) {
@@ -70,6 +77,7 @@ public class BossFight extends BaseScreen {
             if (winSpriteY == Gdx.graphics.getHeight() / 2f) {
                 pressEscSprite.draw(batch);
             }
+            ufoBoss.drawUfoExplosion(batch);
         }
 
         if (paused) {
@@ -79,6 +87,9 @@ public class BossFight extends BaseScreen {
         }
 
         batch.end();
+
+        player.explosion(delta);
+        ufoBoss.explosion(delta);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             paused = !paused;
